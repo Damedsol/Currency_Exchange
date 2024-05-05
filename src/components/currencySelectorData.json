@@ -1,0 +1,167 @@
+{
+	"EUR": {
+		"symbol": "€",
+		"name": "Euro",
+		"code": "EUR"
+	},
+	"USD": {
+		"symbol": "$",
+		"name": "US Dollar",
+		"code": "USD"
+	},
+	"JPY": {
+		"symbol": "¥",
+		"name": "Japanese Yen",
+		"code": "JPY"
+	},
+	"BGN": {
+		"symbol": "BGN",
+		"name": "Bulgarian Lev",
+		"code": "BGN"
+	},
+	"CZK": {
+		"symbol": "Kč",
+		"name": "Czech Republic Koruna",
+		"code": "CZK"
+	},
+	"DKK": {
+		"symbol": "Dkr",
+		"name": "Danish Krone",
+		"code": "DKK"
+	},
+	"GBP": {
+		"symbol": "£",
+		"name": "British Pound Sterling",
+		"code": "GBP"
+	},
+	"HUF": {
+		"symbol": "Ft",
+		"name": "Hungarian Forint",
+		"code": "HUF"
+	},
+	"PLN": {
+		"symbol": "zł",
+		"name": "Polish Zloty",
+		"code": "PLN"
+	},
+	"RON": {
+		"symbol": "RON",
+		"name": "Romanian Leu",
+		"code": "RON"
+	},
+	"SEK": {
+		"symbol": "Skr",
+		"name": "Swedish Krona",
+		"code": "SEK"
+	},
+	"CHF": {
+		"symbol": "CHF",
+		"name": "Swiss Franc",
+		"code": "CHF"
+	},
+	"ISK": {
+		"symbol": "Ikr",
+		"name": "Icelandic Króna",
+		"code": "ISK"
+	},
+	"NOK": {
+		"symbol": "Nkr",
+		"name": "Norwegian Krone",
+		"code": "NOK"
+	},
+	"HRK": {
+		"symbol": "kn",
+		"name": "Croatian Kuna",
+		"code": "HRK"
+	},
+	"RUB": {
+		"symbol": "RUB",
+		"name": "Russian Ruble",
+		"code": "RUB"
+	},
+	"TRY": {
+		"symbol": "TL",
+		"name": "Turkish Lira",
+		"code": "TRY"
+	},
+	"AUD": {
+		"symbol": "AU$",
+		"name": "Australian Dollar",
+		"code": "AUD"
+	},
+	"BRL": {
+		"symbol": "R$",
+		"name": "Brazilian Real",
+		"code": "BRL"
+	},
+	"CAD": {
+		"symbol": "CA$",
+		"name": "Canadian Dollar",
+		"code": "CAD"
+	},
+	"CNY": {
+		"symbol": "CN¥",
+		"name": "Chinese Yuan",
+		"code": "CNY"
+	},
+	"HKD": {
+		"symbol": "HK$",
+		"name": "Hong Kong Dollar",
+		"code": "HKD"
+	},
+	"IDR": {
+		"symbol": "Rp",
+		"name": "Indonesian Rupiah",
+		"code": "IDR"
+	},
+	"ILS": {
+		"symbol": "₪",
+		"name": "Israeli New Sheqel",
+		"code": "ILS"
+	},
+	"INR": {
+		"symbol": "Rs",
+		"name": "Indian Rupee",
+		"code": "INR"
+	},
+	"KRW": {
+		"symbol": "₩",
+		"name": "South Korean Won",
+		"code": "KRW"
+	},
+	"MXN": {
+		"symbol": "MX$",
+		"name": "Mexican Peso",
+		"code": "MXN"
+	},
+	"MYR": {
+		"symbol": "RM",
+		"name": "Malaysian Ringgit",
+		"code": "MYR"
+	},
+	"NZD": {
+		"symbol": "NZ$",
+		"name": "New Zealand Dollar",
+		"code": "NZD"
+	},
+	"PHP": {
+		"symbol": "₱",
+		"name": "Philippine Peso",
+		"code": "PHP"
+	},
+	"SGD": {
+		"symbol": "S$",
+		"name": "Singapore Dollar",
+		"code": "SGD"
+	},
+	"THB": {
+		"symbol": "฿",
+		"name": "Thai Baht",
+		"code": "THB"
+	},
+	"ZAR": {
+		"symbol": "R",
+		"name": "South African Rand",
+		"code": "ZAR"
+	}
+}

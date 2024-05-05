@@ -6,8 +6,8 @@
 	"scripts": {
 		"dev": "vite",
 		"build": "tsc && vite build",
-		"lint": "biome lint --apply-unsafe src",
-		"format": "biome format --write src ",
+		"lint": "biome lint --apply-unsafe src,src/components,src/types",
+		"format": "biome format --write src,src/components,src/types",
 		"preview": "vite preview",
 		"prepare": "husky"
 	},
