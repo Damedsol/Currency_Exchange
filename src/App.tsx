@@ -16,10 +16,10 @@ function App() {
 				`https://api.freecurrencyapi.com/v1/latest?apikey=${apiKey}&currencies=${toCurrency}&base_currency=${fromCurrency}`,
 			);
 			const data = await response.json();
-			setRate(data.data[toCurrency]);
+			return data.data[toCurrency];
 		}
 
-		fetchRate();
+		fetchRate().then((rate) => setRate(rate));
 	}, [fromCurrency, toCurrency, apiKey]);
 
 	console.log(rate);
