@@ -1,0 +1,13 @@
+echo '👀 Comprobando el mensaje de commit.'
+echo ''
+pnpm exec commitlint --edit "$1"
+
+if [ $? != 0 ]; then
+  echo
+  echo '❌ El mensaje de commit no esta en el formato correcto. Verifica el formato del mensaje.';
+  echo
+  exit 1
+fi
+echo ''
+echo '✅ Mensaje del commit comprobado correctamente'
+
