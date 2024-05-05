@@ -9,6 +9,7 @@ interface Currency {
 
 export function CurrencySelector(props: {
 	onValueChange: (value: string) => void;
+	value: string;
 }): React.JSX.Element {
 	const handleInputChange = (event: { target: { value: string } }) => {
 		props.onValueChange(event.target.value);
@@ -19,7 +20,7 @@ export function CurrencySelector(props: {
 
 	return (
 		<>
-			<select onChange={handleInputChange}>
+			<select value={props.value} onChange={handleInputChange}>
 				{TransformData.map((item) => (
 					<option key={item.code} value={item.code}>
 						{item.symbol} - {item.name}
