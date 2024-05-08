@@ -1,31 +1,26 @@
-import { useEffect, useState } from "react";
-import { CurrencySelector } from "./components/CurrencySelector.tsx";
+import { useState } from "react";
+import { CurrencySelector } from "./components/CurrencySelector";
+import { FreeCurrencyService } from "./services/FreeCurrencyService";
 
 function App() {
 	const [fromCurrency, setFromCurrency] = useState<string>("EUR");
 	const [toCurrency, setToCurrency] = useState<string>("USD");
 	const [apiKey, setApiKey] = useState<string | null>(null);
-	const [rate, setRate] = useState<number | null>(null);
-
-	useEffect(() => {
-		if (!apiKey || !fromCurrency || !toCurrency) {
-			return;
-		}
-		async function fetchRate() {
-			const response = await fetch(
-				`https://api.freecurrencyapi.com/v1/latest?apikey=${apiKey}&currencies=${toCurrency}&base_currency=${fromCurrency}`,
-			);
-			const data = await response.json();
-			return data.data[toCurrency];
-		}
-
-		fetchRate().then((rate) => setRate(rate));
-	}, [fromCurrency, toCurrency, apiKey]);
-
-	console.log(rate);
+	const [rate, setRate] = useState<FreeCurrencyService | null>(null);
 
 	const handleFromCurrency = (value: string) => setFromCurrency(value);
 	const handleToCurrency = (value: string) => setToCurrency(value);
+
+	async function fetchRate() {
+		const response = await FreeCurrencyService({
+			fromCurrency,
+			toCurrency,
+			apiKey,
+		});
+		if (response) {
+			setRate(response);
+		}
+	}
 
 	return (
 		<>
@@ -35,16 +30,16 @@ function App() {
 			/>
 			<p>{fromCurrency}</p>
 			<CurrencySelector value={toCurrency} onValueChange={handleToCurrency} />
-			<p>{toCurrency}</p>
-
-			<p>{apiKey ? "API KEY SET" : "API KEY NOT SET"}</p>
+			<p>{toCurrency}</p> <p>{apiKey ? "API KEY SET" : "API KEY NOT SET"}</p>
 			<input
 				value={apiKey ? apiKey : ""}
 				type={"password"}
 				onChange={(event) => setApiKey(event.target.value)}
 			/>
-
-			<p>Rate: {rate}</p>
+			<p>Rate: {rate ? rate.rate : null}</p>
+			<button type="button" onClick={fetchRate}>
+				Obtener Cambio
+			</button>
 		</>
 	);
 }
