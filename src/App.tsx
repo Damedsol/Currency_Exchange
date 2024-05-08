@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { ButtonBase } from "./components/Button/ButtonBase.tsx";
 import { CurrencySelector } from "./components/CurrencySelector/CurrencySelector.tsx";
 import { FreeCurrencyService } from "./services/FreeCurrencyService";
 
@@ -36,10 +37,10 @@ function App() {
 				type={"password"}
 				onChange={(event) => setApiKey(event.target.value)}
 			/>
-			<p>Rate: {rate ? rate.rate : null}</p>
-			<button type="button" onClick={fetchRate}>
+			<p>Rate: {rate ? rate : null}</p>
+			<ButtonBase shape={"rounded"} appearance={"primary"} onClick={fetchRate}>
 				Obtener Cambio
-			</button>
+			</ButtonBase>
 		</>
 	);
 }
