@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CurrencySelector } from "./components/CurrencySelector";
+import { CurrencySelector } from "./components/CurrencySelector/CurrencySelector.tsx";
 import { FreeCurrencyService } from "./services/FreeCurrencyService";
 
 function App() {
