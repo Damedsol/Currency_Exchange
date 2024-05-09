@@ -12,7 +12,7 @@ function App() {
 	const handleFromCurrency = (value: string) => setFromCurrency(value);
 	const handleToCurrency = (value: string) => setToCurrency(value);
 
-	async function fetchRate() {
+	async function fetchRate(): Promise<void> {
 		const response = await FreeCurrencyService({
 			fromCurrency,
 			toCurrency,
@@ -37,7 +37,7 @@ function App() {
 				type={"password"}
 				onChange={(event) => setApiKey(event.target.value)}
 			/>
-			<p>Rate: {rate ? rate : null}</p>
+			<p>Rate: {rate ? rate.toString() : null}</p>
 			<ButtonBase shape={"rounded"} appearance={"primary"} onClick={fetchRate}>
 				Obtener Cambio
 			</ButtonBase>
