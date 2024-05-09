@@ -1,3 +1,4 @@
+import { MoneyCalculatorFilled } from "@fluentui/react-icons";
 import { useState } from "react";
 import { ButtonBase } from "./components/Button/ButtonBase.tsx";
 import { CurrencySelector } from "./components/CurrencySelector/CurrencySelector.tsx";
@@ -42,8 +43,23 @@ function App() {
 				onChange={(event) => setApiKey(event.target.value)}
 			/>
 			<p>Rate: {rate ? rate.toString() : "--"}</p>
-			<ButtonBase shape={"rounded"} appearance={"primary"} onClick={fetchRate}>
-				Obtener Cambio
+			<ButtonBase
+				shape={"rounded"}
+				appearance={"primary"}
+				onClick={fetchRate}
+				style={{
+					display: "flex",
+					alignItems: "center",
+					justifyContent: "center",
+					gap: "3px",
+					width: "120px",
+					padding: "6px 12px",
+				}}
+			>
+				Calculate
+				<span>
+					<MoneyCalculatorFilled style={{ fontSize: "24px" }} />
+				</span>
 			</ButtonBase>
 		</>
 	);
