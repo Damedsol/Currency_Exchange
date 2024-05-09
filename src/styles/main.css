@@ -7,3 +7,12 @@ body {
     margin: 0;
     padding: 0;
 }
+
+Body > div > div {
+    min-height: 100dvh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 20px;
+}
