@@ -7,7 +7,7 @@ function App() {
 	const [fromCurrency, setFromCurrency] = useState<string>("EUR");
 	const [toCurrency, setToCurrency] = useState<string>("USD");
 	const [apiKey, setApiKey] = useState<string | null>(null);
-	const [rate, setRate] = useState<FreeCurrencyService | null>(null);
+	const [rate, setRate] = useState<FreeCurrencyService | "--">("--");
 
 	const handleFromCurrency = (value: string) => setFromCurrency(value);
 	const handleToCurrency = (value: string) => setToCurrency(value);
@@ -27,17 +27,21 @@ function App() {
 		<>
 			<CurrencySelector
 				value={fromCurrency}
-				onValueChange={handleFromCurrency}
+				onChange={handleFromCurrency}
+				where={"from"}
 			/>
-			<p>{fromCurrency}</p>
-			<CurrencySelector value={toCurrency} onValueChange={handleToCurrency} />
-			<p>{toCurrency}</p> <p>{apiKey ? "API KEY SET" : "API KEY NOT SET"}</p>
+			<CurrencySelector
+				value={toCurrency}
+				onChange={handleToCurrency}
+				where={"to"}
+			/>
+			<p>{apiKey ? "API KEY SET" : "API KEY NOT SET"}</p>
 			<input
 				value={apiKey ? apiKey : ""}
 				type={"password"}
 				onChange={(event) => setApiKey(event.target.value)}
 			/>
-			<p>Rate: {rate ? rate.toString() : null}</p>
+			<p>Rate: {rate ? rate.toString() : "--"}</p>
 			<ButtonBase shape={"rounded"} appearance={"primary"} onClick={fetchRate}>
 				Obtener Cambio
 			</ButtonBase>

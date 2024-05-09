@@ -1,3 +1,4 @@
+import { Select, useId } from "@fluentui/react-components";
 import type React from "react";
 import data from "./currencySelectorData.json";
 
@@ -8,11 +9,13 @@ interface Currency {
 }
 
 export function CurrencySelector(props: {
-	onValueChange: (value: string) => void;
+	onChange: (value: string) => void;
 	value: string;
+	where: "from" | "to";
 }): React.JSX.Element {
+	const id = useId();
 	const handleInputChange = (event: { target: { value: string } }) => {
-		props.onValueChange(event.target.value);
+		props.onChange(event.target.value);
 	};
 	const TransformData: Currency[] = Array.from(
 		Object.values(data as Record<string, Currency>),
@@ -20,13 +23,22 @@ export function CurrencySelector(props: {
 
 	return (
 		<>
-			<select value={props.value} onChange={handleInputChange}>
+			<label htmlFor={id}>
+				{props.where.charAt(0).toUpperCase() +
+					props.where.slice(1).toLowerCase()}
+			</label>
+			<Select
+				id={id}
+				value={props.value}
+				onChange={handleInputChange}
+				appearance={"filled-darker"}
+			>
 				{TransformData.map((item) => (
 					<option key={item.code} value={item.code}>
 						{item.symbol} - {item.name}
 					</option>
 				))}
-			</select>
+			</Select>
 		</>
 	);
 }
