@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ButtonBase } from "./components/Button/ButtonBase.tsx";
 import { CurrencySelector } from "./components/CurrencySelector/CurrencySelector.tsx";
 import { Field } from "./components/Field/Field.tsx";
+import { Label } from "./components/Label/Label.tsx";
 import { FreeCurrencyService } from "./services/FreeCurrencyService";
 
 function App() {
@@ -46,7 +47,8 @@ function App() {
 					setApiKey(event.target.value)
 				}
 			/>
-			<p>Rate: {rate ? rate.toString() : "--"}</p>
+			<Label text={`Rate: ${rate ? rate.toString() : "--"}`} size={"large"} />
+
 			<ButtonBase
 				shape={"rounded"}
 				appearance={"primary"}
