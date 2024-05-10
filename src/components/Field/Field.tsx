@@ -1,0 +1,19 @@
+import type { FieldProps } from "@fluentui/react-components";
+import {
+	Field as FluentField,
+	Input as FluentInput,
+} from "@fluentui/react-components";
+
+export const Field = (props: Partial<FieldProps>) => {
+	return (
+		<FluentField
+			label={props.label}
+			validationState={props.validationState}
+			validationMessage={props.validationMessage}
+			required={props.required}
+			{...props}
+		>
+			<FluentInput />
+		</FluentField>
+	);
+};

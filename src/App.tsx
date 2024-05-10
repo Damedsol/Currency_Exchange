@@ -1,7 +1,9 @@
 import { MoneyCalculatorFilled } from "@fluentui/react-icons";
+import type React from "react";
 import { useState } from "react";
 import { ButtonBase } from "./components/Button/ButtonBase.tsx";
 import { CurrencySelector } from "./components/CurrencySelector/CurrencySelector.tsx";
+import { Field } from "./components/Field/Field.tsx";
 import { FreeCurrencyService } from "./services/FreeCurrencyService";
 
 function App() {
@@ -23,7 +25,6 @@ function App() {
 			setRate(response);
 		}
 	}
-
 	return (
 		<>
 			<CurrencySelector
@@ -36,17 +37,21 @@ function App() {
 				onChange={handleToCurrency}
 				where={"to"}
 			/>
-			<p>{apiKey ? "API KEY SET" : "API KEY NOT SET"}</p>
-			<input
-				value={apiKey ? apiKey : ""}
-				type={"password"}
-				onChange={(event) => setApiKey(event.target.value)}
+			<Field
+				label={"Api Key"}
+				validationState={apiKey ? "success" : "error"}
+				validationMessage={apiKey ? "Api Key is set" : "Api Key is required"}
+				required
+				onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+					setApiKey(event.target.value)
+				}
 			/>
 			<p>Rate: {rate ? rate.toString() : "--"}</p>
 			<ButtonBase
 				shape={"rounded"}
 				appearance={"primary"}
 				onClick={fetchRate}
+				disabled={!apiKey}
 				style={{
 					display: "flex",
 					alignItems: "center",
@@ -64,5 +69,4 @@ function App() {
 		</>
 	);
 }
-
 export default App;
