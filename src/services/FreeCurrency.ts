@@ -1,4 +1,4 @@
-export interface FreeCurrencyService {
+export interface FreeCurrency {
 	rate: number | null;
 }
 
@@ -8,11 +8,11 @@ interface FreeCurrencyArg {
 	apiKey: string | unknown;
 }
 
-export async function FreeCurrencyService({
+export async function FreeCurrency({
 	fromCurrency,
 	toCurrency,
 	apiKey,
-}: FreeCurrencyArg): Promise<FreeCurrencyService | null> {
+}: FreeCurrencyArg): Promise<FreeCurrency | null> {
 	const API_URL = "https://api.freecurrencyapi.com/v1/latest";
 	const Params = `apikey=${apiKey}&currencies=${toCurrency}&base_currency=${fromCurrency}`;
 

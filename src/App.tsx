@@ -5,19 +5,19 @@ import { ButtonBase } from "./components/Button/ButtonBase.tsx";
 import { CurrencySelector } from "./components/CurrencySelector/CurrencySelector.tsx";
 import { Field } from "./components/Field/Field.tsx";
 import { Label } from "./components/Label/Label.tsx";
-import { FreeCurrencyService } from "./services/FreeCurrencyService";
+import { FreeCurrency } from "./services/FreeCurrency";
 
 function App() {
 	const [fromCurrency, setFromCurrency] = useState<string>("EUR");
 	const [toCurrency, setToCurrency] = useState<string>("USD");
 	const [apiKey, setApiKey] = useState<string | null>(null);
-	const [rate, setRate] = useState<FreeCurrencyService | "--">("--");
+	const [rate, setRate] = useState<FreeCurrency | "--">("--");
 
 	const handleFromCurrency = (value: string) => setFromCurrency(value);
 	const handleToCurrency = (value: string) => setToCurrency(value);
 
 	async function fetchRate(): Promise<void> {
-		const response = await FreeCurrencyService({
+		const response = await FreeCurrency({
 			fromCurrency,
 			toCurrency,
 			apiKey,
