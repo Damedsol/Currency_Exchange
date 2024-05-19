@@ -6,8 +6,8 @@
 	"scripts": {
 		"dev": "vite",
 		"build": "tsc && vite build",
-		"lint": "biome lint --apply-unsafe src,src/components,src/types",
-		"format": "biome format --write src,src/components,src/types",
+		"lint": "oxlint ./src --fix",
+		"format": "biome format --write ./src",
 		"preview": "vite preview",
 		"prepare": "husky"
 	},
@@ -25,6 +25,7 @@
 		"@types/react-dom": "^18.2.22",
 		"@vitejs/plugin-react": "^4.2.1",
 		"husky": "^9.0.11",
+		"oxlint": "^0.3.5",
 		"typescript": "^5.2.2",
 		"vite": "^5.2.0"
 	}
