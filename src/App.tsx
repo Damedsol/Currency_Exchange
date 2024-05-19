@@ -1,16 +1,21 @@
 import { MoneyCalculatorFilled } from "@fluentui/react-icons";
 import type React from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ButtonBase } from "./components/Button/ButtonBase.tsx";
 import { CurrencySelector } from "./components/CurrencySelector/CurrencySelector.tsx";
 import { Field } from "./components/Field/Field.tsx";
 import { Label } from "./components/Label/Label.tsx";
 import { FreeCurrency } from "./services/FreeCurrency";
+import {
+	clearLocalStorageAndDB,
+	localStorageFetchService,
+	localStorageStoreService,
+} from "./services/LocalStorage.ts";
 
 function App() {
 	const [fromCurrency, setFromCurrency] = useState<string>("EUR");
 	const [toCurrency, setToCurrency] = useState<string>("USD");
-	const [apiKey, setApiKey] = useState<string | null>(null);
+	const [apiKey, setApiKey] = useState<string | null | undefined>(null);
 	const [rate, setRate] = useState<FreeCurrency | "--">("--");
 
 	const handleFromCurrency = (value: string) => setFromCurrency(value);
@@ -26,6 +31,24 @@ function App() {
 			setRate(response);
 		}
 	}
+
+	async function saveApiKey(apiKey: string | null): Promise<void> {
+		if (apiKey) {
+			await localStorageStoreService(apiKey);
+			return;
+		}
+	}
+	const clearApiKey = async () => {
+		await clearLocalStorageAndDB();
+	};
+	useEffect(() => {
+		localStorageFetchService().then((apiKey) => {
+			if (apiKey) {
+				setApiKey(apiKey as string);
+			}
+		});
+	}, []);
+
 	return (
 		<>
 			<CurrencySelector

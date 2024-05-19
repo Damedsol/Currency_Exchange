@@ -8,11 +8,11 @@ interface FreeCurrencyArg {
 	apiKey: string | unknown;
 }
 
-export async function FreeCurrency({
+export const FreeCurrency = async ({
 	fromCurrency,
 	toCurrency,
 	apiKey,
-}: FreeCurrencyArg): Promise<FreeCurrency | null> {
+}: FreeCurrencyArg): Promise<FreeCurrency | null> => {
 	const API_URL = "https://api.freecurrencyapi.com/v1/latest";
 	const Params = `apikey=${apiKey}&currencies=${toCurrency}&base_currency=${fromCurrency}`;
 
@@ -28,4 +28,4 @@ export async function FreeCurrency({
 	const response = await fetch(`${API_URL}?${Params}`);
 	const data = await response.json();
 	return data.data[toCurrency];
-}
+};
