@@ -1,30 +1,17 @@
-# React + TypeScript + Vite
+# Rate Currency Exchange 💱
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Overview
 
-Currently, two official plugins are available:
+This app allows you to convert currency from one currency to another using
+the [Free Currency API](https://freecurrencyapi.com/).
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## How to use
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
-```
-
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+1. Install the dependencies by running `pnpm install` in the root directory of the project. 📦
+2. Run `pnpm dev` to start the development server. 🖥️
+3. Open the browser and navigate to http://localhost:5173. 🌎
+4. Select the currency you want to obtain the exchange rate. 💱
+5. Introduce the api key. You can get it from [here](https://freecurrencyapi.com/).
+6. If you want save your api key, click on the save button. The key will be stored in the IndexedDB or localStorage. You
+   can also clear the key from the localStorage and the IndexedDB using the clear button.
+7. Click on the convert button.
