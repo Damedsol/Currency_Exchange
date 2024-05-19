@@ -43,6 +43,7 @@ function App() {
 				validationState={apiKey ? "success" : "error"}
 				validationMessage={apiKey ? "Api Key is set" : "Api Key is required"}
 				required
+				value={apiKey || ""}
 				onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
 					setApiKey(event.target.value)
 				}
@@ -54,19 +55,27 @@ function App() {
 				appearance={"primary"}
 				onClick={fetchRate}
 				disabled={!apiKey}
-				style={{
-					display: "flex",
-					alignItems: "center",
-					justifyContent: "center",
-					gap: "3px",
-					width: "120px",
-					padding: "6px 12px",
-				}}
 			>
 				Calculate
 				<span>
 					<MoneyCalculatorFilled style={{ fontSize: "24px" }} />
 				</span>
+			</ButtonBase>
+
+			<ButtonBase
+				shape={"rounded"}
+				appearance={"primary"}
+				onClick={() => saveApiKey(apiKey as string)}
+			>
+				Save
+			</ButtonBase>
+
+			<ButtonBase
+				shape={"rounded"}
+				appearance={"primary"}
+				onClick={clearApiKey}
+			>
+				Clear
 			</ButtonBase>
 		</>
 	);

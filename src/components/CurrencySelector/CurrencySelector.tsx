@@ -32,6 +32,7 @@ export function CurrencySelector(props: {
 				value={props.value}
 				onChange={handleInputChange}
 				appearance={"filled-darker"}
+				size={"large"}
 			>
 				{TransformData.map((item) => (
 					<option key={item.code} value={item.code}>

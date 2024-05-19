@@ -1,6 +1,9 @@
 import type { ButtonProps } from "@fluentui/react-components";
 import { Button } from "@fluentui/react-components";
+import "./ButonBase.css";
 
 export const ButtonBase = (props: ButtonProps) => (
-	<Button {...props}>{props.children}</Button>
+	<Button size={"large"} className={"btn"} {...props}>
+		{props.children}
+	</Button>
 );
