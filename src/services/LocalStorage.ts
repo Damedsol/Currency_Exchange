@@ -117,10 +117,11 @@ async function clearDB(): Promise<void> {
 export async function clearLocalStorageAndDB(): Promise<void> {
 	try {
 		if (verifyIfIndexedDB()) {
-			clearDB().then(() => console.log("DB cleared"));
+			clearDB().then(() => window.location.reload());
 			return;
 		}
 		localStorage.clear();
+		window.location.reload();
 	} catch (error) {
 		throw new Error(error as string);
 	}
