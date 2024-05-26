@@ -1,4 +1,8 @@
-import { MoneyCalculatorFilled } from "@fluentui/react-icons";
+import {
+	DeleteFilled,
+	MoneyCalculatorFilled,
+	SaveFilled,
+} from "@fluentui/react-icons";
 import type React from "react";
 import { useEffect, useState } from "react";
 import { ButtonBase } from "./components/Button/ButtonBase.tsx";
@@ -80,9 +84,7 @@ function App() {
 				disabled={!apiKey}
 			>
 				Calculate
-				<span>
-					<MoneyCalculatorFilled style={{ fontSize: "24px" }} />
-				</span>
+				<MoneyCalculatorFilled style={{ fontSize: "24px" }} />
 			</ButtonBase>
 
 			<ButtonBase
@@ -91,6 +93,7 @@ function App() {
 				onClick={() => saveApiKey(apiKey as string)}
 			>
 				Save
+				<SaveFilled style={{ fontSize: "24px" }} />
 			</ButtonBase>
 
 			<ButtonBase
@@ -99,6 +102,7 @@ function App() {
 				onClick={clearApiKey}
 			>
 				Clear
+				<DeleteFilled style={{ fontSize: "24px" }} />
 			</ButtonBase>
 		</>
 	);
