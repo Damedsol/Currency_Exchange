@@ -141,28 +141,18 @@ function App() {
 				label={"Api Key"}
 				// Determine validation state based on input validity and presence
 				validationState={
-					apiKeyInput === "" && !storedApiKey
-						? "none" // No input, no stored key
-						: !isApiKeyValid
-							? "error" // Invalid input
-							: storedApiKey && apiKeyInput === storedApiKey
-								? "success" // Valid stored key shown
-								: isApiKeyValid
-									? "success" // Valid input, not yet saved/matched
-									: "none" // Default case
+					saveError || (!isApiKeyValid && apiKeyInput !== "") ? "error" : // Prioritize showing save errors or format errors
+						storedApiKey && apiKeyInput === storedApiKey ? "success" : // Valid stored key shown
+							isApiKeyValid && apiKeyInput !== "" ? "warning" : // Valid format, but not saved or doesn't match stored
+								"none" // Default state (e.g., empty input, no stored key)
 				}
 				validationMessage={
-					saveError
-						? saveError // Show save error first
-						: !isApiKeyValid && apiKeyInput !== ""
-							? "Invalid format. Must start with fca_live_ + 32 alphanumeric chars."
-							: storedApiKey && apiKeyInput === storedApiKey
-								? "API Key is valid and stored."
-								: apiKeyInput === "" && !storedApiKey
-									? "API Key is required."
-									: isApiKeyValid && apiKeyInput !== ""
-										? "Valid format. Press Save."
-										: ""
+					saveError ? saveError : // Show save error first
+						!isApiKeyValid && apiKeyInput !== "" ? "Invalid format. Must start with fca_live_ + 40 alphanumeric chars." : // Updated length in message
+							storedApiKey && apiKeyInput === storedApiKey ? "API Key is valid and stored." :
+								isApiKeyValid && apiKeyInput !== "" ? "Valid format. Press Save to store this key." : // Warning message
+									apiKeyInput === "" && !storedApiKey ? "API Key is required." :
+										"" // Default: no message
 				}
 				required
 				value={apiKeyInput}
