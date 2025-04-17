@@ -1,130 +1,51 @@
-function verifyIfIndexedDB(): boolean {
-	return window.indexedDB !== undefined;
-}
-
-export async function localStorageFetchService(): Promise<string | null> {
+/**
+ * Fetches the API key from localStorage.
+ * @returns {string | null} The API key if found, otherwise null.
+ */
+export function localStorageFetchService(): string | null {
 	try {
-		return verifyIfIndexedDB()
-			? await getApiKeyFromStorage()
-			: localStorage.getItem("apiKey");
-	} catch (error) {
-		throw new Error(error as string);
-	}
-}
-
-export async function localStorageStoreService(
-	apiKey: string,
-): Promise<string | null> {
-	try {
-		if (verifyIfIndexedDB()) {
-			await saveToIndexedDB(apiKey);
-		} else {
-			localStorage.setItem("apiKey", apiKey as string);
-		}
-		return null;
-	} catch (error) {
-		throw new Error(error as string);
-	}
-}
-
-async function saveToIndexedDB(apiKey: string): Promise<void> {
-	const db = await openDB("currencyExchange");
-	if (!db.objectStoreNames.contains("apiKey")) {
-		await createObjectStore(db, "apiKey");
-	}
-	await putApiKey(db, apiKey);
-	db.close();
-}
-
-function openDB(name: string): Promise<IDBDatabase> {
-	return new Promise((resolve, reject) => {
-		const request = indexedDB.open(name, 1);
-		request.onerror = (event) => reject(`An error occurred: ${event}`);
-		request.onsuccess = (event: Event) => {
-			resolve((event.target as IDBOpenDBRequest).result);
-		};
-	});
-}
-
-function createObjectStore(db: IDBDatabase, name: string): Promise<void> {
-	return new Promise((resolve, reject) => {
-		const transaction = db.transaction(name, "readwrite");
-		if (!db.objectStoreNames.contains("apiKey")) {
-			db.createObjectStore("apiKey", { keyPath: "id" });
-			transaction.oncomplete = () => resolve();
-			transaction.onerror = (event) => reject(`An error occurred: ${event}`);
-		}
-	});
-}
-
-function putApiKey(db: IDBDatabase, apiKey: string): Promise<void> {
-	return new Promise((resolve, reject) => {
-		const transaction = db.transaction("apiKey", "readwrite");
-		const objectStore = transaction.objectStore("apiKey");
-		objectStore.put({ id: "apiKey", value: apiKey });
-		transaction.oncomplete = () => resolve();
-		transaction.onerror = (event) => reject(`An error occurred: ${event}`);
-	});
-}
-
-async function getApiKeyFromStorage(): Promise<string | null> {
-	try {
-		if (verifyIfIndexedDB()) {
-			const apiKey = await fetchFromIndexedDB("currencyExchange", "apiKey");
-			return apiKey?.value || null;
-		}
 		return localStorage.getItem("apiKey");
 	} catch (error) {
-		console.error(error);
+		console.error("Error fetching API key from localStorage:", error);
+		// Return null on error to indicate failure without crashing.
 		return null;
 	}
 }
 
-async function fetchFromIndexedDB(
-	dbName: string,
-	storeName: string,
-): Promise<{ id: string; value: string } | undefined> {
-	const db = await openDB(dbName);
-	const transaction = db.transaction(storeName, "readonly");
-	const objectStore = transaction.objectStore(storeName);
-	const apiKey = await get(objectStore, "apiKey");
-	db.close();
-	return apiKey;
-}
-
-function get(
-	store: IDBObjectStore,
-	key: string,
-): Promise<{ id: string; value: string } | undefined> {
-	return new Promise((resolve, reject) => {
-		const request = store.get(key);
-		request.onsuccess = () => {
-			resolve(request.result as { id: string; value: string } | undefined);
-		};
-		request.onerror = (event) => {
-			reject(`An error occurred: ${event}`);
-		};
-	});
-}
-
-async function clearDB(): Promise<void> {
-	const dbName = "currencyExchange";
-	const storeName = "apiKey";
-	const db = await openDB(dbName);
-	const transaction = db.transaction(storeName, "readwrite");
-	const objectStore = transaction.objectStore(storeName);
-	objectStore.clear();
-}
-
-export async function clearLocalStorageAndDB(): Promise<void> {
+/**
+ * Stores the API key in localStorage.
+ * @param {string} apiKey The API key to store.
+ * @returns {void}
+ * @throws {Error} If the API key is empty or if an error occurs during the store operation.
+ */
+export function localStorageStoreService(apiKey: string): void {
 	try {
-		if (verifyIfIndexedDB()) {
-			clearDB().then(() => window.location.reload());
-			return;
+		if (!apiKey) {
+			throw new Error("API key cannot be empty.");
 		}
-		localStorage.clear();
-		window.location.reload();
+		localStorage.setItem("apiKey", apiKey);
 	} catch (error) {
-		throw new Error(error as string);
+		console.error("Error storing API key in localStorage:", error);
+		// Re-throw the error to allow calling code to handle it.
+		throw new Error(`Failed to store API key: ${error instanceof Error ? error.message : String(error)}`);
+	}
+}
+
+
+/**
+ * Clears the API key from localStorage and reloads the page.
+ * Note: Reloading the page might be better handled by the UI component that calls this function.
+ * @returns {void}
+ * @throws {Error} If an error occurs during the clear operation.
+ */
+export function clearLocalStorage(): void {
+	try {
+		// Use removeItem for targeted removal instead of clear()
+		localStorage.removeItem("apiKey");
+		window.location.reload(); // Consider moving this side effect out of the service
+	} catch (error) {
+		console.error("Error clearing API key from localStorage:", error);
+		// Re-throw the error.
+		throw new Error(`Failed to clear API key: ${error instanceof Error ? error.message : String(error)}`);
 	}
 }

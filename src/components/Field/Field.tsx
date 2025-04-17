@@ -4,7 +4,7 @@ import {
 	Input as FluentInput,
 } from "@fluentui/react-components";
 
-export const Field = (props: Partial<FieldProps> & { value: string }) => {
+export const Field = (props: Partial<FieldProps> & { value: string; type?: string }) => {
 	return (
 		<FluentField
 			label={props.label}
@@ -15,7 +15,7 @@ export const Field = (props: Partial<FieldProps> & { value: string }) => {
 			size={"large"}
 		>
 			<FluentInput
-				type={"password"}
+				type={props.type || "text"}
 				appearance={"filled-darker"}
 				size={"large"}
 				value={props.value}

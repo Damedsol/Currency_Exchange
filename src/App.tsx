@@ -2,6 +2,7 @@ import {
 	DeleteFilled,
 	MoneyCalculatorFilled,
 	SaveFilled,
+	ArrowClockwiseFilled
 } from "@fluentui/react-icons";
 import type React from "react";
 import { useEffect, useState } from "react";
@@ -12,7 +13,7 @@ import { Field } from "./components/Field/Field.tsx";
 import { Label } from "./components/Label/Label.tsx";
 import { FreeCurrency } from "./services/FreeCurrency";
 import {
-	clearLocalStorageAndDB,
+	clearLocalStorage,
 	localStorageFetchService,
 	localStorageStoreService,
 } from "./services/LocalStorage.ts";
@@ -20,6 +21,7 @@ import {
 function App() {
 	const [fromCurrency, setFromCurrency] = useState<string>("EUR");
 	const [toCurrency, setToCurrency] = useState<string>("USD");
+	const [amount, setAmount] = useState<number>(1);
 	const [apiKey, setApiKey] = useState<string | null | undefined>(null);
 	const [rate, setRate] = useState<FreeCurrency | "--">("--");
 
@@ -43,16 +45,23 @@ function App() {
 			return;
 		}
 	}
-	const clearApiKey = async () => {
-		await clearLocalStorageAndDB();
+
+	const clearApiKey = () => {
+		clearLocalStorage();
 	};
+
 	useEffect(() => {
-		localStorageFetchService().then((apiKey) => {
-			if (apiKey) {
-				setApiKey(apiKey as string);
-			}
-		});
+		const storedApiKey = localStorageFetchService();
+		if (storedApiKey) {
+			setApiKey(storedApiKey);
+		}
 	}, []);
+
+	const swapCurrencies = () => {
+		const temp = fromCurrency;
+		setFromCurrency(toCurrency);
+		setToCurrency(temp);
+	};
 
 	return (
 		<>
@@ -61,10 +70,23 @@ function App() {
 				onChange={handleFromCurrency}
 				where={"from"}
 			/>
+
+			<ButtonPrimary onClick={() => swapCurrencies()}>
+				<ArrowClockwiseFilled style={{ fontSize: "24px" }} />
+			</ButtonPrimary>
+
 			<CurrencySelector
 				value={toCurrency}
 				onChange={handleToCurrency}
 				where={"to"}
+			/>
+			<Field
+				label={"Amount"}
+				value={amount.toString()}
+				type={"number"}
+				onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+					setAmount(Number(event.target.value))
+				}
 			/>
 			<Field
 				label={"Api Key"}
@@ -77,6 +99,12 @@ function App() {
 				}
 			/>
 			<Label text={`Rate: ${rate ? rate.toString() : "--"}`} size={"large"} />
+			{typeof rate === "number" && (
+				<Label
+					text={`${amount} ${fromCurrency} = ${(amount * rate).toFixed(2)} ${toCurrency}`}
+					size={"large"}
+				/>
+			)}
 
 			<ButtonPrimary onClick={() => fetchRate()} disabled={!apiKey}>
 				<span>Calculate</span>
