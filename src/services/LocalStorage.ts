@@ -65,3 +65,61 @@ export function clearLocalStorage(): void {
 		);
 	}
 }
+
+// --- Conversion History Service Functions ---
+
+// Define the structure for a history entry
+export interface ConversionHistoryEntry {
+	fromCurrency: string;
+	toCurrency: string;
+	amount: number;
+	rate: number;
+	result: number;
+	timestamp: number; // Store timestamp for potential sorting or display
+}
+
+const HISTORY_STORAGE_KEY = "conversionHistory";
+const MAX_HISTORY_LENGTH = 10; // Keep the last 10 conversions
+
+/**
+ * Saves the conversion history to localStorage.
+ * @param {ConversionHistoryEntry[]} history The history array to save.
+ * @returns {void}
+ */
+export function saveConversionHistoryService(
+	history: ConversionHistoryEntry[],
+): void {
+	try {
+		// Ensure we only save the last MAX_HISTORY_LENGTH items
+		const historyToSave = history.slice(0, MAX_HISTORY_LENGTH);
+		localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(historyToSave));
+	} catch (error) {
+		console.error("Error saving conversion history to localStorage:", error);
+		// Decide if you want to throw or just log the error
+	}
+}
+
+/**
+ * Loads the conversion history from localStorage.
+ * @returns {ConversionHistoryEntry[]} The loaded history array, or an empty array if not found or error.
+ */
+export function loadConversionHistoryService(): ConversionHistoryEntry[] {
+	try {
+		const storedHistory = localStorage.getItem(HISTORY_STORAGE_KEY);
+		if (storedHistory) {
+			const parsedHistory = JSON.parse(storedHistory);
+			// Basic validation to ensure it's an array
+			if (Array.isArray(parsedHistory)) {
+				return parsedHistory;
+			}
+			console.warn(
+				"Invalid history format found in localStorage. Returning empty array.",
+			);
+			return [];
+		}
+		return []; // Return empty array if no history is found
+	} catch (error) {
+		console.error("Error loading conversion history from localStorage:", error);
+		return []; // Return empty array on error
+	}
+}
