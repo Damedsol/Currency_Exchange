@@ -12,9 +12,21 @@ import { Button, makeStyles, shorthands, tokens } from '@fluentui/react-componen
 const useStyles = makeStyles({
 	container: {
 		display: "flex",
-		flexWrap: "wrap", // Allow buttons to wrap
+		// flexWrap: "wrap", // Remove wrap if we want specific groups
+		alignItems: "center", // Align items vertically
 		...shorthands.gap(tokens.spacingHorizontalM),
 		marginTop: tokens.spacingVerticalM,
+	},
+	mainActions: {
+		display: "flex",
+		alignItems: "center",
+		...shorthands.gap(tokens.spacingHorizontalM),
+	},
+	clearActions: {
+		display: "flex",
+		alignItems: "center",
+		marginLeft: "auto", // Push this group to the right
+		...shorthands.gap(tokens.spacingHorizontalS), // Smaller gap for clear buttons
 	},
 	// Remove fixed width button style if present, let buttons size naturally
 	// button: {
@@ -57,56 +69,62 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({
 
 	return (
 		<div className={styles.container}>
-			<Button
-				appearance="primary"
-				icon={<MoneyCalculatorFilled />}
-				onClick={onCalculate}
-				disabled={!storedApiKey || amount <= 0 || rateSource === "loading"}
-			>
-				{rateSource === "loading" ? "Calculating..." : "Calculate"}
-			</Button>
+			{/* Main Actions Group */}
+			<div className={styles.mainActions}>
+				<Button
+					appearance="primary"
+					icon={<MoneyCalculatorFilled />}
+					onClick={onCalculate}
+					disabled={!storedApiKey || amount <= 0 || rateSource === "loading"}
+				>
+					{rateSource === "loading" ? "Calculating..." : "Calculate"}
+				</Button>
 
-			<Button
-				appearance="secondary"
-				icon={<SaveFilled />}
-				onClick={onSaveKey}
-				disabled={
-					!isApiKeyValid ||
-					apiKeyInput === "" ||
-					apiKeyInput === storedApiKey
-				}
-			>
-				Save Key
-			</Button>
+				<Button
+					appearance="secondary"
+					icon={<SaveFilled />}
+					onClick={onSaveKey}
+					disabled={
+						!isApiKeyValid ||
+						apiKeyInput === "" ||
+						apiKeyInput === storedApiKey
+					}
+				>
+					Save Key
+				</Button>
 
-			<Button
-				appearance="secondary"
-				icon={<ArrowSyncRegular />}
-				onClick={onRefreshRates}
-				disabled={rateSource === "loading"}
-				title="Clear cached rates and fetch live data"
-			>
-				Refresh Rates
-			</Button>
+				<Button
+					appearance="secondary"
+					icon={<ArrowSyncRegular />}
+					onClick={onRefreshRates}
+					disabled={rateSource === "loading"}
+					title="Clear cached rates and fetch live data"
+				>
+					Refresh Rates
+				</Button>
+			</div>
 
-			<Button
-				appearance="secondary"
-				icon={<HistoryDismissRegular />}
-				onClick={onClearHistory}
-				disabled={isHistoryEmpty}
-				title="Clear conversion history"
-			>
-				Clear History
-			</Button>
+			{/* Clear Actions Group (pushed to the right) */}
+			<div className={styles.clearActions}>
+				<Button
+					appearance="outline" // Changed from subtle back to a visible button style
+					icon={<HistoryDismissRegular />}
+					onClick={onClearHistory}
+					disabled={isHistoryEmpty}
+					title="Clear conversion history"
+				>
+					Clear History
+				</Button>
 
-			<Button
-				appearance="outline"
-				icon={<DeleteFilled />}
-				onClick={onClearAll}
-				title="Clear all stored data (API Key and History)"
-			>
-				Clear all data
-			</Button>
+				<Button
+					appearance="outline" // Changed from subtle back to a visible button style
+					icon={<DeleteFilled />}
+					onClick={onClearAll}
+					title="Clear all stored data (API Key and History)"
+				>
+					Clear all data
+				</Button>
+			</div>
 		</div>
 	);
 }; 

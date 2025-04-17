@@ -46,6 +46,12 @@ const useStyles = makeStyles({
 		...shorthands.gap(tokens.spacingVerticalXL),
 		...shorthands.padding(tokens.spacingVerticalXXL, tokens.spacingHorizontalXXL),
 		backgroundColor: tokens.colorNeutralBackground2,
+		position: "relative",
+	},
+	themeSwitcherContainer: {
+		position: "absolute",
+		top: tokens.spacingVerticalL,
+		right: tokens.spacingHorizontalL,
 	},
 	mainContent: {
 		display: "flex",
@@ -271,9 +277,12 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 	return (
 		<div className={styles.appContainer}>
 			<Card className={styles.root}>
+				<div className={styles.themeSwitcherContainer}>
+					<ThemeSwitcher isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
+				</div>
+
 				<div className={styles.mainContent}>
 					<div className={styles.leftColumn}>
-						<ThemeSwitcher isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
 						<div className={styles.controlsSection}>
 							<CurrencyRow
 								fromCurrency={fromCurrency}
@@ -294,19 +303,24 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 									size="large"
 								/>
 							</Field>
-							<ApiKeySection
-								apiKeyInput={apiKeyInput}
-								storedApiKey={storedApiKey}
-								isApiKeyValid={isApiKeyValid}
-								saveError={saveError}
-								onApiKeyChange={handleApiKeyChange}
-							/>
 							<ResultSection
 								rate={rate}
 								rateSource={rateSource}
 								amount={amount}
 								fromCurrency={fromCurrency}
 								toCurrency={toCurrency}
+							/>
+						</div>
+
+						<Divider />
+
+						<div className={styles.controlsSection}>
+							<ApiKeySection
+								apiKeyInput={apiKeyInput}
+								storedApiKey={storedApiKey}
+								isApiKeyValid={isApiKeyValid}
+								saveError={saveError}
+								onApiKeyChange={handleApiKeyChange}
 							/>
 							<ActionButtons
 								storedApiKey={storedApiKey}
