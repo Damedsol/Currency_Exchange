@@ -4,10 +4,11 @@ import {
 	SaveFilled,
 	ArrowClockwiseFilled,
 	ArrowSyncRegular,
+	HistoryDismissRegular,
 } from "@fluentui/react-icons";
 import type React from "react";
 import { useEffect, useState } from "react";
-import { Link } from "@fluentui/react-components";
+import { Button, Link } from "@fluentui/react-components";
 import { ButtonDanger } from "./components/Buttons/danger/ButtonDanger.tsx";
 import { ButtonPrimary } from "./components/Buttons/primary/ButtonPrimary.tsx";
 import { CurrencySelector } from "./components/CurrencySelector/CurrencySelector.tsx";
@@ -240,6 +241,11 @@ function App() {
 		return null;
 	};
 
+	const clearConversionHistory = () => {
+		setConversionHistory([]);
+		saveConversionHistoryService([]);
+	};
+
 	return (
 		<>
 			<CurrencySelector
@@ -345,17 +351,25 @@ function App() {
 					<SaveFilled style={{ fontSize: "24px" }} />
 				</ButtonPrimary>
 
-		
-				<ButtonPrimary
+				<Button
+					icon={<ArrowSyncRegular style={{ fontSize: "24px" }} />}
+					appearance="secondary"
 					onClick={handleClearCacheAndFetch}
 					disabled={rateSource === "loading"}
 					title="Clear cached rates and fetch live data"
 				>
-					<span>Refresh Rates</span>	
-					<ArrowSyncRegular style={{ fontSize: "24px" }} />
-				</ButtonPrimary>
+					Refresh Rates
+				</Button>
 
-					<hr/>
+				<Button
+					icon={<HistoryDismissRegular style={{ fontSize: "24px" }} />}
+					appearance="secondary"
+					onClick={clearConversionHistory}
+					disabled={conversionHistory.length === 0}
+					title="Clear conversion history"
+				>
+					Clear History
+				</Button>
 
 				<ButtonDanger onClick={clearApiAndCache}>
 					<span>Clear all data</span>
