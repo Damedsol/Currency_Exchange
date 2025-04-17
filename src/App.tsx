@@ -2,6 +2,7 @@ import {
 	DeleteFilled,
 	MoneyCalculatorFilled,
 	SaveFilled,
+	ArrowClockwiseFilled
 } from "@fluentui/react-icons";
 import type React from "react";
 import { useEffect, useState } from "react";
@@ -44,9 +45,11 @@ function App() {
 			return;
 		}
 	}
+
 	const clearApiKey = async () => {
 		await clearLocalStorageAndDB();
 	};
+
 	useEffect(() => {
 		localStorageFetchService().then((apiKey) => {
 			if (apiKey) {
@@ -55,6 +58,12 @@ function App() {
 		});
 	}, []);
 
+	const swapCurrencies = () => {
+		const temp = fromCurrency;
+		setFromCurrency(toCurrency);
+		setToCurrency(temp);
+	};	
+
 	return (
 		<>
 			<CurrencySelector
@@ -62,6 +71,11 @@ function App() {
 				onChange={handleFromCurrency}
 				where={"from"}
 			/>
+
+			<ButtonPrimary onClick={() => swapCurrencies()}>
+				<ArrowClockwiseFilled style={{ fontSize: "24px" }} />
+			</ButtonPrimary>
+
 			<CurrencySelector
 				value={toCurrency}
 				onChange={handleToCurrency}
