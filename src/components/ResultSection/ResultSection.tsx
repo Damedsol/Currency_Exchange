@@ -1,5 +1,5 @@
 import React from 'react';
-import { Label, makeStyles, shorthands, tokens } from '@fluentui/react-components';
+import { Label, makeStyles, shorthands, tokens, Spinner } from '@fluentui/react-components';
 import { RateSourceIndicator } from '../RateSourceIndicator/RateSourceIndicator';
 
 // Section styles
@@ -9,11 +9,16 @@ const useStyles = makeStyles({
         flexDirection: "column",
         alignItems: "flex-start", // Align left
         ...shorthands.gap(tokens.spacingVerticalS),
+        minHeight: "50px", // Ensure container has some height even when empty
     },
     rateRow: {
         display: "flex",
         alignItems: "center",
-        ...shorthands.gap(tokens.spacingHorizontalXS), // Gap between rate label and indicator
+        ...shorthands.gap(tokens.spacingHorizontalS), // Increased gap slightly
+        height: "24px", // Set fixed height to prevent layout shifts during loading
+    },
+    spinner: {
+        marginLeft: tokens.spacingHorizontalXS, // Space between indicator and spinner
     },
 });
 
@@ -36,25 +41,32 @@ export const ResultSection: React.FC<ResultSectionProps> = ({
 }) => {
     const styles = useStyles();
 
+    const showResult = typeof rate === "number" && amount > 0;
+
     return (
         <div className={styles.container}>
             {/* Row for rate and indicator */}
             <div className={styles.rateRow}>
                 <Label
                     size={"large"}
+                    // Hide rate label during loading for cleaner look?
+                    style={{ visibility: rateSource === 'loading' ? 'hidden' : 'visible' }}
                 >
                     {`Rate: ${typeof rate === "number" ? rate.toFixed(4) : "--"}`}
                 </Label>
                 <RateSourceIndicator rateSource={rateSource} />
+                {/* Show spinner only when loading */}
+                {rateSource === 'loading' && <Spinner size="tiny" className={styles.spinner} />}
             </div>
-            {/* Show conversion result if rate is valid */}
-            {typeof rate === "number" && amount > 0 && (
-                <Label
-                    size={"large"}
-                >
-                    {`${amount} ${fromCurrency} = ${(amount * rate).toFixed(2)} ${toCurrency}`}
-                </Label>
-            )}
+            {/* Show conversion result if rate is valid and not loading */}
+            <Label
+                size={"large"}
+                style={{ visibility: showResult && rateSource !== 'loading' ? 'visible' : 'hidden' }}
+            >
+                {showResult
+                    ? `${amount} ${fromCurrency} = ${(amount * rate).toFixed(2)} ${toCurrency}`
+                    : "Result placeholder"} {/* Placeholder to maintain height */}
+            </Label>
         </div>
     );
 }; 
