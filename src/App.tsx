@@ -29,6 +29,7 @@ import {
 	type ConversionHistoryEntry,
 } from "./services/LocalStorage.ts";
 import { ConversionHistory } from "./components/History/ConversionHistory";
+import { ButtonSecondary } from "./components/Buttons/secondary/ButtonSecondary.tsx";
 
 type RateSource = "idle" | "cache" | "api" | "error" | "loading";
 
@@ -330,7 +331,7 @@ function App() {
 				/>
 			)}
 
-			<div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginTop: "10px" }}>
+			<div style={{ display: "flex", gap: "10px", flexWrap: "nowrap", marginTop: "10px" }}>
 				<ButtonPrimary
 					onClick={fetchRate}
 					disabled={!storedApiKey || amount <= 0 || rateSource === "loading"}
@@ -351,25 +352,27 @@ function App() {
 					<SaveFilled style={{ fontSize: "24px" }} />
 				</ButtonPrimary>
 
-				<Button
+				<ButtonSecondary
 					icon={<ArrowSyncRegular style={{ fontSize: "24px" }} />}
 					appearance="secondary"
 					onClick={handleClearCacheAndFetch}
 					disabled={rateSource === "loading"}
 					title="Clear cached rates and fetch live data"
 				>
-					Refresh Rates
-				</Button>
+					<span>Refresh Rates</span>
+					<ArrowSyncRegular style={{ fontSize: "24px" }} />	
+				</ButtonSecondary>
 
-				<Button
+				<ButtonSecondary
 					icon={<HistoryDismissRegular style={{ fontSize: "24px" }} />}
 					appearance="secondary"
 					onClick={clearConversionHistory}
 					disabled={conversionHistory.length === 0}
 					title="Clear conversion history"
 				>
-					Clear History
-				</Button>
+					<span>Clear History</span>
+					<HistoryDismissRegular style={{ fontSize: "24px" }} />
+				</ButtonSecondary>
 
 				<ButtonDanger onClick={clearApiAndCache}>
 					<span>Clear all data</span>
