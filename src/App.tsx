@@ -18,6 +18,7 @@ import {
 	localStorageStoreService,
 	apiKeyRegex,
 } from "./services/LocalStorage.ts";
+import { Link } from "@fluentui/react-components";
 
 function App() {
 	const [fromCurrency, setFromCurrency] = useState<string>("EUR");
@@ -162,14 +163,14 @@ function App() {
 			<p
 				style={{ fontSize: "small", marginTop: "-10px", marginBottom: "10px" }}
 			>
-				Get your free API key from{" "}
-				<a
+				Get your free API key from{" "} 
+				<Link				
 					href="https://freecurrencyapi.com/"
 					target="_blank"
 					rel="noopener noreferrer"
 				>
 					freecurrencyapi.com
-				</a>
+				</Link>
 			</p>
 			<Label text={`Rate: ${rate ? rate.toString() : "--"}`} size={"large"} />
 			{typeof rate === "number" && (
