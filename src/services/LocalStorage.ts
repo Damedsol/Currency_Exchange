@@ -56,13 +56,93 @@ export function clearLocalStorage(): void {
 	try {
 		// Use removeItem for targeted removal instead of clear()
 		localStorage.removeItem("apiKey");
-		window.location.reload(); // Consider moving this side effect out of the service
+		localStorage.removeItem(RATES_CACHE_KEY); // Clear rates cache too
+		// window.location.reload(); // Consider moving this side effect out of the service
 	} catch (error) {
 		console.error("Error clearing API key from localStorage:", error);
 		// Re-throw the error.
 		throw new Error(
 			`Failed to clear API key: ${error instanceof Error ? error.message : String(error)}`,
 		);
+	}
+}
+
+// --- Currency Rates Cache Service Functions ---
+
+const RATES_CACHE_KEY = "currencyRatesCache";
+// Cache expiration time: 24 hours in milliseconds
+const CACHE_EXPIRATION_TIME = 24 * 60 * 60 * 1000;
+
+// Structure for the cached data
+interface CurrencyRatesCache {
+	timestamp: number;
+	rates: Record<string, number>; // e.g., { 'USD': 1.0, 'EUR': 0.9, ... }
+}
+
+/**
+ * Saves the fetched currency rates and the current timestamp to localStorage.
+ * @param {Record<string, number>} rates The currency rates object to cache.
+ * @returns {void}
+ */
+export function saveRatesToCache(rates: Record<string, number>): void {
+	try {
+		const cacheData: CurrencyRatesCache = {
+			timestamp: Date.now(),
+			rates,
+		};
+		localStorage.setItem(RATES_CACHE_KEY, JSON.stringify(cacheData));
+	} catch (error) {
+		console.error("Error saving currency rates to cache:", error);
+		// Decide if you want to throw or just log the error
+	}
+}
+
+/**
+ * Loads the currency rates from localStorage cache.
+ * @returns {Record<string, number> | null} The cached rates if found and not expired, otherwise null.
+ */
+export function loadRatesFromCache(): Record<string, number> | null {
+	try {
+		const storedCache = localStorage.getItem(RATES_CACHE_KEY);
+		if (storedCache) {
+			const parsedCache: CurrencyRatesCache = JSON.parse(storedCache);
+
+			// Check if cache structure is valid and has rates
+			if (
+				parsedCache &&
+				typeof parsedCache === "object" &&
+				typeof parsedCache.timestamp === "number" &&
+				typeof parsedCache.rates === "object" &&
+				parsedCache.rates !== null
+			) {
+				const now = Date.now();
+				// Check if cache has expired
+				if (now - parsedCache.timestamp < CACHE_EXPIRATION_TIME) {
+					return parsedCache.rates;
+				}
+				console.log("Currency rates cache expired.");
+			} else {
+				console.warn("Invalid rates cache format found in localStorage.");
+			}
+		}
+		return null; // Return null if no valid cache found or expired
+	} catch (error) {
+		console.error("Error loading currency rates from cache:", error);
+		return null; // Return null on error
+	}
+}
+
+/**
+ * Clears the currency rates cache from localStorage.
+ * @returns {void}
+ */
+export function clearRatesCache(): void {
+	try {
+		localStorage.removeItem(RATES_CACHE_KEY);
+		console.log("Currency rates cache cleared.");
+	} catch (error) {
+		console.error("Error clearing currency rates cache:", error);
+		// Decide if you want to throw or just log the error
 	}
 }
 

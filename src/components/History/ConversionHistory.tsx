@@ -11,9 +11,7 @@ export const ConversionHistory = ({
 	history,
 	onRepeat,
 }: ConversionHistoryProps) => {
-	if (!history || history.length === 0) {
-		return null; // Don't render anything if history is empty
-	}
+
 
 	return (
 		<div
@@ -25,7 +23,7 @@ export const ConversionHistory = ({
 		>
 			<h3>
 				<HistoryRegular style={{ marginRight: "8px" }} />
-				Conversion History (Last {history.length})
+				Conversion History (Last 10 conversions)
 			</h3>
 			<ul style={{ listStyle: "none", paddingLeft: 0 }}>
 				{history.map((entry) => (

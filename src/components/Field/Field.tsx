@@ -17,7 +17,7 @@ export const Field = (
 			size={"large"}
 		>
 			<FluentInput
-				type={props.type || "text"}
+				type={props.type as "number" | "search" | "time" | "text" | "tel" | "url" | "email" | "date" | "password" | "datetime-local" | "month" | "week" | undefined}
 				appearance={"filled-darker"}
 				size={"large"}
 				value={props.value}
