@@ -14,6 +14,7 @@ import {
 	MessageBarTitle,
 	Button,
 	type MessageBarIntent,
+	mergeClasses,
 } from "@fluentui/react-components";
 import { DismissRegular, KeyRegular } from '@fluentui/react-icons';
 import {
@@ -88,6 +89,18 @@ const useStyles = makeStyles({
 		marginBottom: tokens.spacingVerticalM,
 		...shorthands.gap(tokens.spacingHorizontalS),
 	},
+	headerInputWrapper: {
+		transitionProperty: "max-width, opacity",
+		transitionDuration: "0.3s",
+		transitionTimingFunction: "ease-out",
+		overflow: "hidden",
+		maxWidth: 0,
+		opacity: 0,
+	},
+	headerInputWrapperVisible: {
+		maxWidth: "250px",
+		opacity: 1,
+	},
 	mainContent: {
 		display: "flex",
 		flexDirection: "row",
@@ -131,7 +144,32 @@ const useStyles = makeStyles({
 		color: tokens.colorStatusDangerForeground1,
 	},
 	messageBarContainer: {
-		minHeight: "52px",
+		transitionProperty: "max-height, opacity",
+		transitionDuration: "0.3s",
+		transitionTimingFunction: "ease-in-out",
+		overflow: "hidden",
+		maxHeight: 0,
+		opacity: 0,
+	},
+	messageBarContainerVisible: {
+		maxHeight: "60px",
+		opacity: 1,
+		marginBottom: tokens.spacingVerticalM,
+	},
+	amountField: {
+		"& input": {
+			transitionProperty: "outline, box-shadow",
+			transitionDuration: tokens.durationNormal,
+			transitionTimingFunction: tokens.curveEasyEase,
+			outlineStyle: 'none',
+		},
+		":focus-within": {
+			"& input": {
+				outlineColor: tokens.colorCompoundBrandStroke,
+				outlineStyle: 'solid',
+				outlineWidth: tokens.strokeWidthThick,
+			}
+		},
 	},
 });
 
@@ -420,18 +458,26 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 
 				{/* Header Row */}
 				<div className={styles.headerContainer}>
-					{isApiKeyHeaderInputVisible && (
-						<Input
-							aria-label="API Key Header Input"
-							type="password"
-							placeholder="Enter API Key..."
-							size="small"
-							appearance="outline"
-							value={apiKeyInput}
-							onChange={handleApiKeyChange}
-							onBlur={handleApiKeyInputBlur}
-						/>
-					)}
+					<div
+						className={mergeClasses(
+							styles.headerInputWrapper,
+							isApiKeyHeaderInputVisible && styles.headerInputWrapperVisible
+						)}
+					>
+						{isApiKeyHeaderInputVisible && (
+							<Input
+								aria-label="API Key Header Input"
+								type="password"
+								placeholder="Enter API Key..."
+								size="small"
+								appearance="outline"
+								style={{ minWidth: '200px' }}
+								value={apiKeyInput}
+								onChange={handleApiKeyChange}
+								onBlur={handleApiKeyInputBlur}
+							/>
+						)}
+					</div>
 					<Button
 						appearance="subtle"
 						icon={<KeyRegular />}
@@ -443,7 +489,12 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 				</div>
 
 				{/* App Message Bar Container */}
-				<div className={styles.messageBarContainer}>
+				<div
+					className={mergeClasses(
+						styles.messageBarContainer,
+						appMessage.visible && styles.messageBarContainerVisible
+					)}
+				>
 					{appMessage.visible && (
 						<MessageBar intent={appMessage.intent} style={{ width: '100%' }}>
 							<MessageBarBody>
@@ -475,6 +526,7 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 							<Field
 								label="Amount"
 								size="large"
+								className={styles.amountField}
 							>
 								<Input
 									type="number"

@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from 'react';
 import type { ConversionHistoryEntry } from "../../services/LocalStorage";
 // Import necessary Fluent components and hooks
 import {
@@ -58,6 +59,11 @@ const useStyles = makeStyles({
 	tableWrapper: {
 		overflowX: "auto", // Enable horizontal scroll on overflow
 		maxWidth: "100%", // Ensure wrapper doesn't exceed parent width
+		opacity: 0, // Start hidden
+		transition: "opacity 0.5s ease-in-out", // Fade-in transition
+	},
+	tableWrapperVisible: {
+		opacity: 1, // Visible state
 	},
 });
 
@@ -74,13 +80,21 @@ export const ConversionHistory = ({
 	onRepeat,
 }: ConversionHistoryProps) => {
 	const styles = useStyles();
+	// State for visibility transition
+	const [isVisible, setIsVisible] = useState(false);
 
-	// Removed the early return for empty history
-	// if (history.length === 0) { ... }
+	// Trigger fade-in after mount
+	useEffect(() => {
+		// Use a small timeout to ensure the transition occurs after initial render
+		const timer = setTimeout(() => {
+			setIsVisible(true);
+		}, 50); // Short delay
+		return () => clearTimeout(timer);
+	}, []);
 
 	return (
 		<div className={styles.tableContainer}>
-			<div className={styles.tableWrapper}>
+			<div className={`${styles.tableWrapper} ${isVisible ? styles.tableWrapperVisible : ''}`}>
 				<Table arial-label="Conversion History Table" size="medium">
 					<TableHeader>
 						<TableRow>
