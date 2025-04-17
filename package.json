@@ -1,13 +1,13 @@
 {
 	"name": "currencyexchange",
 	"private": true,
-	"version": "1.1.0",
+	"version": "1.2.0",
 	"type": "module",
 	"scripts": {
 		"dev": "vite",
 		"build": "tsc && vite build",
 		"preview": "vite preview",
-		"lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0 --fix --cache",
+		"lint": "eslint . --ext ts,ts --fix",
 		"format": "prettier --write .",
 		"prepare": "husky"
 	},

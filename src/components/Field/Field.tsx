@@ -4,7 +4,9 @@ import {
 	Input as FluentInput,
 } from "@fluentui/react-components";
 
-export const Field = (props: Partial<FieldProps> & { value: string; type?: string }) => {
+export const Field = (
+	props: Partial<FieldProps> & { value: string; type?: string },
+) => {
 	return (
 		<FluentField
 			label={props.label}
