@@ -156,10 +156,12 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 	const [appMessage, setAppMessage] = useState<AppMessage>({ text: null, intent: 'info', visible: false });
 	const [isApiKeyHeaderInputVisible, setIsApiKeyHeaderInputVisible] = useState<boolean>(false);
 
-	// Ref to store message timeout ID (using number for browser environment)
+	// Ref to store message timeout ID
 	const messageTimeoutRef = useRef<number | null>(null);
+	// Ref to store blur timeout ID
+	const blurTimeoutRef = useRef<number | null>(null);
 
-	// Helper function to clear the timeout
+	// Helper function to clear the message timeout
 	const clearMessageTimeout = () => {
 		if (messageTimeoutRef.current) {
 			clearTimeout(messageTimeoutRef.current);
@@ -167,33 +169,43 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 		}
 	};
 
-	// Updated dismissMessage to clear timeout
+	// Helper function to clear the blur timeout
+	const clearBlurTimeout = () => {
+		if (blurTimeoutRef.current) {
+			clearTimeout(blurTimeoutRef.current);
+			blurTimeoutRef.current = null;
+		}
+	};
+
+	// Updated dismissMessage to clear message timeout
 	const dismissMessage = () => {
-		clearMessageTimeout(); // Clear timeout when manually dismissed
+		clearMessageTimeout();
 		setAppMessage((prev) => ({ ...prev, visible: false }));
 	};
 
 	// Helper function to show messages and set timeout
 	const showAppMessage = (text: React.ReactNode, intent: MessageBarIntent, duration: number = MESSAGE_TIMEOUT_DURATION) => {
-		clearMessageTimeout(); // Clear previous timeout
+		clearMessageTimeout();
 		setAppMessage({ text, intent, visible: true });
 		messageTimeoutRef.current = setTimeout(() => {
 			dismissMessage();
 		}, duration);
 	};
 
-	// Cleanup timeout on component unmount
+	// Cleanup timeouts on component unmount
 	useEffect(() => {
 		return () => {
 			clearMessageTimeout();
+			clearBlurTimeout();
 		};
 	}, []);
 
-	// Toggle header input visibility and show status message
+	// Toggle header input visibility
 	const toggleApiKeyHeaderInput = () => {
 		const willBeVisible = !isApiKeyHeaderInputVisible;
 		setIsApiKeyHeaderInputVisible(willBeVisible);
-		dismissMessage(); // Clear any previous message first
+		dismissMessage();
+		clearBlurTimeout();
 		if (willBeVisible) {
 			if (storedApiKey) {
 				showAppMessage("Current API Key is stored. Edit below or Save new key.", 'info');
@@ -203,17 +215,25 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 		}
 	};
 
+	// Handle blur for the header API key input
+	const handleApiKeyInputBlur = () => {
+		clearBlurTimeout();
+		blurTimeoutRef.current = setTimeout(() => {
+			setIsApiKeyHeaderInputVisible(false);
+		}, 150);
+	};
+
 	const handleFromCurrency = (value: string) => {
 		setFromCurrency(value);
 		setRate("--");
 		setRateSource("idle");
-		dismissMessage(); // Clear message on input change
+		dismissMessage();
 	};
 	const handleToCurrency = (value: string) => {
 		setToCurrency(value);
 		setRate("--");
 		setRateSource("idle");
-		dismissMessage(); // Clear message on input change
+		dismissMessage();
 	};
 
 	const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -223,7 +243,7 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 		}
 		setRate("--");
 		setRateSource("idle");
-		dismissMessage(); // Clear message on input change
+		dismissMessage();
 	};
 
 	async function fetchRate(): Promise<void> {
@@ -301,6 +321,7 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 	};
 
 	async function saveApiKey(): Promise<void> {
+		clearBlurTimeout();
 		dismissMessage();
 		const keyToSave = apiKeyInput.trim();
 		if (!isApiKeyValid || keyToSave === "") return;
@@ -408,6 +429,7 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 							appearance="outline"
 							value={apiKeyInput}
 							onChange={handleApiKeyChange}
+							onBlur={handleApiKeyInputBlur}
 						/>
 					)}
 					<Button
