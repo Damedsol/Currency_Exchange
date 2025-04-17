@@ -21,7 +21,6 @@ interface ApiKeySectionProps {
     apiKeyInput: string;
     storedApiKey: string | null;
     isApiKeyValid: boolean;
-    saveError: string | null;
     onApiKeyChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
@@ -29,14 +28,13 @@ export const ApiKeySection: React.FC<ApiKeySectionProps> = ({
     apiKeyInput,
     storedApiKey,
     isApiKeyValid,
-    saveError,
     onApiKeyChange,
 }) => {
     const styles = useStyles();
 
-    // Validation logic (same as in App.tsx)
+    // Simplified validation logic based only on format validity and storage status
     const validationState =
-        saveError || (!isApiKeyValid && apiKeyInput !== "")
+        !isApiKeyValid && apiKeyInput !== ""
             ? "error"
             : storedApiKey && apiKeyInput === storedApiKey
                 ? "success"
@@ -44,18 +42,17 @@ export const ApiKeySection: React.FC<ApiKeySectionProps> = ({
                     ? "warning"
                     : "none";
 
+    // Simplified validation messages
     const validationMessage =
-        saveError
-            ? saveError
-            : !isApiKeyValid && apiKeyInput !== ""
-                ? "Invalid format. Must start with fca_live_ + 40 alphanumeric chars."
-                : storedApiKey && apiKeyInput === storedApiKey
-                    ? "API Key is valid and stored."
-                    : isApiKeyValid && apiKeyInput !== ""
-                        ? "Valid format. Press Save to store this key."
-                        : apiKeyInput === "" && !storedApiKey
-                            ? "API Key is required."
-                            : "";
+        !isApiKeyValid && apiKeyInput !== ""
+            ? "Invalid API Key format."
+            : storedApiKey && apiKeyInput === storedApiKey
+                ? "API Key is valid and stored."
+                : isApiKeyValid && apiKeyInput !== ""
+                    ? "Valid format. Press Save Key to store."
+                    : apiKeyInput === "" && !storedApiKey
+                        ? "API Key is required to fetch rates."
+                        : "";
 
     return (
         <div className={styles.container}>
