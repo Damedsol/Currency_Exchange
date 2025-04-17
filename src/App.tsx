@@ -20,6 +20,7 @@ import {
 function App() {
 	const [fromCurrency, setFromCurrency] = useState<string>("EUR");
 	const [toCurrency, setToCurrency] = useState<string>("USD");
+	const [amount, setAmount] = useState<number>(1);
 	const [apiKey, setApiKey] = useState<string | null | undefined>(null);
 	const [rate, setRate] = useState<FreeCurrency | "--">("--");
 
@@ -67,6 +68,14 @@ function App() {
 				where={"to"}
 			/>
 			<Field
+				label={"Amount"}
+				value={amount.toString()}
+				type={"number"}
+				onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+					setAmount(Number(event.target.value))
+				}
+			/>
+			<Field
 				label={"Api Key"}
 				validationState={apiKey ? "success" : "error"}
 				validationMessage={apiKey ? "Api Key is set" : "Api Key is required"}
@@ -77,6 +86,12 @@ function App() {
 				}
 			/>
 			<Label text={`Rate: ${rate ? rate.toString() : "--"}`} size={"large"} />
+			{typeof rate === "number" && (
+				<Label
+					text={`${amount} ${fromCurrency} = ${(amount * rate).toFixed(2)} ${toCurrency}`}
+					size={"large"}
+				/>
+			)}
 
 			<ButtonPrimary onClick={() => fetchRate()} disabled={!apiKey}>
 				<span>Calculate</span>
