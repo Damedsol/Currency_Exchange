@@ -31,7 +31,16 @@ import { ApiKeySection } from "./components/ApiKeySection/ApiKeySection";
 import { ResultSection } from "./components/ResultSection/ResultSection";
 import { ActionButtons } from "./components/ActionButtons/ActionButtons";
 
+// Define RateSource type
 type RateSource = "idle" | "cache" | "api" | "error" | "loading";
+
+// Define breakpoints (adjust values as needed)
+const breakpoints = {
+	small: 320,
+	medium: 600,
+	tablet: 768,
+	large: 1024,
+};
 
 const useStyles = makeStyles({
 	appContainer: {
@@ -39,36 +48,65 @@ const useStyles = makeStyles({
 		margin: `${tokens.spacingVerticalXXL} auto`,
 		paddingLeft: tokens.spacingHorizontalL,
 		paddingRight: tokens.spacingHorizontalL,
+		[`@media (max-width: ${breakpoints.medium}px)`]: {
+			paddingLeft: tokens.spacingHorizontalM,
+			paddingRight: tokens.spacingHorizontalM,
+		},
 	},
 	root: {
 		display: "flex",
 		flexDirection: "column",
 		...shorthands.gap(tokens.spacingVerticalXL),
-		...shorthands.padding(tokens.spacingVerticalXXL, tokens.spacingHorizontalXXL),
+		paddingTop: "40px",
+		paddingBottom: tokens.spacingVerticalXXL,
+		paddingLeft: tokens.spacingHorizontalXXL,
+		paddingRight: tokens.spacingHorizontalXXL,
 		backgroundColor: tokens.colorNeutralBackground2,
 		position: "relative",
+		[`@media (max-width: ${breakpoints.medium}px)`]: {
+			paddingTop: tokens.spacingVerticalXXL,
+			paddingBottom: tokens.spacingVerticalL,
+			paddingLeft: tokens.spacingHorizontalM,
+			paddingRight: tokens.spacingHorizontalM,
+		},
 	},
 	themeSwitcherContainer: {
 		position: "absolute",
 		top: tokens.spacingVerticalL,
 		right: tokens.spacingHorizontalL,
+		[`@media (max-width: ${breakpoints.medium}px)`]: {
+			top: tokens.spacingVerticalS,
+			right: tokens.spacingHorizontalS,
+		},
 	},
 	mainContent: {
 		display: "flex",
 		flexDirection: "row",
 		...shorthands.gap(tokens.spacingHorizontalXXL),
+		[`@media (max-width: ${breakpoints.tablet}px)`]: {
+			flexDirection: "column",
+			...shorthands.gap(tokens.spacingVerticalXL),
+		},
 	},
 	leftColumn: {
 		display: "flex",
 		flexDirection: "column",
 		flexBasis: "60%",
 		...shorthands.gap(tokens.spacingVerticalL),
+		[`@media (max-width: ${breakpoints.tablet}px)`]: {
+			flexBasis: "100%",
+			order: 1,
+		},
 	},
 	rightColumn: {
 		display: "flex",
 		flexDirection: "column",
 		flexBasis: "40%",
 		...shorthands.gap(tokens.spacingVerticalL),
+		[`@media (max-width: ${breakpoints.tablet}px)`]: {
+			flexBasis: "100%",
+			order: 2,
+		},
 	},
 	historySection: {
 	},

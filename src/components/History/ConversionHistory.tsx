@@ -5,7 +5,7 @@ import {
 	makeStyles,
 	shorthands,
 	tokens,
-	Text,
+	// Text, // Removed unused import
 	TableBody,
 	TableCell,
 	TableRow,
@@ -55,6 +55,10 @@ const useStyles = makeStyles({
 	actionCell: {
 		// Ensure button fits well
 	},
+	tableWrapper: {
+		overflowX: "auto", // Enable horizontal scroll on overflow
+		maxWidth: "100%", // Ensure wrapper doesn't exceed parent width
+	},
 });
 
 // Helper to format numbers clearly
@@ -71,61 +75,69 @@ export const ConversionHistory = ({
 }: ConversionHistoryProps) => {
 	const styles = useStyles();
 
-	// Note: Title and Divider are now rendered in App.tsx
-	// If this component needs to be self-contained, uncomment Divider/Text here
-	// and remove them from App.tsx's historySection.
-
-	if (history.length === 0) {
-		return <Text>No conversion history yet.</Text>; // Show a message instead of null
-	}
+	// Removed the early return for empty history
+	// if (history.length === 0) { ... }
 
 	return (
 		<div className={styles.tableContainer}>
-			<Table arial-label="Conversion History Table" size="medium">
-				<TableHeader>
-					<TableRow>
-						<TableHeaderCell>Amount</TableHeaderCell>
-						<TableHeaderCell>From</TableHeaderCell>
-						<TableHeaderCell>To</TableHeaderCell>
-						<TableHeaderCell>Result</TableHeaderCell>
-						<TableHeaderCell>Rate</TableHeaderCell>
-						<TableHeaderCell>Action</TableHeaderCell>
-					</TableRow>
-				</TableHeader>
-				<TableBody>
-					{history.map((entry) => (
-						<TableRow key={entry.timestamp}>
-							<TableCell>
-								<TableCellLayout>{formatNumber(entry.amount, 0, 2)}</TableCellLayout>
-							</TableCell>
-							<TableCell>
-								<TableCellLayout>{entry.fromCurrency}</TableCellLayout>
-							</TableCell>
-							<TableCell>
-								<TableCellLayout>{entry.toCurrency}</TableCellLayout>
-							</TableCell>
-							<TableCell>
-								<TableCellLayout>{formatNumber(entry.result, 2, 2)}</TableCellLayout>
-							</TableCell>
-							<TableCell>
-								<TableCellLayout><i>{formatNumber(entry.rate, 4, 6)}</i></TableCellLayout>
-							</TableCell>
-							<TableCell className={styles.actionCell}>
-								<TableCellLayout>
-									<Button
-										appearance="subtle"
-										icon={<ArrowRepeatAllRegular />}
-										onClick={() => onRepeat(entry)}
-										title={`Repeat: ${entry.amount} ${entry.fromCurrency} to ${entry.toCurrency}`}
-										size="small"
-									>
-									</Button>
-								</TableCellLayout>
-							</TableCell>
+			<div className={styles.tableWrapper}>
+				<Table arial-label="Conversion History Table" size="medium">
+					<TableHeader>
+						<TableRow>
+							<TableHeaderCell>Amount</TableHeaderCell>
+							<TableHeaderCell>From</TableHeaderCell>
+							<TableHeaderCell>To</TableHeaderCell>
+							<TableHeaderCell>Result</TableHeaderCell>
+							<TableHeaderCell>Rate</TableHeaderCell>
+							<TableHeaderCell>Action</TableHeaderCell>
 						</TableRow>
-					))}
-				</TableBody>
-			</Table>
+					</TableHeader>
+					<TableBody>
+						{history.length === 0 ? (
+							<TableRow>
+								<TableCell colSpan={6}> {/* Span across all 6 columns */}
+									<TableCellLayout style={{ textAlign: 'center', padding: tokens.spacingVerticalL }}>
+										No conversion history yet.
+									</TableCellLayout>
+								</TableCell>
+							</TableRow>
+						) : (
+							history.map((entry) => (
+								<TableRow key={entry.timestamp}>
+									<TableCell>
+										<TableCellLayout>{formatNumber(entry.amount, 0, 2)}</TableCellLayout>
+									</TableCell>
+									<TableCell>
+										<TableCellLayout>{entry.fromCurrency}</TableCellLayout>
+									</TableCell>
+									<TableCell>
+										<TableCellLayout>{entry.toCurrency}</TableCellLayout>
+									</TableCell>
+									<TableCell>
+										<TableCellLayout>{formatNumber(entry.result, 2, 2)}</TableCellLayout>
+									</TableCell>
+									<TableCell>
+										<TableCellLayout><i>{formatNumber(entry.rate, 4, 6)}</i></TableCellLayout>
+									</TableCell>
+									<TableCell className={styles.actionCell}>
+										<TableCellLayout>
+											<Button
+												appearance="outline"
+												icon={<ArrowRepeatAllRegular />}
+												onClick={() => onRepeat(entry)}
+												title={`Repeat: ${entry.amount} ${entry.fromCurrency} to ${entry.toCurrency}`}
+												size="small"
+											>
+												Repeat
+											</Button>
+										</TableCellLayout>
+									</TableCell>
+								</TableRow>
+							))
+						)}
+					</TableBody>
+				</Table>
+			</div>
 		</div>
 	);
 };

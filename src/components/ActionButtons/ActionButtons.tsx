@@ -8,6 +8,11 @@ import {
 } from '@fluentui/react-icons';
 import { Button, makeStyles, shorthands, tokens } from '@fluentui/react-components';
 
+// Define breakpoints used in this component
+const actionButtonBreakpoints = {
+	mobile: 480, // Example breakpoint for stacking buttons
+};
+
 // Styles for the button container
 const useStyles = makeStyles({
 	container: {
@@ -16,17 +21,34 @@ const useStyles = makeStyles({
 		alignItems: "center", // Align items vertically
 		...shorthands.gap(tokens.spacingHorizontalM),
 		marginTop: tokens.spacingVerticalM,
+		// Responsive stacking
+		[`@media (max-width: ${actionButtonBreakpoints.mobile}px)`]: {
+			flexDirection: "column",
+			alignItems: "stretch", // Make button groups take full width
+			...shorthands.gap(tokens.spacingVerticalM), // Vertical gap when stacked
+		},
 	},
 	mainActions: {
 		display: "flex",
 		alignItems: "center",
 		...shorthands.gap(tokens.spacingHorizontalM),
+		// Responsive wrapping within the group might be needed too, or let them stack
+		[`@media (max-width: ${actionButtonBreakpoints.mobile}px)`]: {
+			flexWrap: "wrap", // Allow buttons within main actions to wrap if needed
+			justifyContent: "center", // Center buttons when wrapped/stacked
+		},
 	},
 	clearActions: {
 		display: "flex",
 		alignItems: "center",
 		marginLeft: "auto", // Push this group to the right
 		...shorthands.gap(tokens.spacingHorizontalS), // Smaller gap for clear buttons
+		// Responsive alignment
+		[`@media (max-width: ${actionButtonBreakpoints.mobile}px)`]: {
+			marginLeft: 0, // Remove margin pushing it right
+			justifyContent: "center", // Center buttons when stacked
+			width: "100%", // Optional: make group take full width
+		},
 	},
 	// Remove fixed width button style if present, let buttons size naturally
 	// button: {
