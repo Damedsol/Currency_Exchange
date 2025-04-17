@@ -1,17 +1,6 @@
-import {
-	DeleteFilled,
-	MoneyCalculatorFilled,
-	SaveFilled,
-	ArrowClockwiseFilled,
-	ArrowSyncRegular,
-	HistoryDismissRegular,
-} from "@fluentui/react-icons";
 import type React from "react";
 import { useEffect, useState } from "react";
 import {
-	Button,
-	Link,
-	Switch,
 	makeStyles,
 	shorthands,
 	tokens,
@@ -21,9 +10,6 @@ import {
 	Input,
 	Card,
 } from "@fluentui/react-components";
-import { ButtonDanger } from "./components/Buttons/danger/ButtonDanger.tsx";
-import { ButtonPrimary } from "./components/Buttons/primary/ButtonPrimary.tsx";
-import { CurrencySelector } from "./components/CurrencySelector/CurrencySelector.tsx";
 import {
 	getCurrencyRate,
 	type CurrencyRateResult,
@@ -39,7 +25,6 @@ import {
 	type ConversionHistoryEntry,
 } from "./services/LocalStorage.ts";
 import { ConversionHistory } from "./components/History/ConversionHistory";
-import { ButtonSecondary } from "./components/Buttons/secondary/ButtonSecondary.tsx";
 import { ThemeSwitcher } from "./components/ThemeSwitcher/ThemeSwitcher";
 import { CurrencyRow } from "./components/CurrencyRow/CurrencyRow";
 import { ApiKeySection } from "./components/ApiKeySection/ApiKeySection";
@@ -58,8 +43,8 @@ const useStyles = makeStyles({
 	root: {
 		display: "flex",
 		flexDirection: "column",
-		...shorthands.gap(tokens.spacingVerticalL),
-		...shorthands.padding(tokens.spacingVerticalXXL, tokens.spacingHorizontalL),
+		...shorthands.gap(tokens.spacingVerticalXL),
+		...shorthands.padding(tokens.spacingVerticalXXL, tokens.spacingHorizontalXXL),
 		backgroundColor: tokens.colorNeutralBackground2,
 	},
 	historySection: {

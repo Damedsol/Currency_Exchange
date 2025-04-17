@@ -67,7 +67,7 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({
 			</Button>
 
 			<Button
-				appearance="primary"
+				appearance="secondary"
 				icon={<SaveFilled />}
 				onClick={onSaveKey}
 				disabled={
