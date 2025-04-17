@@ -1,4 +1,4 @@
-import {ButtonProps, makeStyles, tokens} from "@fluentui/react-components";
+import { ButtonProps, makeStyles, tokens } from "@fluentui/react-components";
 import React from "react";
 
 const useButtonStyles: () => Record<string | number, string> = makeStyles({
