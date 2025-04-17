@@ -35,7 +35,7 @@ type RateSource = "idle" | "cache" | "api" | "error" | "loading";
 
 const useStyles = makeStyles({
 	appContainer: {
-		maxWidth: "600px",
+		maxWidth: "1250px",
 		margin: `${tokens.spacingVerticalXXL} auto`,
 		paddingLeft: tokens.spacingHorizontalL,
 		paddingRight: tokens.spacingHorizontalL,
@@ -47,7 +47,29 @@ const useStyles = makeStyles({
 		...shorthands.padding(tokens.spacingVerticalXXL, tokens.spacingHorizontalXXL),
 		backgroundColor: tokens.colorNeutralBackground2,
 	},
+	mainContent: {
+		display: "flex",
+		flexDirection: "row",
+		...shorthands.gap(tokens.spacingHorizontalXXL),
+	},
+	leftColumn: {
+		display: "flex",
+		flexDirection: "column",
+		flexBasis: "60%",
+		...shorthands.gap(tokens.spacingVerticalL),
+	},
+	rightColumn: {
+		display: "flex",
+		flexDirection: "column",
+		flexBasis: "40%",
+		...shorthands.gap(tokens.spacingVerticalL),
+	},
 	historySection: {
+	},
+	controlsSection: {
+		display: "flex",
+		flexDirection: "column",
+		...shorthands.gap(tokens.spacingVerticalL),
 	},
 });
 
@@ -249,62 +271,71 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 	return (
 		<div className={styles.appContainer}>
 			<Card className={styles.root}>
-				<ThemeSwitcher isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
-				<CurrencyRow
-					fromCurrency={fromCurrency}
-					toCurrency={toCurrency}
-					onFromChange={handleFromCurrency}
-					onToChange={handleToCurrency}
-					onSwap={swapCurrencies}
-				/>
-				<Field
-					label="Amount"
-					size="large"
-				>
-					<Input
-						type="number"
-						value={amount.toString()}
-						onChange={handleAmountChange}
-						appearance="outline"
-						size="large"
-					/>
-				</Field>
-				<ApiKeySection
-					apiKeyInput={apiKeyInput}
-					storedApiKey={storedApiKey}
-					isApiKeyValid={isApiKeyValid}
-					saveError={saveError}
-					onApiKeyChange={handleApiKeyChange}
-				/>
-				<ResultSection
-					rate={rate}
-					rateSource={rateSource}
-					amount={amount}
-					fromCurrency={fromCurrency}
-					toCurrency={toCurrency}
-				/>
-				<ActionButtons
-					storedApiKey={storedApiKey}
-					amount={amount}
-					rateSource={rateSource}
-					isApiKeyValid={isApiKeyValid}
-					apiKeyInput={apiKeyInput}
-					isHistoryEmpty={conversionHistory.length === 0}
-					onCalculate={fetchRate}
-					onSaveKey={saveApiKey}
-					onRefreshRates={handleClearCacheAndFetch}
-					onClearHistory={clearConversionHistory}
-					onClearAll={clearApiAndCache}
-				/>
-				<div className={styles.historySection}>
-					<Divider />
-					<Text weight="semibold" as="h2" style={{ marginTop: tokens.spacingVerticalL, display: 'block' }}>
-						Conversion History (Last 10 conversions)
-					</Text>
-					<ConversionHistory
-						history={conversionHistory}
-						onRepeat={handleRepeatConversion}
-					/>
+				<div className={styles.mainContent}>
+					<div className={styles.leftColumn}>
+						<ThemeSwitcher isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
+						<div className={styles.controlsSection}>
+							<CurrencyRow
+								fromCurrency={fromCurrency}
+								toCurrency={toCurrency}
+								onFromChange={handleFromCurrency}
+								onToChange={handleToCurrency}
+								onSwap={swapCurrencies}
+							/>
+							<Field
+								label="Amount"
+								size="large"
+							>
+								<Input
+									type="number"
+									value={amount.toString()}
+									onChange={handleAmountChange}
+									appearance="outline"
+									size="large"
+								/>
+							</Field>
+							<ApiKeySection
+								apiKeyInput={apiKeyInput}
+								storedApiKey={storedApiKey}
+								isApiKeyValid={isApiKeyValid}
+								saveError={saveError}
+								onApiKeyChange={handleApiKeyChange}
+							/>
+							<ResultSection
+								rate={rate}
+								rateSource={rateSource}
+								amount={amount}
+								fromCurrency={fromCurrency}
+								toCurrency={toCurrency}
+							/>
+							<ActionButtons
+								storedApiKey={storedApiKey}
+								amount={amount}
+								rateSource={rateSource}
+								isApiKeyValid={isApiKeyValid}
+								apiKeyInput={apiKeyInput}
+								isHistoryEmpty={conversionHistory.length === 0}
+								onCalculate={fetchRate}
+								onSaveKey={saveApiKey}
+								onRefreshRates={handleClearCacheAndFetch}
+								onClearHistory={clearConversionHistory}
+								onClearAll={clearApiAndCache}
+							/>
+						</div>
+					</div>
+
+					<div className={styles.rightColumn}>
+						<div className={styles.historySection}>
+							<Text weight="semibold" as="h2" style={{ display: 'block' }}>
+								Conversion History (Last 10)
+							</Text>
+							<Divider />
+							<ConversionHistory
+								history={conversionHistory}
+								onRepeat={handleRepeatConversion}
+							/>
+						</div>
+					</div>
 				</div>
 			</Card>
 		</div>

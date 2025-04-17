@@ -6,7 +6,15 @@ import {
 	shorthands,
 	tokens,
 	Text,
+	TableBody,
+	TableCell,
+	TableRow,
+	TableHeader,
+	TableHeaderCell,
+	Table,
+	TableCellLayout
 } from "@fluentui/react-components";
+import { ArrowRepeatAllRegular } from "@fluentui/react-icons";
 
 interface ConversionHistoryProps {
 	history: ConversionHistoryEntry[];
@@ -41,7 +49,21 @@ const useStyles = makeStyles({
 		color: tokens.colorNeutralForeground3, // Use a subtle text color token
 		marginLeft: tokens.spacingHorizontalM,
 	},
+	tableContainer: {
+		// No specific container styles needed for now
+	},
+	actionCell: {
+		// Ensure button fits well
+	},
 });
+
+// Helper to format numbers clearly
+const formatNumber = (num: number, minDecimals: number, maxDecimals: number): string => {
+	return num.toLocaleString(undefined, {
+		minimumFractionDigits: minDecimals,
+		maximumFractionDigits: maxDecimals,
+	});
+};
 
 export const ConversionHistory = ({
 	history,
@@ -54,40 +76,56 @@ export const ConversionHistory = ({
 	// and remove them from App.tsx's historySection.
 
 	if (history.length === 0) {
-		return null; // Don't render anything if history is empty
+		return <Text>No conversion history yet.</Text>; // Show a message instead of null
 	}
 
 	return (
-		<div className={styles.container}>
-			{/* Optional: Title could be moved back here if needed */}
-			{/* <Divider /> */}
-			{/* <Text weight="semibold" as="h3" block style={{ marginTop: tokens.spacingVerticalL }}> */}
-			{/*    <HistoryRegular style={{ marginRight: tokens.spacingHorizontalS }} /> */}
-			{/*    Conversion History (Last 10) */}
-			{/* </Text> */}
-
-			<ul className={styles.list}>
-				{history.map((entry) => (
-					<li key={entry.timestamp} className={styles.listItem}>
-						<Button
-							className={styles.repeatButton}
-							appearance="subtle"
-							onClick={() => onRepeat(entry)}
-							title={`Repeat: ${entry.amount} ${entry.fromCurrency} to ${entry.toCurrency}`}
-						>
-							{/* Main conversion text */}
-							<Text>
-								{entry.amount} {entry.fromCurrency} → {entry.result.toFixed(2)}{" "}
-								{entry.toCurrency}
-							</Text>
-							{/* Rate text using Text component */}
-							<Text size={200} className={styles.rateText}>
-								(Rate: {entry.rate.toFixed(4)})
-							</Text>
-						</Button>
-					</li>
-				))}
-			</ul>
+		<div className={styles.tableContainer}>
+			<Table arial-label="Conversion History Table" size="medium">
+				<TableHeader>
+					<TableRow>
+						<TableHeaderCell>Amount</TableHeaderCell>
+						<TableHeaderCell>From</TableHeaderCell>
+						<TableHeaderCell>To</TableHeaderCell>
+						<TableHeaderCell>Result</TableHeaderCell>
+						<TableHeaderCell>Rate</TableHeaderCell>
+						<TableHeaderCell>Action</TableHeaderCell>
+					</TableRow>
+				</TableHeader>
+				<TableBody>
+					{history.map((entry) => (
+						<TableRow key={entry.timestamp}>
+							<TableCell>
+								<TableCellLayout>{formatNumber(entry.amount, 0, 2)}</TableCellLayout>
+							</TableCell>
+							<TableCell>
+								<TableCellLayout>{entry.fromCurrency}</TableCellLayout>
+							</TableCell>
+							<TableCell>
+								<TableCellLayout>{entry.toCurrency}</TableCellLayout>
+							</TableCell>
+							<TableCell>
+								<TableCellLayout>{formatNumber(entry.result, 2, 2)}</TableCellLayout>
+							</TableCell>
+							<TableCell>
+								<TableCellLayout><i>{formatNumber(entry.rate, 4, 6)}</i></TableCellLayout>
+							</TableCell>
+							<TableCell className={styles.actionCell}>
+								<TableCellLayout>
+									<Button
+										appearance="subtle"
+										icon={<ArrowRepeatAllRegular />}
+										onClick={() => onRepeat(entry)}
+										title={`Repeat: ${entry.amount} ${entry.fromCurrency} to ${entry.toCurrency}`}
+										size="small"
+									>
+									</Button>
+								</TableCellLayout>
+							</TableCell>
+						</TableRow>
+					))}
+				</TableBody>
+			</Table>
 		</div>
 	);
 };
