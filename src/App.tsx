@@ -4,11 +4,10 @@ import {
 	SaveFilled,
 	ArrowClockwiseFilled,
 	ArrowSyncRegular,
-	DeleteRegular,
 } from "@fluentui/react-icons";
 import type React from "react";
 import { useEffect, useState } from "react";
-import { Button, Link } from "@fluentui/react-components";
+import { Link } from "@fluentui/react-components";
 import { ButtonDanger } from "./components/Buttons/danger/ButtonDanger.tsx";
 import { ButtonPrimary } from "./components/Buttons/primary/ButtonPrimary.tsx";
 import { CurrencySelector } from "./components/CurrencySelector/CurrencySelector.tsx";
@@ -346,20 +345,23 @@ function App() {
 					<SaveFilled style={{ fontSize: "24px" }} />
 				</ButtonPrimary>
 
-				<ButtonDanger onClick={clearApiAndCache}>
-					<span>Clear Key & Cache</span>
-					<DeleteFilled style={{ fontSize: "24px" }} />
-				</ButtonDanger>
-
-				<Button
-					icon={<DeleteRegular style={{ fontSize: "24px" }} />}
-					appearance="secondary"
+		
+				<ButtonPrimary
 					onClick={handleClearCacheAndFetch}
 					disabled={rateSource === "loading"}
 					title="Clear cached rates and fetch live data"
 				>
-					Refresh Rates
-				</Button>
+					<span>Refresh Rates</span>	
+					<ArrowSyncRegular style={{ fontSize: "24px" }} />
+				</ButtonPrimary>
+
+					<hr/>
+
+				<ButtonDanger onClick={clearApiAndCache}>
+					<span>Clear all data</span>
+					<DeleteFilled style={{ fontSize: "24px" }} />
+				</ButtonDanger>
+
 			</div>
 
 			<ConversionHistory
