@@ -7,28 +7,48 @@ interface ConversionHistoryProps {
 	onRepeat: (entry: ConversionHistoryEntry) => void;
 }
 
-export const ConversionHistory = ({ history, onRepeat }: ConversionHistoryProps) => {
+export const ConversionHistory = ({
+	history,
+	onRepeat,
+}: ConversionHistoryProps) => {
 	if (!history || history.length === 0) {
 		return null; // Don't render anything if history is empty
 	}
 
 	return (
-		<div style={{ marginTop: '20px', borderTop: '1px solid #ccc', paddingTop: '10px' }}>
+		<div
+			style={{
+				marginTop: "20px",
+				borderTop: "1px solid #ccc",
+				paddingTop: "10px",
+			}}
+		>
 			<h3>
-				<HistoryRegular style={{ marginRight: '8px' }}/>
+				<HistoryRegular style={{ marginRight: "8px" }} />
 				Conversion History (Last {history.length})
 			</h3>
-			<ul style={{ listStyle: 'none', paddingLeft: 0 }}>
+			<ul style={{ listStyle: "none", paddingLeft: 0 }}>
 				{history.map((entry) => (
-					<li key={entry.timestamp} style={{ marginBottom: '5px' }}>
+					<li key={entry.timestamp} style={{ marginBottom: "5px" }}>
 						<Button
 							appearance="subtle"
 							onClick={() => onRepeat(entry)}
 							title={`Repeat: ${entry.amount} ${entry.fromCurrency} to ${entry.toCurrency}`}
-							style={{ textAlign: 'left', width: '100%', justifyContent: 'flex-start'}}
+							style={{
+								textAlign: "left",
+								width: "100%",
+								justifyContent: "flex-start",
+							}}
 						>
-							{entry.amount} {entry.fromCurrency} → {entry.result.toFixed(2)} {entry.toCurrency}
-							<span style={{ fontSize: 'smaller', color: 'grey', marginLeft: '10px' }}>
+							{entry.amount} {entry.fromCurrency} → {entry.result.toFixed(2)}{" "}
+							{entry.toCurrency}
+							<span
+								style={{
+									fontSize: "smaller",
+									color: "grey",
+									marginLeft: "10px",
+								}}
+							>
 								(Rate: {entry.rate.toFixed(4)})
 							</span>
 						</Button>
@@ -37,4 +57,4 @@ export const ConversionHistory = ({ history, onRepeat }: ConversionHistoryProps)
 			</ul>
 		</div>
 	);
-}; 
+};

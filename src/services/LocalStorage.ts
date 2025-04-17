@@ -86,7 +86,9 @@ const MAX_HISTORY_LENGTH = 10; // Keep the last 10 conversions
  * @param {ConversionHistoryEntry[]} history The history array to save.
  * @returns {void}
  */
-export function saveConversionHistoryService(history: ConversionHistoryEntry[]): void {
+export function saveConversionHistoryService(
+	history: ConversionHistoryEntry[],
+): void {
 	try {
 		// Ensure we only save the last MAX_HISTORY_LENGTH items
 		const historyToSave = history.slice(0, MAX_HISTORY_LENGTH);
@@ -110,7 +112,9 @@ export function loadConversionHistoryService(): ConversionHistoryEntry[] {
 			if (Array.isArray(parsedHistory)) {
 				return parsedHistory;
 			}
-			console.warn("Invalid history format found in localStorage. Returning empty array.");
+			console.warn(
+				"Invalid history format found in localStorage. Returning empty array.",
+			);
 			return [];
 		}
 		return []; // Return empty array if no history is found

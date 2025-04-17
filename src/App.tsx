@@ -33,7 +33,9 @@ function App() {
 	const [isApiKeyValid, setIsApiKeyValid] = useState<boolean>(true); // Validity of the input
 	const [saveError, setSaveError] = useState<string | null>(null); // Error during save
 	const [rate, setRate] = useState<number | "--">("--"); // Assuming rate is number
-	const [conversionHistory, setConversionHistory] = useState<ConversionHistoryEntry[]>([]); // History state
+	const [conversionHistory, setConversionHistory] = useState<
+		ConversionHistoryEntry[]
+	>([]); // History state
 
 	const handleFromCurrency = (value: string) => setFromCurrency(value);
 	const handleToCurrency = (value: string) => setToCurrency(value);
@@ -49,7 +51,7 @@ function App() {
 				apiKey: storedApiKey,
 			});
 
-			if (typeof currentRate === 'number') {
+			if (typeof currentRate === "number") {
 				const result = amount * currentRate;
 				setRate(currentRate); // Update rate state
 
@@ -63,13 +65,12 @@ function App() {
 					timestamp: Date.now(),
 				};
 
-				setConversionHistory(prevHistory => {
+				setConversionHistory((prevHistory) => {
 					// Add new entry and limit to max length
 					const updatedHistory = [newEntry, ...prevHistory].slice(0, 10);
 					saveConversionHistoryService(updatedHistory); // Persist to localStorage
 					return updatedHistory;
 				});
-
 			} else {
 				console.error("Invalid rate data received:", currentRate);
 				setRate("--"); // Reset rate display on error
@@ -146,7 +147,6 @@ function App() {
 		// Load Conversion History
 		const loadedHistory = loadConversionHistoryService();
 		setConversionHistory(loadedHistory);
-
 	}, []);
 
 	const swapCurrencies = () => {
@@ -193,18 +193,26 @@ function App() {
 				label={"Api Key"}
 				// Determine validation state based on input validity and presence
 				validationState={
-					saveError || (!isApiKeyValid && apiKeyInput !== "") ? "error" : // Prioritize showing save errors or format errors
-						storedApiKey && apiKeyInput === storedApiKey ? "success" : // Valid stored key shown
-							isApiKeyValid && apiKeyInput !== "" ? "warning" : // Valid format, but not saved or doesn't match stored
-								"none" // Default state (e.g., empty input, no stored key)
+					saveError || (!isApiKeyValid && apiKeyInput !== "")
+						? "error" // Prioritize showing save errors or format errors
+						: storedApiKey && apiKeyInput === storedApiKey
+							? "success" // Valid stored key shown
+							: isApiKeyValid && apiKeyInput !== ""
+								? "warning" // Valid format, but not saved or doesn't match stored
+								: "none" // Default state (e.g., empty input, no stored key)
 				}
 				validationMessage={
-					saveError ? saveError : // Show save error first
-						!isApiKeyValid && apiKeyInput !== "" ? "Invalid format. Must start with fca_live_ + 40 alphanumeric chars." : // Updated length in message
-							storedApiKey && apiKeyInput === storedApiKey ? "API Key is valid and stored." :
-								isApiKeyValid && apiKeyInput !== "" ? "Valid format. Press Save to store this key." : // Warning message
-									apiKeyInput === "" && !storedApiKey ? "API Key is required." :
-										"" // Default: no message
+					saveError
+						? saveError // Show save error first
+						: !isApiKeyValid && apiKeyInput !== ""
+							? "Invalid format. Must start with fca_live_ + 40 alphanumeric chars." // Updated length in message
+							: storedApiKey && apiKeyInput === storedApiKey
+								? "API Key is valid and stored."
+								: isApiKeyValid && apiKeyInput !== ""
+									? "Valid format. Press Save to store this key." // Warning message
+									: apiKeyInput === "" && !storedApiKey
+										? "API Key is required."
+										: "" // Default: no message
 				}
 				required
 				value={apiKeyInput}
@@ -224,7 +232,10 @@ function App() {
 				</Link>
 			</p>
 			{/* Display rate with check for number type */}
-			<Label text={`Rate: ${typeof rate === 'number' ? rate.toFixed(4) : "--"}`} size={"large"} />
+			<Label
+				text={`Rate: ${typeof rate === "number" ? rate.toFixed(4) : "--"}`}
+				size={"large"}
+			/>
 			{typeof rate === "number" && (
 				<Label
 					text={`${amount} ${fromCurrency} = ${(amount * rate).toFixed(2)} ${toCurrency}`}
@@ -253,7 +264,10 @@ function App() {
 			</ButtonDanger>
 
 			{/* Render the Conversion History component */}
-			<ConversionHistory history={conversionHistory} onRepeat={handleRepeatConversion} />
+			<ConversionHistory
+				history={conversionHistory}
+				onRepeat={handleRepeatConversion}
+			/>
 		</>
 	);
 }
