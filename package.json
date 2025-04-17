@@ -1,7 +1,7 @@
 {
 	"name": "currencyexchange",
 	"private": true,
-	"version": "1.0.0",
+	"version": "1.0.2",
 	"type": "module",
 	"scripts": {
 		"dev": "vite",
@@ -12,21 +12,21 @@
 		"prepare": "husky"
 	},
 	"dependencies": {
-		"@fluentui/react-components": "^9.49.2",
-		"@fluentui/react-icons": "^2.0.239",
+		"@fluentui/react-components": "^9.62.0",
+		"@fluentui/react-icons": "^2.0.297",
 		"react": "^18.2.0",
-		"react-dom": "^18.2.0"
+		"react-dom": "^18.2.0",
+		"scheduler": "0.23.0"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "1.7.2",
-		"@commitlint/cli": "^19.3.0",
-		"@commitlint/config-conventional": "^19.2.2",
-		"@types/react": "^18.2.66",
-		"@types/react-dom": "^18.2.22",
-		"@vitejs/plugin-react": "^4.2.1",
-		"husky": "^9.0.11",
-		"oxlint": "^0.3.5",
-		"typescript": "^5.2.2",
-		"vite": "^5.2.0"
+		"@biomejs/biome": "1.9.4",
+		"@commitlint/cli": "^19.8.0",
+		"@commitlint/config-conventional": "^19.8.0",
+		"@types/react": "^18.2.0",
+		"@types/react-dom": "^18.2.0",
+		"@vitejs/plugin-react": "^4.4.0",
+		"husky": "^9.1.7",
+		"typescript": "^5.8.3",
+		"vite": "^6.3.1"
 	}
 }
