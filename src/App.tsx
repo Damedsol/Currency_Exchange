@@ -8,12 +8,22 @@ import {
 } from "@fluentui/react-icons";
 import type React from "react";
 import { useEffect, useState } from "react";
-import { Button, Link } from "@fluentui/react-components";
+import {
+	Button,
+	Link,
+	Switch,
+	makeStyles,
+	shorthands,
+	tokens,
+	Divider,
+	Text,
+	Field,
+	Input,
+	Card,
+} from "@fluentui/react-components";
 import { ButtonDanger } from "./components/Buttons/danger/ButtonDanger.tsx";
 import { ButtonPrimary } from "./components/Buttons/primary/ButtonPrimary.tsx";
 import { CurrencySelector } from "./components/CurrencySelector/CurrencySelector.tsx";
-import { Field } from "./components/Field/Field.tsx";
-import { Label } from "./components/Label/Label.tsx";
 import {
 	getCurrencyRate,
 	type CurrencyRateResult,
@@ -30,10 +40,39 @@ import {
 } from "./services/LocalStorage.ts";
 import { ConversionHistory } from "./components/History/ConversionHistory";
 import { ButtonSecondary } from "./components/Buttons/secondary/ButtonSecondary.tsx";
+import { ThemeSwitcher } from "./components/ThemeSwitcher/ThemeSwitcher";
+import { CurrencyRow } from "./components/CurrencyRow/CurrencyRow";
+import { ApiKeySection } from "./components/ApiKeySection/ApiKeySection";
+import { ResultSection } from "./components/ResultSection/ResultSection";
+import { ActionButtons } from "./components/ActionButtons/ActionButtons";
 
 type RateSource = "idle" | "cache" | "api" | "error" | "loading";
 
-function App() {
+const useStyles = makeStyles({
+	appContainer: {
+		maxWidth: "600px",
+		margin: `${tokens.spacingVerticalXXL} auto`,
+		paddingLeft: tokens.spacingHorizontalL,
+		paddingRight: tokens.spacingHorizontalL,
+	},
+	root: {
+		display: "flex",
+		flexDirection: "column",
+		...shorthands.gap(tokens.spacingVerticalL),
+		...shorthands.padding(tokens.spacingVerticalXXL, tokens.spacingHorizontalL),
+		backgroundColor: tokens.colorNeutralBackground2,
+	},
+	historySection: {
+	},
+});
+
+interface AppProps {
+	toggleTheme: () => void;
+	isDarkMode: boolean;
+}
+
+function App({ toggleTheme, isDarkMode }: AppProps) {
+	const styles = useStyles();
 	const [fromCurrency, setFromCurrency] = useState<string>("EUR");
 	const [toCurrency, setToCurrency] = useState<string>("USD");
 	const [amount, setAmount] = useState<number>(1);
@@ -54,6 +93,15 @@ function App() {
 	};
 	const handleToCurrency = (value: string) => {
 		setToCurrency(value);
+		setRate("--");
+		setRateSource("idle");
+	};
+
+	const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		const value = Number(event.target.value);
+		if (!isNaN(value) && value >= 0) {
+			setAmount(value);
+		}
 		setRate("--");
 		setRateSource("idle");
 	};
@@ -208,184 +256,73 @@ function App() {
 		}
 	};
 
-	const renderRateSourceIndicator = () => {
-		if (rateSource === "loading") {
-			return <span style={{ marginLeft: "8px", fontSize: "small" }}>Loading...</span>;
-		}
-		if (rateSource === "cache") {
-			return (
-				<span
-					title="Data from cache (max 24h old)"
-					style={{ marginLeft: "8px", fontSize: "small", cursor: "help" }}
-				>
-					<ArrowSyncRegular style={{ verticalAlign: "middle" }} /> (cached)
-				</span>
-			);
-		}
-		if (rateSource === "api") {
-			return (
-				<span
-					title="Live data from API"
-					style={{ marginLeft: "8px", fontSize: "small", cursor: "help" }}
-				>
-					<ArrowSyncRegular style={{ verticalAlign: "middle" }} /> (live)
-				</span>
-			);
-		}
-		if (rateSource === "error") {
-			return (
-				<span style={{ marginLeft: "8px", fontSize: "small", color: "red" }}>
-					Error fetching rate
-				</span>
-			);
-		}
-		return null;
-	};
-
 	const clearConversionHistory = () => {
 		setConversionHistory([]);
 		saveConversionHistoryService([]);
 	};
 
 	return (
-		<>
-			<CurrencySelector
-				value={fromCurrency}
-				onChange={handleFromCurrency}
-				where={"from"}
-			/>
-
-			<ButtonPrimary onClick={swapCurrencies}>
-				<ArrowClockwiseFilled style={{ fontSize: "24px" }} />
-			</ButtonPrimary>
-
-			<CurrencySelector
-				value={toCurrency}
-				onChange={handleToCurrency}
-				where={"to"}
-			/>
-			<Field
-				label={"Amount"}
-				value={amount.toString()}
-				type={"number"}
-				onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-					const value = Number(event.target.value);
-					if (!isNaN(value) && value >= 0) {
-						setAmount(value);
-					}
-					setRate("--");
-					setRateSource("idle");
-				}}
-			/>
-			<Field
-				label={"Api Key"}
-				validationState={
-					saveError || (!isApiKeyValid && apiKeyInput !== "")
-						? "error"
-						: storedApiKey && apiKeyInput === storedApiKey
-							? "success"
-							: isApiKeyValid && apiKeyInput !== ""
-								? "warning"
-								: "none"
-				}
-				validationMessage={
-					saveError
-						? saveError
-						: !isApiKeyValid && apiKeyInput !== ""
-							? "Invalid format. Must start with fca_live_ + 40 alphanumeric chars."
-							: storedApiKey && apiKeyInput === storedApiKey
-								? "API Key is valid and stored."
-								: isApiKeyValid && apiKeyInput !== ""
-									? "Valid format. Press Save to store this key."
-									: apiKeyInput === "" && !storedApiKey
-										? "API Key is required."
-										: ""
-				}
-				required
-				value={apiKeyInput}
-				onChange={handleApiKeyChange}
-			/>
-			<p
-				style={{ fontSize: "small", marginTop: "-10px", marginBottom: "10px" }}
-			>
-				Get your free API key from{" "}
-				<Link
-					href="https://freecurrencyapi.com/"
-					target="_blank"
-					rel="noopener noreferrer"
-				>
-					freecurrencyapi.com
-				</Link>
-			</p>
-			<div>
-				<Label
-					text={`Rate: ${typeof rate === "number" ? rate.toFixed(4) : "--"}`}
-					size={"large"}
+		<div className={styles.appContainer}>
+			<Card className={styles.root}>
+				<ThemeSwitcher isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
+				<CurrencyRow
+					fromCurrency={fromCurrency}
+					toCurrency={toCurrency}
+					onFromChange={handleFromCurrency}
+					onToChange={handleToCurrency}
+					onSwap={swapCurrencies}
 				/>
-				{renderRateSourceIndicator()}
-			</div>
-			{typeof rate === "number" && (
-				<Label
-					text={`${amount} ${fromCurrency} = ${(amount * rate).toFixed(2)} ${toCurrency}`}
-					size={"large"}
+				<Field
+					label="Amount"
+					size="large"
+				>
+					<Input
+						type="number"
+						value={amount.toString()}
+						onChange={handleAmountChange}
+						appearance="outline"
+						size="large"
+					/>
+				</Field>
+				<ApiKeySection
+					apiKeyInput={apiKeyInput}
+					storedApiKey={storedApiKey}
+					isApiKeyValid={isApiKeyValid}
+					saveError={saveError}
+					onApiKeyChange={handleApiKeyChange}
 				/>
-			)}
-
-			<div style={{ display: "flex", gap: "10px", flexWrap: "nowrap", marginTop: "10px" }}>
-				<ButtonPrimary
-					onClick={fetchRate}
-					disabled={!storedApiKey || amount <= 0 || rateSource === "loading"}
-				>
-					<span>{rateSource === "loading" ? "Calculating..." : "Calculate"}</span>
-					<MoneyCalculatorFilled style={{ fontSize: "24px" }} />
-				</ButtonPrimary>
-
-				<ButtonPrimary
-					onClick={saveApiKey}
-					disabled={
-						!isApiKeyValid ||
-						apiKeyInput === "" ||
-						apiKeyInput === storedApiKey
-					}
-				>
-					<span>Save Key</span>
-					<SaveFilled style={{ fontSize: "24px" }} />
-				</ButtonPrimary>
-
-				<ButtonSecondary
-					icon={<ArrowSyncRegular style={{ fontSize: "24px" }} />}
-					appearance="secondary"
-					onClick={handleClearCacheAndFetch}
-					disabled={rateSource === "loading"}
-					title="Clear cached rates and fetch live data"
-				>
-					<span>Refresh Rates</span>
-					<ArrowSyncRegular style={{ fontSize: "24px" }} />	
-				</ButtonSecondary>
-
-				<ButtonSecondary
-					icon={<HistoryDismissRegular style={{ fontSize: "24px" }} />}
-					appearance="secondary"
-					onClick={clearConversionHistory}
-					disabled={conversionHistory.length === 0}
-					title="Clear conversion history"
-				>
-					<span>Clear History</span>
-					<HistoryDismissRegular style={{ fontSize: "24px" }} />
-				</ButtonSecondary>
-
-				<ButtonDanger onClick={clearApiAndCache}>
-					<span>Clear all data</span>
-					<DeleteFilled style={{ fontSize: "24px" }} />
-				</ButtonDanger>
-
-			</div>
-
-			<ConversionHistory
-				history={conversionHistory}
-				onRepeat={handleRepeatConversion}
-			/>
-		</>
+				<ResultSection
+					rate={rate}
+					rateSource={rateSource}
+					amount={amount}
+					fromCurrency={fromCurrency}
+					toCurrency={toCurrency}
+				/>
+				<ActionButtons
+					storedApiKey={storedApiKey}
+					amount={amount}
+					rateSource={rateSource}
+					isApiKeyValid={isApiKeyValid}
+					apiKeyInput={apiKeyInput}
+					isHistoryEmpty={conversionHistory.length === 0}
+					onCalculate={fetchRate}
+					onSaveKey={saveApiKey}
+					onRefreshRates={handleClearCacheAndFetch}
+					onClearHistory={clearConversionHistory}
+					onClearAll={clearApiAndCache}
+				/>
+				<div className={styles.historySection}>
+					<Divider />
+					<Text weight="semibold" as="h2" style={{ marginTop: tokens.spacingVerticalL, display: 'block' }}>
+						Conversion History (Last 10 conversions)
+					</Text>
+					<ConversionHistory
+						history={conversionHistory}
+						onRepeat={handleRepeatConversion}
+					/>
+				</div>
+			</Card>
+		</div>
 	);
 }
 
