@@ -1,13 +1,21 @@
-import {DeleteFilled, MoneyCalculatorFilled, SaveFilled,} from "@fluentui/react-icons";
+import {
+	DeleteFilled,
+	MoneyCalculatorFilled,
+	SaveFilled,
+} from "@fluentui/react-icons";
 import type React from "react";
-import {useEffect, useState} from "react";
-import {ButtonDanger} from "./components/Buttons/danger/ButtonDanger.tsx";
-import {ButtonPrimary} from "./components/Buttons/primary/ButtonPrimary.tsx";
-import {CurrencySelector} from "./components/CurrencySelector/CurrencySelector.tsx";
-import {Field} from "./components/Field/Field.tsx";
-import {Label} from "./components/Label/Label.tsx";
-import {FreeCurrency} from "./services/FreeCurrency";
-import {clearLocalStorageAndDB, localStorageFetchService, localStorageStoreService,} from "./services/LocalStorage.ts";
+import { useEffect, useState } from "react";
+import { ButtonDanger } from "./components/Buttons/danger/ButtonDanger.tsx";
+import { ButtonPrimary } from "./components/Buttons/primary/ButtonPrimary.tsx";
+import { CurrencySelector } from "./components/CurrencySelector/CurrencySelector.tsx";
+import { Field } from "./components/Field/Field.tsx";
+import { Label } from "./components/Label/Label.tsx";
+import { FreeCurrency } from "./services/FreeCurrency";
+import {
+	clearLocalStorageAndDB,
+	localStorageFetchService,
+	localStorageStoreService,
+} from "./services/LocalStorage.ts";
 
 function App() {
 	const [fromCurrency, setFromCurrency] = useState<string>("EUR");

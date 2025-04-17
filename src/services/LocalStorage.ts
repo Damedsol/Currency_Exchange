@@ -16,9 +16,11 @@ export async function localStorageStoreService(
 	apiKey: string,
 ): Promise<string | null> {
 	try {
-		verifyIfIndexedDB() && true
-			? await saveToIndexedDB(apiKey)
-			: localStorage.setItem("apiKey", apiKey as string);
+		if (verifyIfIndexedDB()) {
+			await saveToIndexedDB(apiKey);
+		} else {
+			localStorage.setItem("apiKey", apiKey as string);
+		}
 		return null;
 	} catch (error) {
 		throw new Error(error as string);
