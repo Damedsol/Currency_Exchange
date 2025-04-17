@@ -1,5 +1,5 @@
 import type React from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
 	makeStyles,
 	shorthands,
@@ -15,7 +15,7 @@ import {
 	Button,
 	type MessageBarIntent,
 } from "@fluentui/react-components";
-import { DismissRegular } from '@fluentui/react-icons';
+import { DismissRegular, KeyRegular } from '@fluentui/react-icons';
 import {
 	getCurrencyRate,
 	type CurrencyRateResult,
@@ -33,7 +33,6 @@ import {
 import { ConversionHistory } from "./components/History/ConversionHistory";
 import { ThemeSwitcher } from "./components/ThemeSwitcher/ThemeSwitcher";
 import { CurrencyRow } from "./components/CurrencyRow/CurrencyRow";
-import { ApiKeySection } from "./components/ApiKeySection/ApiKeySection";
 import { ResultSection } from "./components/ResultSection/ResultSection";
 import { ActionButtons } from "./components/ActionButtons/ActionButtons";
 
@@ -54,6 +53,8 @@ const breakpoints = {
 	tablet: 768,
 	large: 1024,
 };
+
+const MESSAGE_TIMEOUT_DURATION = 5000; // 5 seconds
 
 const useStyles = makeStyles({
 	appContainer: {
@@ -83,7 +84,9 @@ const useStyles = makeStyles({
 	headerContainer: {
 		display: "flex",
 		justifyContent: "flex-end",
-		marginBottom: tokens.spacingVerticalM, // Space between switcher and message bar
+		alignItems: "center",
+		marginBottom: tokens.spacingVerticalM,
+		...shorthands.gap(tokens.spacingHorizontalS),
 	},
 	mainContent: {
 		display: "flex",
@@ -121,6 +124,12 @@ const useStyles = makeStyles({
 		flexDirection: "column",
 		...shorthands.gap(tokens.spacingVerticalL),
 	},
+	apiKeyStoredIcon: {
+		color: tokens.colorStatusSuccessForeground1,
+	},
+	apiKeyMissingIcon: {
+		color: tokens.colorStatusDangerForeground1,
+	},
 	messageBarContainer: {
 		minHeight: "52px",
 	},
@@ -145,10 +154,53 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 		ConversionHistoryEntry[]
 	>([]);
 	const [appMessage, setAppMessage] = useState<AppMessage>({ text: null, intent: 'info', visible: false });
+	const [isApiKeyHeaderInputVisible, setIsApiKeyHeaderInputVisible] = useState<boolean>(false);
 
-	// Function to dismiss message
+	// Ref to store message timeout ID (using number for browser environment)
+	const messageTimeoutRef = useRef<number | null>(null);
+
+	// Helper function to clear the timeout
+	const clearMessageTimeout = () => {
+		if (messageTimeoutRef.current) {
+			clearTimeout(messageTimeoutRef.current);
+			messageTimeoutRef.current = null;
+		}
+	};
+
+	// Updated dismissMessage to clear timeout
 	const dismissMessage = () => {
+		clearMessageTimeout(); // Clear timeout when manually dismissed
 		setAppMessage((prev) => ({ ...prev, visible: false }));
+	};
+
+	// Helper function to show messages and set timeout
+	const showAppMessage = (text: React.ReactNode, intent: MessageBarIntent, duration: number = MESSAGE_TIMEOUT_DURATION) => {
+		clearMessageTimeout(); // Clear previous timeout
+		setAppMessage({ text, intent, visible: true });
+		messageTimeoutRef.current = setTimeout(() => {
+			dismissMessage();
+		}, duration);
+	};
+
+	// Cleanup timeout on component unmount
+	useEffect(() => {
+		return () => {
+			clearMessageTimeout();
+		};
+	}, []);
+
+	// Toggle header input visibility and show status message
+	const toggleApiKeyHeaderInput = () => {
+		const willBeVisible = !isApiKeyHeaderInputVisible;
+		setIsApiKeyHeaderInputVisible(willBeVisible);
+		dismissMessage(); // Clear any previous message first
+		if (willBeVisible) {
+			if (storedApiKey) {
+				showAppMessage("Current API Key is stored. Edit below or Save new key.", 'info');
+			} else {
+				showAppMessage("API Key not set. Enter your key below.", 'info');
+			}
+		}
 	};
 
 	const handleFromCurrency = (value: string) => {
@@ -175,7 +227,7 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 	};
 
 	async function fetchRate(): Promise<void> {
-		dismissMessage(); // Clear previous messages
+		dismissMessage();
 		if (!storedApiKey || amount <= 0 || fromCurrency === toCurrency) {
 			setRate(fromCurrency === toCurrency ? 1.0 : "--");
 			setRateSource(fromCurrency === toCurrency ? "api" : "idle");
@@ -219,43 +271,37 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 				);
 				setRate("--");
 				if (result.source === "error") {
-					// Show error message
-					setAppMessage({
-						text: "Error fetching currency rate. Check your API key or network connection.",
-						intent: 'error',
-						visible: true
-					});
+					showAppMessage("Error fetching currency rate. Check your API key or network connection.", 'error');
 				}
 			}
 		} catch (error) {
 			console.error("Error calling getCurrencyRate service:", error);
 			setRate("--");
 			setRateSource("error");
-			setAppMessage({
-				text: "An unexpected error occurred while fetching the rate.",
-				intent: 'error',
-				visible: true
-			});
+			showAppMessage("An unexpected error occurred while fetching the rate.", 'error');
 		}
 	}
 
+	// Only show format warning in MessageBar now
 	const handleApiKeyChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-		dismissMessage(); // Clear message on input change
 		const newKey = event.target.value.trim();
 		setApiKeyInput(newKey);
 		if (newKey === "") {
 			setIsApiKeyValid(true);
+			dismissMessage();
 		} else {
 			const isValid = apiKeyRegex.test(newKey);
 			setIsApiKeyValid(isValid);
 			if (!isValid) {
-				setAppMessage({ text: "Invalid API Key format.", intent: 'warning', visible: true });
+				showAppMessage("Invalid API Key format.", 'warning');
+			} else {
+				dismissMessage();
 			}
 		}
 	};
 
 	async function saveApiKey(): Promise<void> {
-		dismissMessage(); // Clear previous messages
+		dismissMessage();
 		const keyToSave = apiKeyInput.trim();
 		if (!isApiKeyValid || keyToSave === "") return;
 
@@ -267,11 +313,12 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 			clearRatesCache();
 			setRate("--");
 			setRateSource("idle");
-			setAppMessage({ text: "API Key saved successfully.", intent: 'success', visible: true });
+			showAppMessage("API Key saved successfully.", 'success');
+			setIsApiKeyHeaderInputVisible(false);
 		} catch (error) {
 			console.error("Failed to save API key:", error);
 			const errorMessage = error instanceof Error ? error.message : "An unknown error occurred while saving the API key.";
-			setAppMessage({ text: `Failed to save API key: ${errorMessage}`, intent: 'error', visible: true });
+			showAppMessage(`Failed to save API key: ${errorMessage}`, 'error');
 			setStoredApiKey(null);
 		}
 	}
@@ -286,7 +333,7 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 		setRateSource("idle");
 		setConversionHistory([]);
 		saveConversionHistoryService([]);
-		setAppMessage({ text: "All data cleared.", intent: 'warning', visible: true });
+		showAppMessage("All data cleared.", 'warning');
 	};
 
 	const handleClearCacheAndFetch = () => {
@@ -294,7 +341,7 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 		clearRatesCache();
 		setRate("--");
 		setRateSource("idle");
-		setAppMessage({ text: "Rates cache cleared.", intent: 'info', visible: true });
+		showAppMessage("Rates cache cleared.", 'info');
 		if (storedApiKey && amount > 0 && fromCurrency !== toCurrency) {
 			void fetchRate();
 		}
@@ -312,11 +359,7 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 				setStoredApiKey(null);
 				setApiKeyInput("");
 				setIsApiKeyValid(false);
-				setAppMessage({
-					text: "Invalid API key found in storage. Please enter a valid key.",
-					intent: 'warning',
-					visible: true
-				});
+				showAppMessage("Invalid API key found in storage. Please enter a valid key.", 'warning');
 				clearRatesCache();
 			}
 		}
@@ -347,28 +390,42 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 		dismissMessage();
 		setConversionHistory([]);
 		saveConversionHistoryService([]);
-		setAppMessage({ text: "Conversion history cleared.", intent: 'info', visible: true });
+		showAppMessage("Conversion history cleared.", 'info');
 	};
 
 	return (
 		<div className={styles.appContainer}>
 			<Card className={styles.root}>
 
-				{/* Header Row for Theme Switcher */}
+				{/* Header Row */}
 				<div className={styles.headerContainer}>
+					{isApiKeyHeaderInputVisible && (
+						<Input
+							aria-label="API Key Header Input"
+							type="password"
+							placeholder="Enter API Key..."
+							size="small"
+							appearance="outline"
+							value={apiKeyInput}
+							onChange={handleApiKeyChange}
+						/>
+					)}
+					<Button
+						appearance="subtle"
+						icon={<KeyRegular />}
+						className={storedApiKey ? styles.apiKeyStoredIcon : styles.apiKeyMissingIcon}
+						onClick={toggleApiKeyHeaderInput}
+						aria-label={isApiKeyHeaderInputVisible ? "Hide API Key Input" : "Show API Key Input"}
+					/>
 					<ThemeSwitcher isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
 				</div>
 
-				{/* App Message Bar Container (for CLS prevention) */}
+				{/* App Message Bar Container */}
 				<div className={styles.messageBarContainer}>
 					{appMessage.visible && (
-						<MessageBar
-							intent={appMessage.intent}
-							style={{ width: '100%' }} // Allow bar to take full width of container
-						>
+						<MessageBar intent={appMessage.intent} style={{ width: '100%' }}>
 							<MessageBarBody>
-								<MessageBarTitle>
-								</MessageBarTitle>
+								<MessageBarTitle></MessageBarTitle>
 								{appMessage.text}
 							</MessageBarBody>
 							<Button
@@ -417,12 +474,8 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 						<Divider />
 
 						<div className={styles.controlsSection}>
-							<ApiKeySection
-								apiKeyInput={apiKeyInput}
-								storedApiKey={storedApiKey}
-								isApiKeyValid={isApiKeyValid}
-								onApiKeyChange={handleApiKeyChange}
-							/>
+							{/* Conditionally hide main ApiKeySection */}
+							{/* {!isApiKeyHeaderInputVisible && ( ... )} */}
 							<ActionButtons
 								storedApiKey={storedApiKey}
 								amount={amount}
