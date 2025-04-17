@@ -2,6 +2,7 @@ import globals from "globals";
 import tseslint from "typescript-eslint";
 import pluginReactConfig from "eslint-plugin-react/configs/recommended.js";
 import js from "@eslint/js";
+import eslintConfigPrettier from "eslint-config-prettier";
 
 export default [
   { languageOptions: { globals: globals.browser } },
@@ -22,4 +23,5 @@ export default [
   {
     ignores: ["dist", "node_modules", "**/*.config.js", "**/*.config.ts", "**/*.cjs"], // Ignore build outputs, dependencies and config files
   },
+  eslintConfigPrettier,
 ]; 
