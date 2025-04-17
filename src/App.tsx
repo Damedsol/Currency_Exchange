@@ -17,8 +17,12 @@ import {
 	localStorageFetchService,
 	localStorageStoreService,
 	apiKeyRegex,
+	loadConversionHistoryService,
+	saveConversionHistoryService,
+	type ConversionHistoryEntry,
 } from "./services/LocalStorage.ts";
 import { Link } from "@fluentui/react-components";
+import { ConversionHistory } from "./components/History/ConversionHistory";
 
 function App() {
 	const [fromCurrency, setFromCurrency] = useState<string>("EUR");
@@ -28,19 +32,51 @@ function App() {
 	const [storedApiKey, setStoredApiKey] = useState<string | null>(null); // Confirmed stored key
 	const [isApiKeyValid, setIsApiKeyValid] = useState<boolean>(true); // Validity of the input
 	const [saveError, setSaveError] = useState<string | null>(null); // Error during save
-	const [rate, setRate] = useState<FreeCurrency | "--">("--");
+	const [rate, setRate] = useState<number | "--">("--"); // Assuming rate is number
+	const [conversionHistory, setConversionHistory] = useState<ConversionHistoryEntry[]>([]); // History state
 
 	const handleFromCurrency = (value: string) => setFromCurrency(value);
 	const handleToCurrency = (value: string) => setToCurrency(value);
 
 	async function fetchRate(): Promise<void> {
-		const response = await FreeCurrency({
-			fromCurrency,
-			toCurrency,
-			apiKey: storedApiKey, // Use the confirmed stored key for fetching
-		});
-		if (response) {
-			setRate(response);
+		if (!storedApiKey || amount <= 0) return; // Basic validation
+
+		try {
+			// FreeCurrency returns the rate directly (number) or null
+			const currentRate = await FreeCurrency({
+				fromCurrency,
+				toCurrency,
+				apiKey: storedApiKey,
+			});
+
+			if (typeof currentRate === 'number') {
+				const result = amount * currentRate;
+				setRate(currentRate); // Update rate state
+
+				// Create and save history entry
+				const newEntry: ConversionHistoryEntry = {
+					fromCurrency,
+					toCurrency,
+					amount,
+					rate: currentRate,
+					result,
+					timestamp: Date.now(),
+				};
+
+				setConversionHistory(prevHistory => {
+					// Add new entry and limit to max length
+					const updatedHistory = [newEntry, ...prevHistory].slice(0, 10);
+					saveConversionHistoryService(updatedHistory); // Persist to localStorage
+					return updatedHistory;
+				});
+
+			} else {
+				console.error("Invalid rate data received:", currentRate);
+				setRate("--"); // Reset rate display on error
+			}
+		} catch (error) {
+			console.error("Error fetching currency rate:", error);
+			setRate("--"); // Reset rate display on error
 		}
 	}
 
@@ -86,7 +122,9 @@ function App() {
 		setSaveError(null); // Clear any save errors
 	};
 
+	// Load initial data (API Key and History)
 	useEffect(() => {
+		// Load API Key
 		const fetchedApiKey = localStorageFetchService();
 		if (fetchedApiKey) {
 			// Validate the fetched key as well
@@ -105,12 +143,25 @@ function App() {
 				);
 			}
 		}
+		// Load Conversion History
+		const loadedHistory = loadConversionHistoryService();
+		setConversionHistory(loadedHistory);
+
 	}, []);
 
 	const swapCurrencies = () => {
 		const temp = fromCurrency;
 		setFromCurrency(toCurrency);
 		setToCurrency(temp);
+	};
+
+	// Function to handle repeating a conversion from history
+	const handleRepeatConversion = (entry: ConversionHistoryEntry) => {
+		setFromCurrency(entry.fromCurrency);
+		setToCurrency(entry.toCurrency);
+		setAmount(entry.amount);
+		// Optional: Trigger fetchRate immediately after setting state?
+		// fetchRate(); // Uncomment this if you want to recalculate automatically
 	};
 
 	return (
@@ -163,8 +214,8 @@ function App() {
 			<p
 				style={{ fontSize: "small", marginTop: "-10px", marginBottom: "10px" }}
 			>
-				Get your free API key from{" "} 
-				<Link				
+				Get your free API key from{" "}
+				<Link
 					href="https://freecurrencyapi.com/"
 					target="_blank"
 					rel="noopener noreferrer"
@@ -172,7 +223,8 @@ function App() {
 					freecurrencyapi.com
 				</Link>
 			</p>
-			<Label text={`Rate: ${rate ? rate.toString() : "--"}`} size={"large"} />
+			{/* Display rate with check for number type */}
+			<Label text={`Rate: ${typeof rate === 'number' ? rate.toFixed(4) : "--"}`} size={"large"} />
 			{typeof rate === "number" && (
 				<Label
 					text={`${amount} ${fromCurrency} = ${(amount * rate).toFixed(2)} ${toCurrency}`}
@@ -199,6 +251,9 @@ function App() {
 				<span>Clear Data</span>
 				<DeleteFilled style={{ fontSize: "24px" }} />
 			</ButtonDanger>
+
+			{/* Render the Conversion History component */}
+			<ConversionHistory history={conversionHistory} onRepeat={handleRepeatConversion} />
 		</>
 	);
 }
