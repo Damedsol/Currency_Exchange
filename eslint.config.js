@@ -16,8 +16,7 @@ export default [
       },
     },
     rules: {
-        // Aquí puedes añadir o sobrescribir reglas específicas para React o TypeScript
-        // Ejemplo: "@typescript-eslint/no-explicit-any": "warn"
+      "react/react-in-jsx-scope": "off"
     }
   },
   {
