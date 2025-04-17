@@ -1,7 +1,7 @@
 {
 	"name": "currencyexchange",
 	"private": true,
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"type": "module",
 	"scripts": {
 		"dev": "vite",
@@ -14,15 +14,16 @@
 	"dependencies": {
 		"@fluentui/react-components": "^9.62.0",
 		"@fluentui/react-icons": "^2.0.297",
-		"react": "^19.1.0",
-		"react-dom": "^19.1.0"
+		"react": "^18.2.0",
+		"react-dom": "^18.2.0",
+		"scheduler": "0.23.0"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "1.9.4",
 		"@commitlint/cli": "^19.8.0",
 		"@commitlint/config-conventional": "^19.8.0",
-		"@types/react": "^19.1.2",
-		"@types/react-dom": "^19.1.2",
+		"@types/react": "^18.2.0",
+		"@types/react-dom": "^18.2.0",
 		"@vitejs/plugin-react": "^4.4.0",
 		"husky": "^9.1.7",
 		"typescript": "^5.8.3",
