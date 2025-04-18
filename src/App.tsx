@@ -113,7 +113,7 @@ const useStyles = makeStyles({
 	leftColumn: {
 		display: "flex",
 		flexDirection: "column",
-		flexBasis: "60%",
+		flexBasis: "30%",
 		...shorthands.gap(tokens.spacingVerticalL),
 		[`@media (max-width: ${breakpoints.tablet}px)`]: {
 			flexBasis: "100%",
@@ -123,7 +123,7 @@ const useStyles = makeStyles({
 	rightColumn: {
 		display: "flex",
 		flexDirection: "column",
-		flexBasis: "40%",
+		flexBasis: "70%",
 		...shorthands.gap(tokens.spacingVerticalL),
 		[`@media (max-width: ${breakpoints.tablet}px)`]: {
 			flexBasis: "100%",
