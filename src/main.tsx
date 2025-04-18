@@ -11,13 +11,13 @@ import App from "./App.tsx";
 import "./styles/main.css";
 
 // Create a container component to manage theme state
-function AppContainer() {
+function AppContainer(): JSX.Element {
 	// State for the current theme, initialize with dark theme by default
 	const [theme, setTheme] = useState<Theme>(webDarkTheme);
 	const [isDarkMode, setIsDarkMode] = useState<boolean>(true);
 
 	// Function to toggle the theme
-	const toggleTheme = () => {
+	const toggleTheme: () => void = () => {
 		const newTheme = isDarkMode ? webLightTheme : webDarkTheme;
 		setTheme(newTheme);
 		setIsDarkMode(!isDarkMode);

@@ -208,7 +208,7 @@ interface AppProps {
 	isDarkMode: boolean;
 }
 
-function App({ toggleTheme, isDarkMode }: AppProps) {
+function App({ toggleTheme, isDarkMode }: AppProps): JSX.Element {
 	const styles = useStyles();
 	const [fromCurrency, setFromCurrency] = useState<string>("EUR");
 	const [toCurrency, setToCurrency] = useState<string>("USD");
@@ -239,7 +239,7 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 	const saveTimeoutRef = useRef<number | null>(null);
 
 	// Helper function to clear the message timeout
-	const clearMessageTimeout = () => {
+	const clearMessageTimeout: () => void = () => {
 		if (messageTimeoutRef.current) {
 			clearTimeout(messageTimeoutRef.current);
 			messageTimeoutRef.current = null;
@@ -247,7 +247,7 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 	};
 
 	// Helper function to clear the blur timeout
-	const clearBlurTimeout = () => {
+	const clearBlurTimeout: () => void = () => {
 		if (blurTimeoutRef.current) {
 			clearTimeout(blurTimeoutRef.current);
 			blurTimeoutRef.current = null;
@@ -255,7 +255,7 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 	};
 
 	// Helper function to clear the save timeout
-	const clearSaveTimeout = () => {
+	const clearSaveTimeout: () => void = () => {
 		if (saveTimeoutRef.current) {
 			clearTimeout(saveTimeoutRef.current);
 			saveTimeoutRef.current = null;
@@ -263,23 +263,27 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 	};
 
 	// Updated dismissMessage to clear message timeout
-	const dismissMessage = () => {
+	const dismissMessage: () => void = () => {
 		clearMessageTimeout();
 		setAppMessage((prev) => ({ ...prev, visible: false }));
 	};
 
 	// Helper function to show messages and set timeout
-	const showAppMessage = (
+	const showAppMessage: (
+		text: React.ReactNode,
+		intent: MessageBarIntent,
+		duration?: number,
+	) => void = (
 		text: React.ReactNode,
 		intent: MessageBarIntent,
 		duration: number = MESSAGE_TIMEOUT_DURATION,
 	) => {
-		clearMessageTimeout();
-		setAppMessage({ text, intent, visible: true });
-		messageTimeoutRef.current = setTimeout(() => {
-			dismissMessage();
-		}, duration);
-	};
+			clearMessageTimeout();
+			setAppMessage({ text, intent, visible: true });
+			messageTimeoutRef.current = setTimeout(() => {
+				dismissMessage();
+			}, duration);
+		};
 
 	// Cleanup timeouts on component unmount
 	useEffect(() => {
@@ -291,7 +295,7 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 	}, []);
 
 	// Toggle header input visibility
-	const toggleApiKeyHeaderInput = () => {
+	const toggleApiKeyHeaderInput: () => void = () => {
 		const willBeVisible = !isApiKeyHeaderInputVisible;
 		setIsApiKeyHeaderInputVisible(willBeVisible);
 		dismissMessage();
@@ -299,27 +303,27 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 	};
 
 	// Handle blur for the header API key input
-	const handleApiKeyInputBlur = () => {
+	const handleApiKeyInputBlur: () => void = () => {
 		clearBlurTimeout();
 		blurTimeoutRef.current = setTimeout(() => {
 			setIsApiKeyHeaderInputVisible(false);
 		}, 150);
 	};
 
-	const handleFromCurrency = (value: string) => {
+	const handleFromCurrency: (value: string) => void = (value: string) => {
 		setFromCurrency(value);
 		setRate("--");
 		setRateSource("idle");
 		dismissMessage();
 	};
-	const handleToCurrency = (value: string) => {
+	const handleToCurrency: (value: string) => void = (value: string) => {
 		setToCurrency(value);
 		setRate("--");
 		setRateSource("idle");
 		dismissMessage();
 	};
 
-	const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+	const handleAmountChange: (event: React.ChangeEvent<HTMLInputElement>) => void = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const value = Number(event.target.value);
 		if (!isNaN(value) && value >= 0) {
 			setAmount(value);
@@ -329,7 +333,7 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 		dismissMessage();
 	};
 
-	async function fetchRate(): Promise<void> {
+	const fetchRate: () => Promise<void> = async () => {
 		dismissMessage();
 		if (!storedApiKey || amount <= 0 || fromCurrency === toCurrency) {
 			setRate(fromCurrency === toCurrency ? 1.0 : "--");
@@ -392,7 +396,7 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 	}
 
 	// Modified handleApiKeyChange for auto-save logic
-	const handleApiKeyChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+	const handleApiKeyChange: (event: React.ChangeEvent<HTMLInputElement>) => void = (event: React.ChangeEvent<HTMLInputElement>) => {
 		clearSaveTimeout(); // Clear any pending save
 		dismissMessage(); // Dismiss previous messages
 		const newKey = event.target.value; // Don't trim here, let validation handle spaces if needed
@@ -456,7 +460,7 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 		};
 	}, [apiKeyInput, apiKeySaveStatus]); // Rerun effect when input changes or status becomes validating
 
-	const clearApiAndCache = () => {
+	const clearApiAndCache: () => void = () => {
 		dismissMessage();
 		clearLocalStorage();
 		setApiKeyInput("");
@@ -469,7 +473,7 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 		showAppMessage("All data cleared.", "warning");
 	};
 
-	const handleClearCacheAndFetch = () => {
+	const handleClearCacheAndFetch: () => void = () => {
 		dismissMessage();
 		clearRatesCache();
 		setRate("--");
@@ -503,7 +507,7 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 		setConversionHistory(loadedHistory);
 	}, []);
 
-	const swapCurrencies = () => {
+	const swapCurrencies: () => void = () => {
 		dismissMessage();
 		const temp = fromCurrency;
 		setFromCurrency(toCurrency);
@@ -512,7 +516,7 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 		setRateSource("idle");
 	};
 
-	const handleRepeatConversion = (entry: ConversionHistoryEntry) => {
+	const handleRepeatConversion: (entry: ConversionHistoryEntry) => void = (entry: ConversionHistoryEntry) => {
 		dismissMessage();
 		setFromCurrency(entry.fromCurrency);
 		setToCurrency(entry.toCurrency);
@@ -522,7 +526,7 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 		}
 	};
 
-	const clearConversionHistory = () => {
+	const clearConversionHistory: () => void = () => {
 		dismissMessage();
 		setConversionHistory([]);
 		saveConversionHistoryService([]);
@@ -530,7 +534,7 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 	};
 
 	// Function to render the status icon and tooltip
-	const renderApiKeyStatusIcon = () => {
+	const renderApiKeyStatusIcon: () => React.ReactNode = () => {
 		const iconStyle = { fontSize: tokens.fontSizeBase400 }; // Increase icon size
 		switch (apiKeySaveStatus) {
 			case "saving":
