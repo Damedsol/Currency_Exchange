@@ -25,7 +25,7 @@ export const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({ isDarkMode, toggle
 
 	return (
 		<div className={styles.container}>
-			<Label size="medium">{isDarkMode ? "Dark Mode" : "Light Mode"}</Label>
+			<Label size="medium">{isDarkMode ? "Dark Mode Active" : "Light Mode Active"}</Label>
 			<Switch checked={isDarkMode} onChange={toggleTheme} />
 		</div>
 	);

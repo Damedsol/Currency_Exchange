@@ -244,13 +244,6 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 		setIsApiKeyHeaderInputVisible(willBeVisible);
 		dismissMessage();
 		clearBlurTimeout();
-		if (willBeVisible) {
-			if (storedApiKey) {
-				showAppMessage("Current API Key is stored. Edit below or Save new key.", 'info');
-			} else {
-				showAppMessage("API Key not set. Enter your key below.", 'info');
-			}
-		}
 	};
 
 	// Handle blur for the header API key input

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import{ useState, useEffect } from 'react';
 import type { ConversionHistoryEntry } from "../../services/LocalStorage";
 // Import necessary Fluent components and hooks
 import {
