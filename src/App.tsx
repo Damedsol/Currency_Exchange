@@ -15,8 +15,9 @@ import {
 	Button,
 	type MessageBarIntent,
 	mergeClasses,
+	Tooltip,
 } from "@fluentui/react-components";
-import { DismissRegular, KeyRegular } from '@fluentui/react-icons';
+import { DismissRegular, KeyRegular, ArrowClockwiseRegular, CheckmarkCircleRegular, ErrorCircleRegular, WarningRegular } from '@fluentui/react-icons';
 import {
 	getCurrencyRate,
 	type CurrencyRateResult,
@@ -39,6 +40,9 @@ import { ActionButtons } from "./components/ActionButtons/ActionButtons";
 
 // Define RateSource type
 type RateSource = "idle" | "cache" | "api" | "error" | "loading";
+
+// Define API Key Save Status type
+type ApiKeySaveStatus = "idle" | "validating" | "saving" | "saved" | "invalid" | "error";
 
 // App Message type
 interface AppMessage {
@@ -171,6 +175,18 @@ const useStyles = makeStyles({
 			}
 		},
 	},
+	apiKeySavedIcon: {
+		color: tokens.colorStatusSuccessForeground1,
+	},
+	apiKeyInvalidIcon: {
+		color: tokens.colorStatusWarningForeground1,
+	},
+	apiKeyErrorIcon: {
+		color: tokens.colorStatusDangerForeground1,
+	},
+	apiKeySavingIcon: {
+		// Use default color or a specific one if desired
+	},
 });
 
 interface AppProps {
@@ -193,11 +209,14 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 	>([]);
 	const [appMessage, setAppMessage] = useState<AppMessage>({ text: null, intent: 'info', visible: false });
 	const [isApiKeyHeaderInputVisible, setIsApiKeyHeaderInputVisible] = useState<boolean>(false);
+	const [apiKeySaveStatus, setApiKeySaveStatus] = useState<ApiKeySaveStatus>("idle");
 
 	// Ref to store message timeout ID
 	const messageTimeoutRef = useRef<number | null>(null);
 	// Ref to store blur timeout ID
 	const blurTimeoutRef = useRef<number | null>(null);
+	// Ref to store API Key save debounce timeout ID
+	const saveTimeoutRef = useRef<number | null>(null);
 
 	// Helper function to clear the message timeout
 	const clearMessageTimeout = () => {
@@ -212,6 +231,14 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 		if (blurTimeoutRef.current) {
 			clearTimeout(blurTimeoutRef.current);
 			blurTimeoutRef.current = null;
+		}
+	};
+
+	// Helper function to clear the save timeout
+	const clearSaveTimeout = () => {
+		if (saveTimeoutRef.current) {
+			clearTimeout(saveTimeoutRef.current);
+			saveTimeoutRef.current = null;
 		}
 	};
 
@@ -235,6 +262,7 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 		return () => {
 			clearMessageTimeout();
 			clearBlurTimeout();
+			clearSaveTimeout(); // Clear save timeout on unmount
 		};
 	}, []);
 
@@ -333,47 +361,73 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 		}
 	}
 
-	// Only show format warning in MessageBar now
+	// Modified handleApiKeyChange for auto-save logic
 	const handleApiKeyChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-		const newKey = event.target.value.trim();
+		clearSaveTimeout(); // Clear any pending save
+		dismissMessage(); // Dismiss previous messages
+		const newKey = event.target.value; // Don't trim here, let validation handle spaces if needed
 		setApiKeyInput(newKey);
+		setIsApiKeyValid(true); // Assume valid initially until debounce checks
+
 		if (newKey === "") {
-			setIsApiKeyValid(true);
-			dismissMessage();
+			setApiKeySaveStatus('idle');
+			// Optionally clear stored key if input is cleared
+			// clearLocalStorage(); 
+			// setStoredApiKey(null);
 		} else {
-			const isValid = apiKeyRegex.test(newKey);
-			setIsApiKeyValid(isValid);
-			if (!isValid) {
-				showAppMessage("Invalid API Key format.", 'warning');
-			} else {
-				dismissMessage();
-			}
+			setApiKeySaveStatus('validating'); // Set status to validating while typing
 		}
 	};
 
-	async function saveApiKey(): Promise<void> {
-		clearBlurTimeout();
-		dismissMessage();
-		const keyToSave = apiKeyInput.trim();
-		if (!isApiKeyValid || keyToSave === "") return;
-
-		try {
-			await localStorageStoreService(keyToSave);
-			setStoredApiKey(keyToSave);
-			setApiKeyInput(keyToSave);
-			setIsApiKeyValid(true);
-			clearRatesCache();
-			setRate("--");
-			setRateSource("idle");
-			showAppMessage("API Key saved successfully.", 'success');
-			setIsApiKeyHeaderInputVisible(false);
-		} catch (error) {
-			console.error("Failed to save API key:", error);
-			const errorMessage = error instanceof Error ? error.message : "An unknown error occurred while saving the API key.";
-			showAppMessage(`Failed to save API key: ${errorMessage}`, 'error');
-			setStoredApiKey(null);
+	// useEffect for debounced API Key saving
+	useEffect(() => {
+		// Don't save if the input is empty or just validating
+		if (apiKeyInput === "" || apiKeySaveStatus === 'idle') {
+			setApiKeySaveStatus('idle'); // Ensure status is idle if input is empty
+			return;
 		}
-	}
+
+		if (apiKeySaveStatus === 'validating') {
+			clearSaveTimeout(); // Clear previous timeout if user is still typing
+
+			saveTimeoutRef.current = setTimeout(async () => {
+				const keyToValidate = apiKeyInput.trim(); // Trim now before validation/saving
+				if (keyToValidate === "") { // Check if empty after trim
+					setApiKeySaveStatus('idle');
+					return;
+				}
+
+				const isValidFormat = apiKeyRegex.test(keyToValidate);
+				setIsApiKeyValid(isValidFormat); // Update validity state
+
+				if (!isValidFormat) {
+					setApiKeySaveStatus('invalid');
+					return;
+				}
+
+				// If format is valid, proceed to save
+				setApiKeySaveStatus('saving');
+				try {
+					await localStorageStoreService(keyToValidate);
+					setStoredApiKey(keyToValidate); // Update stored key state
+					setApiKeySaveStatus('saved');
+					clearRatesCache(); // Clear cache on new key save
+					setRate("--");
+					setRateSource("idle");
+				} catch (error) {
+					console.error("Failed to save API key automatically:", error);
+					setApiKeySaveStatus('error');
+					setStoredApiKey(null); // Clear stored key on save error
+				}
+			}, 1000); // Debounce time: 1 second
+		}
+
+		// Cleanup function for the effect
+		return () => {
+			clearSaveTimeout();
+		};
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [apiKeyInput, apiKeySaveStatus]); // Rerun effect when input changes or status becomes validating
 
 	const clearApiAndCache = () => {
 		dismissMessage();
@@ -445,6 +499,41 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 		showAppMessage("Conversion history cleared.", 'info');
 	};
 
+	// Function to render the status icon and tooltip
+	const renderApiKeyStatusIcon = () => {
+		const iconStyle = { fontSize: tokens.fontSizeBase400 }; // Increase icon size
+		switch (apiKeySaveStatus) {
+			case 'saving':
+				return (
+					<Tooltip content="Saving API Key..." relationship="label">
+						<ArrowClockwiseRegular className={styles.apiKeySavingIcon} style={iconStyle} />
+					</Tooltip>
+				);
+			case 'saved':
+				return (
+					<Tooltip content="API Key Saved" relationship="label">
+						<CheckmarkCircleRegular className={styles.apiKeySavedIcon} style={iconStyle} />
+					</Tooltip>
+				);
+			case 'invalid':
+				return (
+					<Tooltip content="Invalid API Key Format" relationship="label">
+						<WarningRegular className={styles.apiKeyInvalidIcon} style={iconStyle} />
+					</Tooltip>
+				);
+			case 'error':
+				return (
+					<Tooltip content="Error Saving API Key" relationship="label">
+						<ErrorCircleRegular className={styles.apiKeyErrorIcon} style={iconStyle} />
+					</Tooltip>
+				);
+			case 'validating':
+			case 'idle':
+			default:
+				return null; // No icon for idle or validating states
+		}
+	};
+
 	return (
 		<div className={styles.appContainer}>
 			<Card className={styles.root}>
@@ -456,19 +545,24 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 							styles.headerInputWrapper,
 							isApiKeyHeaderInputVisible && styles.headerInputWrapperVisible
 						)}
+						style={{ display: 'flex', alignItems: 'center' }} // Align input and icon
 					>
 						{isApiKeyHeaderInputVisible && (
-							<Input
-								aria-label="API Key Header Input"
-								type="password"
-								placeholder="Enter API Key..."
-								size="small"
-								appearance="outline"
-								style={{ minWidth: '200px' }}
-								value={apiKeyInput}
-								onChange={handleApiKeyChange}
-								onBlur={handleApiKeyInputBlur}
-							/>
+							<>
+								<Input
+									aria-label="API Key Header Input"
+									type="password"
+									placeholder="Enter API Key..."
+									size="small"
+									appearance="outline"
+									style={{ minWidth: '200px', marginRight: tokens.spacingHorizontalSNudge }} // Add space before icon
+									value={apiKeyInput}
+									onChange={handleApiKeyChange}
+									onBlur={handleApiKeyInputBlur}
+								/>
+								{/* Render the status icon */}
+								{renderApiKeyStatusIcon()}
+							</>
 						)}
 					</div>
 					<Button
@@ -551,7 +645,6 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 								apiKeyInput={apiKeyInput}
 								isHistoryEmpty={conversionHistory.length === 0}
 								onCalculate={fetchRate}
-								onSaveKey={saveApiKey}
 								onRefreshRates={handleClearCacheAndFetch}
 								onClearHistory={clearConversionHistory}
 								onClearAll={clearApiAndCache}

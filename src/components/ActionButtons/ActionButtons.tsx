@@ -68,7 +68,6 @@ interface ActionButtonsProps {
 	isHistoryEmpty: boolean;
 	// Action handlers
 	onCalculate: () => void;
-	onSaveKey: () => void;
 	onRefreshRates: () => void;
 	onClearHistory: () => void;
 	onClearAll: () => void;
@@ -82,7 +81,6 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({
 	apiKeyInput,
 	isHistoryEmpty,
 	onCalculate,
-	onSaveKey,
 	onRefreshRates,
 	onClearHistory,
 	onClearAll,
@@ -100,19 +98,6 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({
 					disabled={!storedApiKey || amount <= 0 || rateSource === "loading"}
 				>
 					{rateSource === "loading" ? "Calculating..." : "Calculate"}
-				</Button>
-
-				<Button
-					appearance="secondary"
-					icon={<SaveFilled />}
-					onClick={onSaveKey}
-					disabled={
-						!isApiKeyValid ||
-						apiKeyInput === "" ||
-						apiKeyInput === storedApiKey
-					}
-				>
-					Save Key
 				</Button>
 
 				<Button
