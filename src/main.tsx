@@ -18,7 +18,7 @@ function AppContainer() {
 	};
 
 	return (
-		<FluentProvider theme={theme}>
+		<FluentProvider id="app-container" theme={theme}>
 			{/* Pass the toggle function and current state to App */}
 			<App toggleTheme={toggleTheme} isDarkMode={isDarkMode} />
 		</FluentProvider>
