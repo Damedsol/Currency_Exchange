@@ -1,6 +1,8 @@
 import { Select, useId, makeStyles } from "@fluentui/react-components";
-import type React from "react";
+
 import data from "./currencySelectorData.json";
+
+import type React from "react";
 
 interface Currency {
 	symbol: string;
@@ -10,9 +12,9 @@ interface Currency {
 
 const useStyles = makeStyles({
 	select: {
-		width: '100%',
-		maxWidth: '100%',
-	}
+		width: "100%",
+		maxWidth: "100%",
+	},
 });
 
 export function CurrencySelector(props: {
@@ -37,7 +39,11 @@ export function CurrencySelector(props: {
 			onChange={handleInputChange}
 			appearance={"outline"}
 			size={"large"}
-			aria-label={props.where === 'from' ? 'Select currency to convert from' : 'Select currency to convert to'}
+			aria-label={
+				props.where === "from"
+					? "Select currency to convert from"
+					: "Select currency to convert to"
+			}
 		>
 			{TransformData.map((item) => (
 				<option key={item.code} value={item.code}>

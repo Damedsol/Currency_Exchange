@@ -1,5 +1,3 @@
-import type React from "react";
-import { useEffect, useState, useRef } from "react";
 import {
 	makeStyles,
 	shorthands,
@@ -17,7 +15,21 @@ import {
 	mergeClasses,
 	Tooltip,
 } from "@fluentui/react-components";
-import { DismissRegular, KeyRegular, ArrowClockwiseRegular, CheckmarkCircleRegular, ErrorCircleRegular, WarningRegular } from '@fluentui/react-icons';
+import {
+	DismissRegular,
+	KeyRegular,
+	ArrowClockwiseRegular,
+	CheckmarkCircleRegular,
+	ErrorCircleRegular,
+	WarningRegular,
+} from "@fluentui/react-icons";
+import { useEffect, useState, useRef } from "react";
+
+import { ActionButtons } from "./components/ActionButtons/ActionButtons";
+import { CurrencyRow } from "./components/CurrencyRow/CurrencyRow";
+import { ConversionHistory } from "./components/History/ConversionHistory";
+import { ResultSection } from "./components/ResultSection/ResultSection";
+import { ThemeSwitcher } from "./components/ThemeSwitcher/ThemeSwitcher";
 import {
 	getCurrencyRate,
 	type CurrencyRateResult,
@@ -32,17 +44,20 @@ import {
 	clearRatesCache,
 	type ConversionHistoryEntry,
 } from "./services/LocalStorage.ts";
-import { ConversionHistory } from "./components/History/ConversionHistory";
-import { ThemeSwitcher } from "./components/ThemeSwitcher/ThemeSwitcher";
-import { CurrencyRow } from "./components/CurrencyRow/CurrencyRow";
-import { ResultSection } from "./components/ResultSection/ResultSection";
-import { ActionButtons } from "./components/ActionButtons/ActionButtons";
+
+import type React from "react";
 
 // Define RateSource type
 type RateSource = "idle" | "cache" | "api" | "error" | "loading";
 
 // Define API Key Save Status type
-type ApiKeySaveStatus = "idle" | "validating" | "saving" | "saved" | "invalid" | "error";
+type ApiKeySaveStatus =
+	| "idle"
+	| "validating"
+	| "saving"
+	| "saved"
+	| "invalid"
+	| "error";
 
 // App Message type
 interface AppMessage {
@@ -134,8 +149,7 @@ const useStyles = makeStyles({
 			order: 2,
 		},
 	},
-	historySection: {
-	},
+	historySection: {},
 	controlsSection: {
 		display: "flex",
 		flexDirection: "column",
@@ -165,14 +179,14 @@ const useStyles = makeStyles({
 			transitionProperty: "outline, box-shadow",
 			transitionDuration: tokens.durationNormal,
 			transitionTimingFunction: tokens.curveEasyEase,
-			outlineStyle: 'none',
+			outlineStyle: "none",
 		},
 		":focus-within": {
 			"& input": {
 				outlineColor: tokens.colorCompoundBrandStroke,
-				outlineStyle: 'solid',
+				outlineStyle: "solid",
 				outlineWidth: tokens.strokeWidthThick,
-			}
+			},
 		},
 	},
 	apiKeySavedIcon: {
@@ -207,9 +221,15 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 	const [conversionHistory, setConversionHistory] = useState<
 		ConversionHistoryEntry[]
 	>([]);
-	const [appMessage, setAppMessage] = useState<AppMessage>({ text: null, intent: 'info', visible: false });
-	const [isApiKeyHeaderInputVisible, setIsApiKeyHeaderInputVisible] = useState<boolean>(false);
-	const [apiKeySaveStatus, setApiKeySaveStatus] = useState<ApiKeySaveStatus>("idle");
+	const [appMessage, setAppMessage] = useState<AppMessage>({
+		text: null,
+		intent: "info",
+		visible: false,
+	});
+	const [isApiKeyHeaderInputVisible, setIsApiKeyHeaderInputVisible] =
+		useState<boolean>(false);
+	const [apiKeySaveStatus, setApiKeySaveStatus] =
+		useState<ApiKeySaveStatus>("idle");
 
 	// Ref to store message timeout ID
 	const messageTimeoutRef = useRef<number | null>(null);
@@ -249,7 +269,11 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 	};
 
 	// Helper function to show messages and set timeout
-	const showAppMessage = (text: React.ReactNode, intent: MessageBarIntent, duration: number = MESSAGE_TIMEOUT_DURATION) => {
+	const showAppMessage = (
+		text: React.ReactNode,
+		intent: MessageBarIntent,
+		duration: number = MESSAGE_TIMEOUT_DURATION,
+	) => {
 		clearMessageTimeout();
 		setAppMessage({ text, intent, visible: true });
 		messageTimeoutRef.current = setTimeout(() => {
@@ -350,14 +374,20 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 				);
 				setRate("--");
 				if (result.source === "error") {
-					showAppMessage("Error fetching currency rate. Check your API key or network connection.", 'error');
+					showAppMessage(
+						"Error fetching currency rate. Check your API key or network connection.",
+						"error",
+					);
 				}
 			}
 		} catch (error) {
 			console.error("Error calling getCurrencyRate service:", error);
 			setRate("--");
 			setRateSource("error");
-			showAppMessage("An unexpected error occurred while fetching the rate.", 'error');
+			showAppMessage(
+				"An unexpected error occurred while fetching the rate.",
+				"error",
+			);
 		}
 	}
 
@@ -370,30 +400,28 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 		setIsApiKeyValid(true); // Assume valid initially until debounce checks
 
 		if (newKey === "") {
-			setApiKeySaveStatus('idle');
-			// Optionally clear stored key if input is cleared
-			// clearLocalStorage(); 
-			// setStoredApiKey(null);
+			setApiKeySaveStatus("idle");
 		} else {
-			setApiKeySaveStatus('validating'); // Set status to validating while typing
+			setApiKeySaveStatus("validating"); // Set status to validating while typing
 		}
 	};
 
 	// useEffect for debounced API Key saving
 	useEffect(() => {
 		// Don't save if the input is empty or just validating
-		if (apiKeyInput === "" || apiKeySaveStatus === 'idle') {
-			setApiKeySaveStatus('idle'); // Ensure status is idle if input is empty
+		if (apiKeyInput === "" || apiKeySaveStatus === "idle") {
+			setApiKeySaveStatus("idle"); // Ensure status is idle if input is empty
 			return;
 		}
 
-		if (apiKeySaveStatus === 'validating') {
+		if (apiKeySaveStatus === "validating") {
 			clearSaveTimeout(); // Clear previous timeout if user is still typing
 
 			saveTimeoutRef.current = setTimeout(async () => {
 				const keyToValidate = apiKeyInput.trim(); // Trim now before validation/saving
-				if (keyToValidate === "") { // Check if empty after trim
-					setApiKeySaveStatus('idle');
+				if (keyToValidate === "") {
+					// Check if empty after trim
+					setApiKeySaveStatus("idle");
 					return;
 				}
 
@@ -401,22 +429,22 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 				setIsApiKeyValid(isValidFormat); // Update validity state
 
 				if (!isValidFormat) {
-					setApiKeySaveStatus('invalid');
+					setApiKeySaveStatus("invalid");
 					return;
 				}
 
 				// If format is valid, proceed to save
-				setApiKeySaveStatus('saving');
+				setApiKeySaveStatus("saving");
 				try {
 					await localStorageStoreService(keyToValidate);
 					setStoredApiKey(keyToValidate); // Update stored key state
-					setApiKeySaveStatus('saved');
+					setApiKeySaveStatus("saved");
 					clearRatesCache(); // Clear cache on new key save
 					setRate("--");
 					setRateSource("idle");
 				} catch (error) {
 					console.error("Failed to save API key automatically:", error);
-					setApiKeySaveStatus('error');
+					setApiKeySaveStatus("error");
 					setStoredApiKey(null); // Clear stored key on save error
 				}
 			}, 1000); // Debounce time: 1 second
@@ -426,7 +454,6 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 		return () => {
 			clearSaveTimeout();
 		};
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [apiKeyInput, apiKeySaveStatus]); // Rerun effect when input changes or status becomes validating
 
 	const clearApiAndCache = () => {
@@ -439,7 +466,7 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 		setRateSource("idle");
 		setConversionHistory([]);
 		saveConversionHistoryService([]);
-		showAppMessage("All data cleared.", 'warning');
+		showAppMessage("All data cleared.", "warning");
 	};
 
 	const handleClearCacheAndFetch = () => {
@@ -447,7 +474,7 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 		clearRatesCache();
 		setRate("--");
 		setRateSource("idle");
-		showAppMessage("Rates cache cleared.", 'info');
+		showAppMessage("Rates cache cleared.", "info");
 		if (storedApiKey && amount > 0 && fromCurrency !== toCurrency) {
 			void fetchRate();
 		}
@@ -465,7 +492,10 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 				setStoredApiKey(null);
 				setApiKeyInput("");
 				setIsApiKeyValid(false);
-				showAppMessage("Invalid API key found in storage. Please enter a valid key.", 'warning');
+				showAppMessage(
+					"Invalid API key found in storage. Please enter a valid key.",
+					"warning",
+				);
 				clearRatesCache();
 			}
 		}
@@ -496,39 +526,51 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 		dismissMessage();
 		setConversionHistory([]);
 		saveConversionHistoryService([]);
-		showAppMessage("Conversion history cleared.", 'info');
+		showAppMessage("Conversion history cleared.", "info");
 	};
 
 	// Function to render the status icon and tooltip
 	const renderApiKeyStatusIcon = () => {
 		const iconStyle = { fontSize: tokens.fontSizeBase400 }; // Increase icon size
 		switch (apiKeySaveStatus) {
-			case 'saving':
+			case "saving":
 				return (
 					<Tooltip content="Saving API Key..." relationship="label">
-						<ArrowClockwiseRegular className={styles.apiKeySavingIcon} style={iconStyle} />
+						<ArrowClockwiseRegular
+							className={styles.apiKeySavingIcon}
+							style={iconStyle}
+						/>
 					</Tooltip>
 				);
-			case 'saved':
+			case "saved":
 				return (
 					<Tooltip content="API Key Saved" relationship="label">
-						<CheckmarkCircleRegular className={styles.apiKeySavedIcon} style={iconStyle} />
+						<CheckmarkCircleRegular
+							className={styles.apiKeySavedIcon}
+							style={iconStyle}
+						/>
 					</Tooltip>
 				);
-			case 'invalid':
+			case "invalid":
 				return (
 					<Tooltip content="Invalid API Key Format" relationship="label">
-						<WarningRegular className={styles.apiKeyInvalidIcon} style={iconStyle} />
+						<WarningRegular
+							className={styles.apiKeyInvalidIcon}
+							style={iconStyle}
+						/>
 					</Tooltip>
 				);
-			case 'error':
+			case "error":
 				return (
 					<Tooltip content="Error Saving API Key" relationship="label">
-						<ErrorCircleRegular className={styles.apiKeyErrorIcon} style={iconStyle} />
+						<ErrorCircleRegular
+							className={styles.apiKeyErrorIcon}
+							style={iconStyle}
+						/>
 					</Tooltip>
 				);
-			case 'validating':
-			case 'idle':
+			case "validating":
+			case "idle":
 			default:
 				return null; // No icon for idle or validating states
 		}
@@ -537,15 +579,14 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 	return (
 		<div className={styles.appContainer}>
 			<Card className={styles.root}>
-
 				{/* Header Row */}
 				<div className={styles.headerContainer}>
 					<div
 						className={mergeClasses(
 							styles.headerInputWrapper,
-							isApiKeyHeaderInputVisible && styles.headerInputWrapperVisible
+							isApiKeyHeaderInputVisible && styles.headerInputWrapperVisible,
 						)}
-						style={{ display: 'flex', alignItems: 'center' }} // Align input and icon
+						style={{ display: "flex", alignItems: "center" }} // Align input and icon
 					>
 						{isApiKeyHeaderInputVisible && (
 							<>
@@ -555,7 +596,10 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 									placeholder="Enter API Key..."
 									size="small"
 									appearance="outline"
-									style={{ minWidth: '200px', marginRight: tokens.spacingHorizontalSNudge }} // Add space before icon
+									style={{
+										minWidth: "200px",
+										marginRight: tokens.spacingHorizontalSNudge,
+									}} // Add space before icon
 									value={apiKeyInput}
 									onChange={handleApiKeyChange}
 									onBlur={handleApiKeyInputBlur}
@@ -568,9 +612,15 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 					<Button
 						appearance="subtle"
 						icon={<KeyRegular />}
-						className={storedApiKey ? styles.apiKeyStoredIcon : styles.apiKeyMissingIcon}
+						className={
+							storedApiKey ? styles.apiKeyStoredIcon : styles.apiKeyMissingIcon
+						}
 						onClick={toggleApiKeyHeaderInput}
-						aria-label={isApiKeyHeaderInputVisible ? "Hide API Key Input" : "Show API Key Input"}
+						aria-label={
+							isApiKeyHeaderInputVisible
+								? "Hide API Key Input"
+								: "Show API Key Input"
+						}
 					/>
 					<ThemeSwitcher isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
 				</div>
@@ -579,11 +629,11 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 				<div
 					className={mergeClasses(
 						styles.messageBarContainer,
-						appMessage.visible && styles.messageBarContainerVisible
+						appMessage.visible && styles.messageBarContainerVisible,
 					)}
 				>
 					{appMessage.visible && (
-						<MessageBar intent={appMessage.intent} style={{ width: '100%' }}>
+						<MessageBar intent={appMessage.intent} style={{ width: "100%" }}>
 							<MessageBarBody>
 								<MessageBarTitle></MessageBarTitle>
 								{appMessage.text}
@@ -610,11 +660,7 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 								onToChange={handleToCurrency}
 								onSwap={swapCurrencies}
 							/>
-							<Field
-								label="Amount"
-								size="large"
-								className={styles.amountField}
-							>
+							<Field label="Amount" size="large" className={styles.amountField}>
 								<Input
 									type="number"
 									value={amount.toString()}
@@ -635,8 +681,6 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 						<Divider />
 
 						<div className={styles.controlsSection}>
-							{/* Conditionally hide main ApiKeySection */}
-							{/* {!isApiKeyHeaderInputVisible && ( ... )} */}
 							<ActionButtons
 								storedApiKey={storedApiKey}
 								amount={amount}
@@ -656,7 +700,7 @@ function App({ toggleTheme, isDarkMode }: AppProps) {
 					<div className={styles.rightColumn}>
 						{/* History Section Content */}
 						<div className={styles.historySection}>
-							<Text weight="semibold" as="h2" style={{ display: 'block' }}>
+							<Text weight="semibold" as="h2" style={{ display: "block" }}>
 								Conversion History (Last 10)
 							</Text>
 							<Divider />

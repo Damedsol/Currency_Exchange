@@ -1,12 +1,9 @@
-import { useState, useEffect } from 'react';
-import type { ConversionHistoryEntry } from "../../services/LocalStorage";
-// Import necessary Fluent components and hooks
 import {
 	Button,
 	makeStyles,
 	shorthands,
 	tokens,
-	Text, // Re-import Text component
+	Text,
 	TableBody,
 	TableCell,
 	TableRow,
@@ -14,9 +11,12 @@ import {
 	TableHeaderCell,
 	Table,
 	TableCellLayout,
-	Tooltip
+	Tooltip,
 } from "@fluentui/react-components";
 import { ArrowRepeatAllRegular } from "@fluentui/react-icons";
+import { useState, useEffect } from "react";
+
+import type { ConversionHistoryEntry } from "../../services/LocalStorage";
 
 interface ConversionHistoryProps {
 	history: ConversionHistoryEntry[];
@@ -25,15 +25,11 @@ interface ConversionHistoryProps {
 
 // Define styles using makeStyles
 const useStyles = makeStyles({
-	container: {
-		// marginTop handled by historySection style in App.tsx
-		// borderTop handled by Divider component now
-		// paddingTop handled by spacing below Divider/Title
-	},
+	container: {},
 	list: {
 		listStyleType: "none",
 		...shorthands.padding(0),
-		marginTop: tokens.spacingVerticalM, // Add space below title
+		marginTop: tokens.spacingVerticalM,
 	},
 	listItem: {
 		marginBottom: tokens.spacingVerticalXS,
@@ -41,67 +37,54 @@ const useStyles = makeStyles({
 	repeatButton: {
 		width: "100%",
 		justifyContent: "flex-start",
-		height: 'auto', // Let button height adjust to content
+		height: "auto",
 		paddingTop: tokens.spacingVerticalS,
 		paddingBottom: tokens.spacingVerticalS,
 	},
 	rateText: {
-		// Use Text props like size=200, italic=true, weight="light"
-		// Or define specific styles here if needed
-		color: tokens.colorNeutralForeground3, // Use a subtle text color token
+		color: tokens.colorNeutralForeground3,
 		marginLeft: tokens.spacingHorizontalM,
 	},
-	tableContainer: {
-		// No specific container styles needed for now
-	},
 	actionCell: {
-		textAlign: "center"
+		textAlign: "center",
 	},
-	currencyCell: {
-		// minWidth: "60px", // Removed width constraints
-		// maxWidth: "90px",
-	},
-	numericCell: {
-		// minWidth: "80px", // Removed width constraints
-		// maxWidth: "160px",
-		// textAlign: "right" as const, // Align numbers to the right - Applied via style prop
-	},
-	rateCell: {
-		// minWidth: "100px", // Removed width constraints
-		// maxWidth: "200px",
-		// textAlign: "right" as const, - Applied via style prop
-	},
+	currencyCell: {},
+	numericCell: {},
+	rateCell: {},
 	tableWrapper: {
-		// overflowX: "auto", // Removed overflow to prevent scrollbar
-		opacity: 0, // Start hidden
-		transition: "opacity 0.5s ease-in-out", // Fade-in transition
+		opacity: 0,
+		transition: "opacity 0.5s ease-in-out",
 	},
 	tableWrapperVisible: {
-		opacity: 1, // Visible state
+		opacity: 1,
 	},
-	tableRow: { // Base styles for table row
+	tableRow: {
 		"&:hover": {
 			backgroundColor: tokens.colorNeutralBackground1Hover,
 		},
-		"&:nth-child(odd)": { // Apply style to odd rows for striping
-			backgroundColor: tokens.colorNeutralBackground1Selected, // Or another subtle color
-		}
+		"&:nth-child(odd)": {
+			backgroundColor: tokens.colorNeutralBackground1Selected,
+		},
 	},
-	timestampCell: { // Style for the timestamp column
-		minWidth: "160px", // Allocate enough space for date and time
+	timestampCell: {
+		minWidth: "160px",
 		maxWidth: "200px",
 	},
-	tableLayoutFixed: { // Style to enforce fixed table layout
+	tableLayoutFixed: {
 		tableLayout: "fixed",
 	},
 });
 
 // Helper to format numbers clearly
-const formatNumber = (num: number, minDecimals: number, maxDecimals: number): string => {
+const formatNumber = (
+	num: number,
+	minDecimals: number,
+	maxDecimals: number,
+): string => {
 	return num.toLocaleString(undefined, {
 		minimumFractionDigits: minDecimals,
 		maximumFractionDigits: maxDecimals,
-		useGrouping: false // Disable thousands separators
+		useGrouping: false, // Disable thousands separators
 	});
 };
 
@@ -123,26 +106,52 @@ export const ConversionHistory = ({
 	}, []);
 
 	return (
-		<div className={styles.tableContainer}>
-			<div className={`${styles.tableWrapper} ${isVisible ? styles.tableWrapperVisible : ''}`}>
-				<Table className={styles.tableLayoutFixed} arial-label="Conversion History Table" size="medium">
+		<div>
+			<div
+				className={`${styles.tableWrapper} ${isVisible ? styles.tableWrapperVisible : ""}`}
+			>
+				<Table
+					className={styles.tableLayoutFixed}
+					arial-label="Conversion History Table"
+					size="medium"
+				>
 					<TableHeader>
 						<TableRow>
-							<TableHeaderCell style={{ textAlign: 'center' }}>Amount</TableHeaderCell>
-							<TableHeaderCell style={{ textAlign: 'center' }}>From</TableHeaderCell>
-							<TableHeaderCell style={{ textAlign: 'center' }}>To</TableHeaderCell>
-							<TableHeaderCell style={{ textAlign: 'center' }}>Result</TableHeaderCell>
-							<TableHeaderCell style={{ textAlign: 'center' }}>Rate</TableHeaderCell>
-							<TableHeaderCell style={{ textAlign: 'center' }}>Timestamp</TableHeaderCell>
-							<TableHeaderCell style={{ width: '60px', textAlign: 'center' }}>Action</TableHeaderCell>
-
+							<TableHeaderCell style={{ textAlign: "center" }}>
+								Amount
+							</TableHeaderCell>
+							<TableHeaderCell style={{ textAlign: "center" }}>
+								From
+							</TableHeaderCell>
+							<TableHeaderCell style={{ textAlign: "center" }}>
+								To
+							</TableHeaderCell>
+							<TableHeaderCell style={{ textAlign: "center" }}>
+								Result
+							</TableHeaderCell>
+							<TableHeaderCell style={{ textAlign: "center" }}>
+								Rate
+							</TableHeaderCell>
+							<TableHeaderCell style={{ textAlign: "center" }}>
+								Timestamp
+							</TableHeaderCell>
+							<TableHeaderCell style={{ width: "60px", textAlign: "center" }}>
+								Action
+							</TableHeaderCell>
 						</TableRow>
 					</TableHeader>
 					<TableBody>
 						{history.length === 0 ? (
 							<TableRow>
-								<TableCell colSpan={7}> {/* Span across all 7 columns now */}
-									<TableCellLayout style={{ textAlign: 'center', padding: tokens.spacingVerticalL }}>
+								<TableCell colSpan={7}>
+									{" "}
+									{/* Span across all 7 columns now */}
+									<TableCellLayout
+										style={{
+											textAlign: "center",
+											padding: tokens.spacingVerticalL,
+										}}
+									>
 										No conversion history yet.
 									</TableCellLayout>
 								</TableCell>
@@ -150,28 +159,45 @@ export const ConversionHistory = ({
 						) : (
 							history.map((entry) => (
 								<TableRow key={entry.timestamp} className={styles.tableRow}>
-									<TableCell style={{ textAlign: 'left' }}>
-										<Tooltip content={formatNumber(entry.amount, 3, 3)} relationship="label">
-											<TableCellLayout truncate>{formatNumber(entry.amount, 3, 3)}</TableCellLayout>
+									<TableCell style={{ textAlign: "left" }}>
+										<Tooltip
+											content={formatNumber(entry.amount, 3, 3)}
+											relationship="label"
+										>
+											<TableCellLayout truncate>
+												{formatNumber(entry.amount, 3, 3)}
+											</TableCellLayout>
 										</Tooltip>
 									</TableCell>
-									<TableCell style={{ textAlign: 'left' }}>
+									<TableCell style={{ textAlign: "left" }}>
 										<Tooltip content={entry.fromCurrency} relationship="label">
-											<TableCellLayout truncate>{entry.fromCurrency}</TableCellLayout>
+											<TableCellLayout truncate>
+												{entry.fromCurrency}
+											</TableCellLayout>
 										</Tooltip>
 									</TableCell>
-									<TableCell style={{ textAlign: 'left' }}>
+									<TableCell style={{ textAlign: "left" }}>
 										<Tooltip content={entry.toCurrency} relationship="label">
-											<TableCellLayout truncate>{entry.toCurrency}</TableCellLayout>
+											<TableCellLayout truncate>
+												{entry.toCurrency}
+											</TableCellLayout>
 										</Tooltip>
 									</TableCell>
-									<TableCell style={{ textAlign: 'right' }}>
-										<Tooltip content={formatNumber(entry.result, 3, 3)} relationship="label">
-											<TableCellLayout truncate>{formatNumber(entry.result, 3, 3)}</TableCellLayout>
+									<TableCell style={{ textAlign: "right" }}>
+										<Tooltip
+											content={formatNumber(entry.result, 3, 3)}
+											relationship="label"
+										>
+											<TableCellLayout truncate>
+												{formatNumber(entry.result, 3, 3)}
+											</TableCellLayout>
 										</Tooltip>
 									</TableCell>
-									<TableCell style={{ textAlign: 'right' }}>
-										<Tooltip content={formatNumber(entry.rate, 3, 3)} relationship="label">
+									<TableCell style={{ textAlign: "right" }}>
+										<Tooltip
+											content={formatNumber(entry.rate, 3, 3)}
+											relationship="label"
+										>
 											<TableCellLayout truncate>
 												<Text size={300} italic weight="regular">
 													{formatNumber(entry.rate, 3, 3)}
@@ -179,16 +205,21 @@ export const ConversionHistory = ({
 											</TableCellLayout>
 										</Tooltip>
 									</TableCell>
-									<TableCell style={{ textAlign: 'left' }}>
-										<Tooltip content={new Date(entry.timestamp).toLocaleString()} relationship="label">
-											<TableCellLayout truncate>{new Date(entry.timestamp).toLocaleString()}</TableCellLayout>
+									<TableCell style={{ textAlign: "left" }}>
+										<Tooltip
+											content={new Date(entry.timestamp).toLocaleString()}
+											relationship="label"
+										>
+											<TableCellLayout truncate>
+												{new Date(entry.timestamp).toLocaleString()}
+											</TableCellLayout>
 										</Tooltip>
 									</TableCell>
-									<TableCell style={{ width: '60px', textAlign: 'center' }}>
+									<TableCell style={{ width: "60px", textAlign: "center" }}>
 										<TableCellLayout>
 											<Tooltip content="Repeat conversion" relationship="label">
 												<Button
-													appearance="subtle" // Subtle appearance for icon-only
+													appearance="subtle"
 													icon={<ArrowRepeatAllRegular />}
 													onClick={() => onRepeat(entry)}
 													size="small"

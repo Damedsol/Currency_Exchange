@@ -1,6 +1,12 @@
-import { FluentProvider, webDarkTheme, webLightTheme, type Theme } from "@fluentui/react-components";
+import {
+	FluentProvider,
+	webDarkTheme,
+	webLightTheme,
+	type Theme,
+} from "@fluentui/react-components";
 import React, { useState } from "react";
 import ReactDOM from "react-dom/client";
+
 import App from "./App.tsx";
 import "./styles/main.css";
 

@@ -1,16 +1,21 @@
-import React from 'react';
-import { ArrowSyncRegular } from '@fluentui/react-icons';
-import { Text, makeStyles, shorthands, tokens } from '@fluentui/react-components';
+import {
+	Text,
+	makeStyles,
+	shorthands,
+	tokens,
+} from "@fluentui/react-components";
+import { ArrowSyncRegular } from "@fluentui/react-icons";
+import React from "react";
 
 // Specific styles for the indicator
 const useStyles = makeStyles({
 	text: {
-		display: 'inline-flex',
-		alignItems: 'center',
+		display: "inline-flex",
+		alignItems: "center",
 		...shorthands.gap(tokens.spacingHorizontalXXS),
 	},
 	help: {
-		cursor: 'help',
+		cursor: "help",
 	},
 	error: {
 		color: tokens.colorPaletteRedForeground1,
@@ -23,7 +28,9 @@ interface RateSourceIndicatorProps {
 	rateSource: RateSource;
 }
 
-export const RateSourceIndicator: React.FC<RateSourceIndicatorProps> = ({ rateSource }) => {
+export const RateSourceIndicator: React.FC<RateSourceIndicatorProps> = ({
+	rateSource,
+}) => {
 	const styles = useStyles();
 
 	// Common props for Text component
@@ -56,13 +63,10 @@ export const RateSourceIndicator: React.FC<RateSourceIndicatorProps> = ({ rateSo
 	}
 	if (rateSource === "error") {
 		return (
-			<Text
-				{...textProps}
-				className={`${styles.text} ${styles.error}`}
-			>
+			<Text {...textProps} className={`${styles.text} ${styles.error}`}>
 				Error fetching rate
 			</Text>
 		);
 	}
 	return null; // Render nothing if 'idle'
-}; 
+};

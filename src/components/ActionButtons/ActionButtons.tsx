@@ -1,72 +1,62 @@
-import React from 'react';
 import {
-	DeleteFilled,
+	Button,
+	makeStyles,
+	shorthands,
+	tokens,
+} from "@fluentui/react-components";
+import {
 	MoneyCalculatorFilled,
-	SaveFilled,
 	ArrowSyncRegular,
 	HistoryDismissRegular,
-} from '@fluentui/react-icons';
-import { Button, makeStyles, shorthands, tokens } from '@fluentui/react-components';
+} from "@fluentui/react-icons";
+import React from "react";
 
-// Define breakpoints used in this component
 const actionButtonBreakpoints = {
-	mobile: 480, // Example breakpoint for stacking buttons
+	mobile: 480,
 };
 
-// Styles for the button container
 const useStyles = makeStyles({
 	container: {
 		display: "flex",
-		// flexWrap: "wrap", // Remove wrap if we want specific groups
-		alignItems: "center", // Align items vertically
+		alignItems: "center",
 		...shorthands.gap(tokens.spacingHorizontalM),
 		marginTop: tokens.spacingVerticalM,
-		// Responsive stacking
 		[`@media (max-width: ${actionButtonBreakpoints.mobile}px)`]: {
 			flexDirection: "column",
-			alignItems: "stretch", // Make button groups take full width
-			...shorthands.gap(tokens.spacingVerticalM), // Vertical gap when stacked
+			alignItems: "stretch",
+			...shorthands.gap(tokens.spacingVerticalM),
 		},
 	},
 	mainActions: {
 		display: "flex",
 		alignItems: "center",
 		...shorthands.gap(tokens.spacingHorizontalM),
-		// Responsive wrapping within the group might be needed too, or let them stack
 		[`@media (max-width: ${actionButtonBreakpoints.mobile}px)`]: {
-			flexWrap: "wrap", // Allow buttons within main actions to wrap if needed
-			justifyContent: "center", // Center buttons when wrapped/stacked
+			flexWrap: "wrap",
+			justifyContent: "center",
 		},
 	},
 	clearActions: {
 		display: "flex",
 		alignItems: "center",
-		marginLeft: "auto", // Push this group to the right
-		...shorthands.gap(tokens.spacingHorizontalS), // Smaller gap for clear buttons
-		// Responsive alignment
+		marginLeft: "auto",
+		...shorthands.gap(tokens.spacingHorizontalS),
 		[`@media (max-width: ${actionButtonBreakpoints.mobile}px)`]: {
-			marginLeft: 0, // Remove margin pushing it right
-			justifyContent: "center", // Center buttons when stacked
-			width: "100%", // Optional: make group take full width
+			marginLeft: 0,
+			justifyContent: "center",
+			width: "100%",
 		},
 	},
-	// Remove fixed width button style if present, let buttons size naturally
-	// button: {
-	//     minWidth: '120px',
-	// }
 });
 
-// Define all required props
 type RateSource = "idle" | "cache" | "api" | "error" | "loading";
 interface ActionButtonsProps {
-	// State for disabling buttons
 	storedApiKey: string | null;
 	amount: number;
 	rateSource: RateSource;
 	isApiKeyValid: boolean;
 	apiKeyInput: string;
 	isHistoryEmpty: boolean;
-	// Action handlers
 	onCalculate: () => void;
 	onRefreshRates: () => void;
 	onClearHistory: () => void;
@@ -77,8 +67,6 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({
 	storedApiKey,
 	amount,
 	rateSource,
-	isApiKeyValid,
-	apiKeyInput,
 	isHistoryEmpty,
 	onCalculate,
 	onRefreshRates,
@@ -110,11 +98,9 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({
 					Refresh Rates
 				</Button>
 			</div>
-
-			{/* Clear Actions Group (pushed to the right) */}
 			<div className={styles.clearActions}>
 				<Button
-					appearance="outline" // Changed from subtle back to a visible button style
+					appearance="outline"
 					icon={<HistoryDismissRegular />}
 					onClick={onClearHistory}
 					disabled={isHistoryEmpty}
@@ -124,8 +110,7 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({
 				</Button>
 
 				<Button
-					appearance="outline" // Changed from subtle back to a visible button style
-					icon={<DeleteFilled />}
+					appearance="outline"
 					onClick={onClearAll}
 					title="Clear all stored data (API Key and History)"
 				>
@@ -134,4 +119,4 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({
 			</div>
 		</div>
 	);
-}; 
+};

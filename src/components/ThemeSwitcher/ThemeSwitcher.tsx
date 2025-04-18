@@ -1,8 +1,12 @@
-import React from 'react';
+import {
+	Label,
+	Switch,
+	makeStyles,
+	shorthands,
+	tokens,
+} from "@fluentui/react-components";
+import React from "react";
 // Import Label from Fluent UI directly
-import { Label, Switch, makeStyles, shorthands, tokens } from '@fluentui/react-components';
-// Remove import for custom Label
-// import { Label } from '../Label/Label';
 
 // Define styles specific to this component
 const useStyles = makeStyles({
@@ -20,13 +24,18 @@ interface ThemeSwitcherProps {
 	toggleTheme: () => void;
 }
 
-export const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({ isDarkMode, toggleTheme }) => {
+export const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({
+	isDarkMode,
+	toggleTheme,
+}) => {
 	const styles = useStyles();
 
 	return (
 		<div className={styles.container}>
-			<Label size="medium">{isDarkMode ? "Dark Mode Active" : "Light Mode Active"}</Label>
+			<Label size="medium">
+				{isDarkMode ? "Dark Mode Active" : "Light Mode Active"}
+			</Label>
 			<Switch checked={isDarkMode} onChange={toggleTheme} />
 		</div>
 	);
-}; 
+};
