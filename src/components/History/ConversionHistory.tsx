@@ -1,4 +1,4 @@
-import{ useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import type { ConversionHistoryEntry } from "../../services/LocalStorage";
 // Import necessary Fluent components and hooks
 import {
@@ -6,14 +6,15 @@ import {
 	makeStyles,
 	shorthands,
 	tokens,
-	// Text, // Removed unused import
+	Text, // Re-import Text component
 	TableBody,
 	TableCell,
 	TableRow,
 	TableHeader,
 	TableHeaderCell,
 	Table,
-	TableCellLayout
+	TableCellLayout,
+	Tooltip
 } from "@fluentui/react-components";
 import { ArrowRepeatAllRegular } from "@fluentui/react-icons";
 
@@ -54,16 +55,44 @@ const useStyles = makeStyles({
 		// No specific container styles needed for now
 	},
 	actionCell: {
-		// Ensure button fits well
+		textAlign: "center"
+	},
+	currencyCell: {
+		// minWidth: "60px", // Removed width constraints
+		// maxWidth: "90px",
+	},
+	numericCell: {
+		// minWidth: "80px", // Removed width constraints
+		// maxWidth: "160px",
+		// textAlign: "right" as const, // Align numbers to the right - Applied via style prop
+	},
+	rateCell: {
+		// minWidth: "100px", // Removed width constraints
+		// maxWidth: "200px",
+		// textAlign: "right" as const, - Applied via style prop
 	},
 	tableWrapper: {
-		overflowX: "auto", // Enable horizontal scroll on overflow
-		maxWidth: "100%", // Ensure wrapper doesn't exceed parent width
+		// overflowX: "auto", // Removed overflow to prevent scrollbar
 		opacity: 0, // Start hidden
 		transition: "opacity 0.5s ease-in-out", // Fade-in transition
 	},
 	tableWrapperVisible: {
 		opacity: 1, // Visible state
+	},
+	tableRow: { // Base styles for table row
+		"&:hover": {
+			backgroundColor: tokens.colorNeutralBackground1Hover,
+		},
+		"&:nth-child(odd)": { // Apply style to odd rows for striping
+			backgroundColor: tokens.colorNeutralBackground1Selected, // Or another subtle color
+		}
+	},
+	timestampCell: { // Style for the timestamp column
+		minWidth: "160px", // Allocate enough space for date and time
+		maxWidth: "200px",
+	},
+	tableLayoutFixed: { // Style to enforce fixed table layout
+		tableLayout: "fixed",
 	},
 });
 
@@ -72,6 +101,7 @@ const formatNumber = (num: number, minDecimals: number, maxDecimals: number): st
 	return num.toLocaleString(undefined, {
 		minimumFractionDigits: minDecimals,
 		maximumFractionDigits: maxDecimals,
+		useGrouping: false // Disable thousands separators
 	});
 };
 
@@ -95,21 +125,23 @@ export const ConversionHistory = ({
 	return (
 		<div className={styles.tableContainer}>
 			<div className={`${styles.tableWrapper} ${isVisible ? styles.tableWrapperVisible : ''}`}>
-				<Table arial-label="Conversion History Table" size="medium">
+				<Table className={styles.tableLayoutFixed} arial-label="Conversion History Table" size="medium">
 					<TableHeader>
 						<TableRow>
-							<TableHeaderCell>Amount</TableHeaderCell>
-							<TableHeaderCell>From</TableHeaderCell>
-							<TableHeaderCell>To</TableHeaderCell>
-							<TableHeaderCell>Result</TableHeaderCell>
-							<TableHeaderCell>Rate</TableHeaderCell>
-							<TableHeaderCell>Action</TableHeaderCell>
+							<TableHeaderCell style={{ textAlign: 'center' }}>Amount</TableHeaderCell>
+							<TableHeaderCell style={{ textAlign: 'center' }}>From</TableHeaderCell>
+							<TableHeaderCell style={{ textAlign: 'center' }}>To</TableHeaderCell>
+							<TableHeaderCell style={{ textAlign: 'center' }}>Result</TableHeaderCell>
+							<TableHeaderCell style={{ textAlign: 'center' }}>Rate</TableHeaderCell>
+							<TableHeaderCell style={{ textAlign: 'center' }}>Timestamp</TableHeaderCell>
+							<TableHeaderCell style={{ width: '60px', textAlign: 'center' }}>Action</TableHeaderCell>
+
 						</TableRow>
 					</TableHeader>
 					<TableBody>
 						{history.length === 0 ? (
 							<TableRow>
-								<TableCell colSpan={6}> {/* Span across all 6 columns */}
+								<TableCell colSpan={7}> {/* Span across all 7 columns now */}
 									<TableCellLayout style={{ textAlign: 'center', padding: tokens.spacingVerticalL }}>
 										No conversion history yet.
 									</TableCellLayout>
@@ -117,33 +149,51 @@ export const ConversionHistory = ({
 							</TableRow>
 						) : (
 							history.map((entry) => (
-								<TableRow key={entry.timestamp}>
-									<TableCell>
-										<TableCellLayout>{formatNumber(entry.amount, 0, 2)}</TableCellLayout>
+								<TableRow key={entry.timestamp} className={styles.tableRow}>
+									<TableCell style={{ textAlign: 'left' }}>
+										<Tooltip content={formatNumber(entry.amount, 3, 3)} relationship="label">
+											<TableCellLayout truncate>{formatNumber(entry.amount, 3, 3)}</TableCellLayout>
+										</Tooltip>
 									</TableCell>
-									<TableCell>
-										<TableCellLayout>{entry.fromCurrency}</TableCellLayout>
+									<TableCell style={{ textAlign: 'left' }}>
+										<Tooltip content={entry.fromCurrency} relationship="label">
+											<TableCellLayout truncate>{entry.fromCurrency}</TableCellLayout>
+										</Tooltip>
 									</TableCell>
-									<TableCell>
-										<TableCellLayout>{entry.toCurrency}</TableCellLayout>
+									<TableCell style={{ textAlign: 'left' }}>
+										<Tooltip content={entry.toCurrency} relationship="label">
+											<TableCellLayout truncate>{entry.toCurrency}</TableCellLayout>
+										</Tooltip>
 									</TableCell>
-									<TableCell>
-										<TableCellLayout>{formatNumber(entry.result, 2, 2)}</TableCellLayout>
+									<TableCell style={{ textAlign: 'right' }}>
+										<Tooltip content={formatNumber(entry.result, 3, 3)} relationship="label">
+											<TableCellLayout truncate>{formatNumber(entry.result, 3, 3)}</TableCellLayout>
+										</Tooltip>
 									</TableCell>
-									<TableCell>
-										<TableCellLayout><i>{formatNumber(entry.rate, 4, 6)}</i></TableCellLayout>
+									<TableCell style={{ textAlign: 'right' }}>
+										<Tooltip content={formatNumber(entry.rate, 3, 3)} relationship="label">
+											<TableCellLayout truncate>
+												<Text size={300} italic weight="regular">
+													{formatNumber(entry.rate, 3, 3)}
+												</Text>
+											</TableCellLayout>
+										</Tooltip>
 									</TableCell>
-									<TableCell className={styles.actionCell}>
+									<TableCell style={{ textAlign: 'left' }}>
+										<Tooltip content={new Date(entry.timestamp).toLocaleString()} relationship="label">
+											<TableCellLayout truncate>{new Date(entry.timestamp).toLocaleString()}</TableCellLayout>
+										</Tooltip>
+									</TableCell>
+									<TableCell style={{ width: '60px', textAlign: 'center' }}>
 										<TableCellLayout>
-											<Button
-												appearance="outline"
-												icon={<ArrowRepeatAllRegular />}
-												onClick={() => onRepeat(entry)}
-												title={`Repeat: ${entry.amount} ${entry.fromCurrency} to ${entry.toCurrency}`}
-												size="small"
-											>
-												Repeat
-											</Button>
+											<Tooltip content="Repeat conversion" relationship="label">
+												<Button
+													appearance="subtle" // Subtle appearance for icon-only
+													icon={<ArrowRepeatAllRegular />}
+													onClick={() => onRepeat(entry)}
+													size="small"
+												/>
+											</Tooltip>
 										</TableCellLayout>
 									</TableCell>
 								</TableRow>
