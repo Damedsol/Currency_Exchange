@@ -1,0 +1,12 @@
+echo '👀 Running linters and formatters on staged files...'
+echo ''
+
+pnpm exec lint-staged
+if [ $? != 0 ]; then
+  echo
+  echo '❌ There are code style issues. Please fix them before committing.'
+  echo
+  exit 1
+fi
+echo ''
+echo '✅ Code quality check passed successfully' 
