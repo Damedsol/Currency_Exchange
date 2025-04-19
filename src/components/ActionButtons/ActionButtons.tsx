@@ -4,9 +4,6 @@ import {
 	shorthands,
 	tokens,
 } from "@fluentui/react-components";
-import {
-	HistoryDismissRegular,
-} from "@fluentui/react-icons";
 import React from "react";
 
 const actionButtonBreakpoints = {
@@ -60,8 +57,6 @@ interface ActionButtonsProps {
 }
 
 export const ActionButtons: React.FC<ActionButtonsProps> = ({
-	isHistoryEmpty,
-	onClearHistory,
 	onClearAll,
 }) => {
 	const styles = useStyles();
@@ -69,16 +64,6 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({
 	return (
 		<div className={styles.container}>
 			<div className={styles.clearActions}>
-				<Button
-					appearance="outline"
-					icon={<HistoryDismissRegular />}
-					onClick={onClearHistory}
-					disabled={isHistoryEmpty}
-					title="Clear conversion history"
-				>
-					Clear History
-				</Button>
-
 				<Button
 					appearance="outline"
 					onClick={onClearAll}

@@ -23,6 +23,7 @@ import {
 	ErrorCircleRegular,
 	WarningRegular,
 	MoneyCalculatorFilled,
+	HistoryDismissRegular,
 } from "@fluentui/react-icons";
 import { useEffect, useState, useRef } from "react";
 
@@ -714,9 +715,21 @@ function App({ toggleTheme, isDarkMode }: AppProps): JSX.Element {
 					<div className={styles.rightColumn}>
 						{/* History Section Content */}
 						<div className={styles.historySection}>
-							<Text weight="semibold" as="h2" style={{ display: "block" }}>
-								Conversion History (Last 10)
-							</Text>
+							<div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: tokens.spacingVerticalS }}>
+								<Text weight="semibold" as="h2" style={{ display: "block" }}>
+									Conversion History (Last 10)
+								</Text>
+								<Button
+									appearance="outline"
+									icon={<HistoryDismissRegular />}
+									onClick={clearConversionHistory}
+									disabled={conversionHistory.length === 0}
+									title="Clear conversion history"
+									size="small"
+								>
+									Clear History
+								</Button>
+							</div>
 							<Divider />
 							<ConversionHistory
 								history={conversionHistory}
