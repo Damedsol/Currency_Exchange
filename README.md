@@ -1,5 +1,12 @@
 # Currency Exchange 💱
 
+[![License: CC BY 4.0](https://img.shields.io/badge/License-CC_BY_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/)
+[![Version](https://img.shields.io/badge/version-1.3.0-blue.svg)](https://github.com/your-username/currencyExchange)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.8.3-blue?logo=typescript)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React-18.2.0-blue?logo=react)](https://reactjs.org/)
+[![Vite](https://img.shields.io/badge/Vite-6.3.1-646CFF?logo=vite)](https://vitejs.dev/)
+[![FluentUI](https://img.shields.io/badge/FluentUI-9.62.0-blue?logo=microsoft)](https://developer.microsoft.com/en-us/fluentui)
+
 ## Description
 
 Web application for currency conversion using the [Free Currency API](https://freecurrencyapi.com/). Developed with React, TypeScript, and Fluent UI, it offers a modern interface for real-time currency conversion.
@@ -66,6 +73,18 @@ src/
   ├── App.tsx         # Main component
   └── main.tsx        # Entry point
 ```
+
+## Development Workflow
+
+This project follows the [Gitflow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow) workflow for development:
+
+- `main`: Production branch, contains stable releases
+- `develop`: Development branch for integration
+- `feature/*`: Feature branches for new functionality
+- `release/*`: Release branches for version preparation
+- `hotfix/*`: Hotfix branches for urgent production fixes
+
+For versioning, we follow [Semantic Versioning](https://semver.org/) principles.
 
 ## Available Scripts
 
