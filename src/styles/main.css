@@ -8,7 +8,7 @@ body {
 	padding: 0;
 }
 
-Body > div > div {
+#app-container {
 	min-height: 100dvh;
 	display: flex;
 	justify-content: center;

@@ -57,7 +57,6 @@ export function clearLocalStorage(): void {
 		// Use removeItem for targeted removal instead of clear()
 		localStorage.removeItem("apiKey");
 		localStorage.removeItem(RATES_CACHE_KEY); // Clear rates cache too
-		// window.location.reload(); // Consider moving this side effect out of the service
 	} catch (error) {
 		console.error("Error clearing API key from localStorage:", error);
 		// Re-throw the error.
