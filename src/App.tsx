@@ -14,6 +14,13 @@ import {
 	type MessageBarIntent,
 	mergeClasses,
 	Tooltip,
+	Dialog,
+	DialogTrigger,
+	DialogSurface,
+	DialogBody,
+	DialogTitle,
+	DialogContent,
+	DialogActions,
 } from "@fluentui/react-components";
 import {
 	DismissRegular,
@@ -203,6 +210,24 @@ const useStyles = makeStyles({
 	apiKeySavingIcon: {
 		// Use default color or a specific one if desired
 	},
+	clearHistoryButton: {
+		backgroundColor: tokens.colorNeutralBackground1,
+		color: tokens.colorNeutralForeground2,
+		":hover": {
+			backgroundColor: tokens.colorNeutralBackground1Hover,
+			color: tokens.colorPaletteRedForeground1,
+		},
+		":active": {
+			backgroundColor: tokens.colorNeutralBackground1Pressed,
+			color: tokens.colorPaletteRedForeground1,
+		},
+		":disabled": {
+			color: tokens.colorNeutralForegroundDisabled,
+			backgroundColor: tokens.colorNeutralBackgroundDisabled,
+		},
+		...shorthands.padding(tokens.spacingHorizontalXS, tokens.spacingHorizontalS),
+		...shorthands.borderRadius(tokens.borderRadiusMedium),
+	},
 });
 
 interface AppProps {
@@ -232,6 +257,7 @@ function App({ toggleTheme, isDarkMode }: AppProps): JSX.Element {
 		useState<boolean>(false);
 	const [apiKeySaveStatus, setApiKeySaveStatus] =
 		useState<ApiKeySaveStatus>("idle");
+	const [isHistoryClearDialogOpen, setIsHistoryClearDialogOpen] = useState<boolean>(false);
 
 	// Ref to store message timeout ID
 	const messageTimeoutRef = useRef<number | null>(null);
@@ -582,6 +608,12 @@ function App({ toggleTheme, isDarkMode }: AppProps): JSX.Element {
 		}
 	};
 
+	// Handle confirmation to clear history
+	const handleConfirmClearHistory = () => {
+		clearConversionHistory();
+		setIsHistoryClearDialogOpen(false);
+	};
+
 	return (
 		<div className={styles.appContainer}>
 			<Card className={styles.root}>
@@ -719,16 +751,46 @@ function App({ toggleTheme, isDarkMode }: AppProps): JSX.Element {
 								<Text weight="semibold" as="h2" style={{ display: "block" }}>
 									Conversion History (Last 10)
 								</Text>
-								<Button
-									appearance="outline"
-									icon={<HistoryDismissRegular />}
-									onClick={clearConversionHistory}
-									disabled={conversionHistory.length === 0}
-									title="Clear conversion history"
-									size="small"
-								>
-									Clear History
-								</Button>
+								<Dialog open={isHistoryClearDialogOpen} onOpenChange={(event, data) => setIsHistoryClearDialogOpen(data.open)}>
+									<DialogTrigger disableButtonEnhancement>
+										<Button
+											appearance="outline"
+											icon={<HistoryDismissRegular />}
+											disabled={conversionHistory.length === 0}
+											title="Clear conversion history"
+											size="small"
+											className={styles.clearHistoryButton}
+										>
+											Clear History
+										</Button>
+									</DialogTrigger>
+									<DialogSurface>
+										<DialogBody>
+											<DialogTitle>
+												<WarningRegular style={{ color: tokens.colorPaletteYellowForeground1, fontSize: tokens.fontSizeBase500, marginRight: tokens.spacingHorizontalS }} />
+												Confirmar eliminación del historial
+											</DialogTitle>
+											<DialogContent>
+												¿Estás seguro de que deseas eliminar todo el historial de conversiones? Esta acción no se puede deshacer.
+											</DialogContent>
+											<DialogActions>
+												<Button appearance="subtle" onClick={() => setIsHistoryClearDialogOpen(false)}>
+													Cancelar
+												</Button>
+												<Button
+													appearance="primary"
+													onClick={handleConfirmClearHistory}
+													style={{
+														backgroundColor: tokens.colorPaletteRedBackground1,
+														color: tokens.colorNeutralForegroundOnBrand
+													}}
+												>
+													Eliminar historial
+												</Button>
+											</DialogActions>
+										</DialogBody>
+									</DialogSurface>
+								</Dialog>
 							</div>
 							<Divider />
 							<ConversionHistory
