@@ -5,7 +5,6 @@ import {
 	tokens,
 } from "@fluentui/react-components";
 import {
-	ArrowSyncRegular,
 	HistoryDismissRegular,
 } from "@fluentui/react-icons";
 import React from "react";
@@ -56,15 +55,12 @@ interface ActionButtonsProps {
 	isApiKeyValid: boolean;
 	apiKeyInput: string;
 	isHistoryEmpty: boolean;
-	onRefreshRates: () => void;
 	onClearHistory: () => void;
 	onClearAll: () => void;
 }
 
 export const ActionButtons: React.FC<ActionButtonsProps> = ({
-	rateSource,
 	isHistoryEmpty,
-	onRefreshRates,
 	onClearHistory,
 	onClearAll,
 }) => {
@@ -72,19 +68,6 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({
 
 	return (
 		<div className={styles.container}>
-			{/* Main Actions Group */}
-			<div className={styles.mainActions}>
-
-				<Button
-					appearance="secondary"
-					icon={<ArrowSyncRegular />}
-					onClick={onRefreshRates}
-					disabled={rateSource === "loading"}
-					title="Clear cached rates and fetch live data"
-				>
-					Refresh Rates
-				</Button>
-			</div>
 			<div className={styles.clearActions}>
 				<Button
 					appearance="outline"

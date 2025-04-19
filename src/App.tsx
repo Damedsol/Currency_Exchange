@@ -680,6 +680,7 @@ function App({ toggleTheme, isDarkMode }: AppProps): JSX.Element {
 								amount={amount}
 								fromCurrency={fromCurrency}
 								toCurrency={toCurrency}
+								onRefreshRates={handleClearCacheAndFetch}
 							/>
 						</div>
 
@@ -702,7 +703,6 @@ function App({ toggleTheme, isDarkMode }: AppProps): JSX.Element {
 								isApiKeyValid={isApiKeyValid}
 								apiKeyInput={apiKeyInput}
 								isHistoryEmpty={conversionHistory.length === 0}
-								onRefreshRates={handleClearCacheAndFetch}
 								onClearHistory={clearConversionHistory}
 								onClearAll={clearApiAndCache}
 							/>

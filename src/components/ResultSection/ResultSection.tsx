@@ -4,7 +4,9 @@ import {
 	shorthands,
 	tokens,
 	Spinner,
+	Button,
 } from "@fluentui/react-components";
+import { ArrowClockwiseRegular } from "@fluentui/react-icons";
 import React from "react";
 
 import { RateSourceIndicator } from "../RateSourceIndicator/RateSourceIndicator";
@@ -27,6 +29,15 @@ const useStyles = makeStyles({
 	spinner: {
 		marginLeft: tokens.spacingHorizontalXS, // Space between indicator and spinner
 	},
+	refreshButton: {
+		marginRight: tokens.spacingHorizontalS,
+		minWidth: "auto",
+		height: "24px",
+		color: tokens.colorBrandForeground1,
+		":hover": {
+			color: tokens.colorBrandForeground2,
+		},
+	},
 });
 
 // Required props
@@ -37,6 +48,7 @@ interface ResultSectionProps {
 	amount: number;
 	fromCurrency: string;
 	toCurrency: string;
+	onRefreshRates: () => void;
 }
 
 export const ResultSection: React.FC<ResultSectionProps> = ({
@@ -45,6 +57,7 @@ export const ResultSection: React.FC<ResultSectionProps> = ({
 	amount,
 	fromCurrency,
 	toCurrency,
+	onRefreshRates,
 }) => {
 	const styles = useStyles();
 
@@ -54,6 +67,16 @@ export const ResultSection: React.FC<ResultSectionProps> = ({
 		<div className={styles.container}>
 			{/* Row for rate and indicator */}
 			<div className={styles.rateRow}>
+				<Button
+					appearance="transparent"
+					size="small"
+					icon={<ArrowClockwiseRegular />}
+					onClick={onRefreshRates}
+					disabled={rateSource === "loading"}
+					title="Clear cached rates and fetch live data"
+					className={styles.refreshButton}
+					iconPosition="before"
+				/>
 				<Label
 					size={"large"}
 					// Hide rate label during loading for cleaner look?
