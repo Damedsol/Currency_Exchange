@@ -47,10 +47,17 @@ const useStyles = makeStyles({
 	},
 	actionCell: {
 		textAlign: "center",
+		width: "60px",
 	},
-	currencyCell: {},
-	numericCell: {},
-	rateCell: {},
+	currencyCell: {
+		textAlign: "center",
+	},
+	numericCell: {
+		textAlign: "right",
+	},
+	rateCell: {
+		textAlign: "right",
+	},
 	tableWrapper: {
 		opacity: 0,
 		transition: "opacity 0.5s ease-in-out",
@@ -69,9 +76,18 @@ const useStyles = makeStyles({
 	timestampCell: {
 		minWidth: "160px",
 		maxWidth: "200px",
+		textAlign: "center",
 	},
 	tableLayoutFixed: {
 		tableLayout: "fixed",
+		width: "100%",
+	},
+	headerCell: {
+		textAlign: "center",
+		fontWeight: "600",
+	},
+	amountCell: {
+		textAlign: "right",
 	},
 });
 
@@ -85,6 +101,29 @@ const formatNumber = (
 		minimumFractionDigits: minDecimals,
 		maximumFractionDigits: maxDecimals,
 		useGrouping: false, // Disable thousands separators
+	});
+};
+
+// Helper to format timestamp for better readability
+const formatTimestamp = (timestamp: string): string => {
+	const date = new Date(timestamp);
+	return date.toLocaleString(undefined, {
+		year: "numeric",
+		month: "2-digit",
+		day: "2-digit",
+		hour: "2-digit",
+		minute: "2-digit",
+		second: "2-digit",
+	});
+};
+
+// Helper to format timestamp showing only the date part
+const formatShortDate = (timestamp: string): string => {
+	const date = new Date(timestamp);
+	return date.toLocaleString(undefined, {
+		year: "numeric",
+		month: "2-digit",
+		day: "2-digit",
 	});
 };
 
@@ -117,25 +156,25 @@ export const ConversionHistory = ({
 				>
 					<TableHeader>
 						<TableRow>
-							<TableHeaderCell style={{ textAlign: "center" }}>
+							<TableHeaderCell className={styles.headerCell}>
 								Amount
 							</TableHeaderCell>
-							<TableHeaderCell style={{ textAlign: "center" }}>
+							<TableHeaderCell className={styles.headerCell}>
 								From
 							</TableHeaderCell>
-							<TableHeaderCell style={{ textAlign: "center" }}>
+							<TableHeaderCell className={styles.headerCell}>
 								To
 							</TableHeaderCell>
-							<TableHeaderCell style={{ textAlign: "center" }}>
+							<TableHeaderCell className={styles.headerCell}>
 								Result
 							</TableHeaderCell>
-							<TableHeaderCell style={{ textAlign: "center" }}>
+							<TableHeaderCell className={styles.headerCell}>
 								Rate
 							</TableHeaderCell>
-							<TableHeaderCell style={{ textAlign: "center" }}>
+							<TableHeaderCell className={styles.headerCell}>
 								Timestamp
 							</TableHeaderCell>
-							<TableHeaderCell style={{ width: "60px", textAlign: "center" }}>
+							<TableHeaderCell className={styles.headerCell} style={{ width: "60px" }}>
 								Action
 							</TableHeaderCell>
 						</TableRow>
@@ -144,8 +183,6 @@ export const ConversionHistory = ({
 						{history.length === 0 ? (
 							<TableRow>
 								<TableCell colSpan={7}>
-									{" "}
-									{/* Span across all 7 columns now */}
 									<TableCellLayout
 										style={{
 											textAlign: "center",
@@ -159,7 +196,7 @@ export const ConversionHistory = ({
 						) : (
 							history.map((entry) => (
 								<TableRow key={entry.timestamp} className={styles.tableRow}>
-									<TableCell style={{ textAlign: "left" }}>
+									<TableCell className={styles.amountCell}>
 										<Tooltip
 											content={formatNumber(entry.amount, 3, 3)}
 											relationship="label"
@@ -169,21 +206,21 @@ export const ConversionHistory = ({
 											</TableCellLayout>
 										</Tooltip>
 									</TableCell>
-									<TableCell style={{ textAlign: "left" }}>
+									<TableCell className={styles.currencyCell}>
 										<Tooltip content={entry.fromCurrency} relationship="label">
 											<TableCellLayout truncate>
 												{entry.fromCurrency}
 											</TableCellLayout>
 										</Tooltip>
 									</TableCell>
-									<TableCell style={{ textAlign: "left" }}>
+									<TableCell className={styles.currencyCell}>
 										<Tooltip content={entry.toCurrency} relationship="label">
 											<TableCellLayout truncate>
 												{entry.toCurrency}
 											</TableCellLayout>
 										</Tooltip>
 									</TableCell>
-									<TableCell style={{ textAlign: "right" }}>
+									<TableCell className={styles.numericCell}>
 										<Tooltip
 											content={formatNumber(entry.result, 3, 3)}
 											relationship="label"
@@ -193,39 +230,35 @@ export const ConversionHistory = ({
 											</TableCellLayout>
 										</Tooltip>
 									</TableCell>
-									<TableCell style={{ textAlign: "right" }}>
+									<TableCell className={styles.rateCell}>
 										<Tooltip
 											content={formatNumber(entry.rate, 3, 3)}
 											relationship="label"
 										>
 											<TableCellLayout truncate>
-												<Text size={300} italic weight="regular">
-													{formatNumber(entry.rate, 3, 3)}
-												</Text>
+												{formatNumber(entry.rate, 3, 3)}
 											</TableCellLayout>
 										</Tooltip>
 									</TableCell>
-									<TableCell style={{ textAlign: "left" }}>
+									<TableCell className={styles.timestampCell}>
+										<Tooltip content={formatTimestamp(entry.timestamp)} relationship="label">
+											<TableCellLayout truncate>
+												{formatShortDate(entry.timestamp)}
+											</TableCellLayout>
+										</Tooltip>
+									</TableCell>
+									<TableCell className={styles.actionCell}>
 										<Tooltip
-											content={new Date(entry.timestamp).toLocaleString()}
+											content="Repeat this conversion"
 											relationship="label"
 										>
-											<TableCellLayout truncate>
-												{new Date(entry.timestamp).toLocaleString()}
-											</TableCellLayout>
+											<Button
+												appearance="subtle"
+												icon={<ArrowRepeatAllRegular />}
+												aria-label="Repeat conversion"
+												onClick={() => onRepeat(entry)}
+											/>
 										</Tooltip>
-									</TableCell>
-									<TableCell style={{ width: "60px", textAlign: "center" }}>
-										<TableCellLayout>
-											<Tooltip content="Repeat conversion" relationship="label">
-												<Button
-													appearance="subtle"
-													icon={<ArrowRepeatAllRegular />}
-													onClick={() => onRepeat(entry)}
-													size="small"
-												/>
-											</Tooltip>
-										</TableCellLayout>
 									</TableCell>
 								</TableRow>
 							))

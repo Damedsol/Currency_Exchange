@@ -211,27 +211,14 @@ const useStyles = makeStyles({
 		// Use default color or a specific one if desired
 	},
 	clearHistoryButton: {
-		backgroundColor: tokens.colorNeutralBackground1,
-		color: tokens.colorNeutralForeground2,
-		":hover": {
-			backgroundColor: tokens.colorNeutralBackground1Hover,
-			color: tokens.colorPaletteRedForeground1,
-		},
-		":active": {
-			backgroundColor: tokens.colorNeutralBackground1Pressed,
-			color: tokens.colorPaletteRedForeground1,
-		},
-		":disabled": {
-			color: tokens.colorNeutralForegroundDisabled,
-			backgroundColor: tokens.colorNeutralBackgroundDisabled,
-		},
-		...shorthands.padding(
-			tokens.spacingHorizontalXS,
-			tokens.spacingHorizontalS,
-		),
-		...shorthands.borderRadius(tokens.borderRadiusMedium),
+		marginLeft: tokens.spacingHorizontalS,
+		display: "flex",
+		alignItems: "center",
+		justifyContent: "center",
+		...shorthands.gap(tokens.spacingHorizontalXS),
 	},
 	primaryActionButton: {
+		marginTop: tokens.spacingVerticalS,
 		backgroundColor: tokens.colorBrandBackground,
 		color: tokens.colorNeutralForegroundOnBrand,
 		...shorthands.padding(tokens.spacingVerticalS, tokens.spacingHorizontalL),
@@ -274,6 +261,22 @@ const useStyles = makeStyles({
 			backgroundColor: tokens.colorPaletteRedBackground2,
 		},
 	},
+	historyHeader: {
+		display: "flex",
+		alignItems: "center",
+		justifyContent: "space-between",
+		marginBottom: tokens.spacingVerticalS,
+	},
+	historyTitle: {
+		margin: 0,
+		padding: 0,
+		display: "block",
+	},
+	iconButton: {
+		display: "flex",
+		alignItems: "center",
+		justifyContent: "center",
+	},
 });
 
 interface AppProps {
@@ -283,13 +286,13 @@ interface AppProps {
 
 function App({ toggleTheme, isDarkMode }: AppProps): JSX.Element {
 	const styles = useStyles();
-	const [fromCurrency, setFromCurrency] = useState<string>("EUR");
-	const [toCurrency, setToCurrency] = useState<string>("USD");
-	const [amount, setAmount] = useState<number>(1);
+	const [amount, setAmount] = useState(1000); // Default amount
+	const [fromCurrency, setFromCurrency] = useState("EUR");
+	const [toCurrency, setToCurrency] = useState("USD");
 	const [apiKeyInput, setApiKeyInput] = useState<string>("");
 	const [storedApiKey, setStoredApiKey] = useState<string | null>(null);
 	const [isApiKeyValid, setIsApiKeyValid] = useState<boolean>(true);
-	const [rate, setRate] = useState<number | "--">("--");
+	const [rate, setRate] = useState<number>(0);
 	const [rateSource, setRateSource] = useState<RateSource>("idle");
 	const [conversionHistory, setConversionHistory] = useState<
 		ConversionHistoryEntry[]
@@ -353,12 +356,12 @@ function App({ toggleTheme, isDarkMode }: AppProps): JSX.Element {
 		intent: MessageBarIntent,
 		duration: number = MESSAGE_TIMEOUT_DURATION,
 	) => {
-		clearMessageTimeout();
-		setAppMessage({ text, intent, visible: true });
-		messageTimeoutRef.current = setTimeout(() => {
-			dismissMessage();
-		}, duration);
-	};
+			clearMessageTimeout();
+			setAppMessage({ text, intent, visible: true });
+			messageTimeoutRef.current = setTimeout(() => {
+				dismissMessage();
+			}, duration);
+		};
 
 	// Cleanup timeouts on component unmount
 	useEffect(() => {
@@ -387,13 +390,13 @@ function App({ toggleTheme, isDarkMode }: AppProps): JSX.Element {
 
 	const handleFromCurrency: (value: string) => void = (value: string) => {
 		setFromCurrency(value);
-		setRate("--");
+		setRate(0);
 		setRateSource("idle");
 		dismissMessage();
 	};
 	const handleToCurrency: (value: string) => void = (value: string) => {
 		setToCurrency(value);
-		setRate("--");
+		setRate(0);
 		setRateSource("idle");
 		dismissMessage();
 	};
@@ -405,7 +408,7 @@ function App({ toggleTheme, isDarkMode }: AppProps): JSX.Element {
 		if (!isNaN(value) && value >= 0) {
 			setAmount(value);
 		}
-		setRate("--");
+		setRate(0);
 		setRateSource("idle");
 		dismissMessage();
 	};
@@ -413,13 +416,13 @@ function App({ toggleTheme, isDarkMode }: AppProps): JSX.Element {
 	const fetchRate: () => Promise<void> = async () => {
 		dismissMessage();
 		if (!storedApiKey || amount <= 0 || fromCurrency === toCurrency) {
-			setRate(fromCurrency === toCurrency ? 1.0 : "--");
+			setRate(fromCurrency === toCurrency ? 1.0 : 0);
 			setRateSource(fromCurrency === toCurrency ? "api" : "idle");
 			return;
 		}
 
 		setRateSource("loading");
-		setRate("--");
+		setRate(0);
 
 		try {
 			const result: CurrencyRateResult = await getCurrencyRate({
@@ -453,7 +456,7 @@ function App({ toggleTheme, isDarkMode }: AppProps): JSX.Element {
 				console.error(
 					`Failed to get rate (${result.source}), rate: ${result.rate}`,
 				);
-				setRate("--");
+				setRate(0);
 				if (result.source === "error") {
 					showAppMessage(
 						"Error fetching currency rate. Check your API key or network connection.",
@@ -463,7 +466,7 @@ function App({ toggleTheme, isDarkMode }: AppProps): JSX.Element {
 			}
 		} catch (error) {
 			console.error("Error calling getCurrencyRate service:", error);
-			setRate("--");
+			setRate(0);
 			setRateSource("error");
 			showAppMessage(
 				"An unexpected error occurred while fetching the rate.",
@@ -523,7 +526,7 @@ function App({ toggleTheme, isDarkMode }: AppProps): JSX.Element {
 					setStoredApiKey(keyToValidate); // Update stored key state
 					setApiKeySaveStatus("saved");
 					clearRatesCache(); // Clear cache on new key save
-					setRate("--");
+					setRate(0);
 					setRateSource("idle");
 				} catch (error) {
 					console.error("Failed to save API key automatically:", error);
@@ -545,7 +548,7 @@ function App({ toggleTheme, isDarkMode }: AppProps): JSX.Element {
 		setApiKeyInput("");
 		setStoredApiKey(null);
 		setIsApiKeyValid(true);
-		setRate("--");
+		setRate(0);
 		setRateSource("idle");
 		setConversionHistory([]);
 		saveConversionHistoryService([]);
@@ -555,7 +558,7 @@ function App({ toggleTheme, isDarkMode }: AppProps): JSX.Element {
 	const handleClearCacheAndFetch: () => void = () => {
 		dismissMessage();
 		clearRatesCache();
-		setRate("--");
+		setRate(0);
 		setRateSource("idle");
 		showAppMessage("Rates cache cleared.", "info");
 		if (storedApiKey && amount > 0 && fromCurrency !== toCurrency) {
@@ -591,7 +594,7 @@ function App({ toggleTheme, isDarkMode }: AppProps): JSX.Element {
 		const temp = fromCurrency;
 		setFromCurrency(toCurrency);
 		setToCurrency(temp);
-		setRate("--");
+		setRate(0);
 		setRateSource("idle");
 	};
 
@@ -677,7 +680,7 @@ function App({ toggleTheme, isDarkMode }: AppProps): JSX.Element {
 							styles.headerInputWrapper,
 							isApiKeyHeaderInputVisible && styles.headerInputWrapperVisible,
 						)}
-						style={{ display: "flex", alignItems: "center" }} // Align input and icon
+						style={{ display: "flex", alignItems: "center" }}
 					>
 						{isApiKeyHeaderInputVisible && (
 							<>
@@ -688,9 +691,9 @@ function App({ toggleTheme, isDarkMode }: AppProps): JSX.Element {
 									size="small"
 									appearance="outline"
 									style={{
-										minWidth: "200px",
+										width: "200px",
 										marginRight: tokens.spacingHorizontalSNudge,
-									}} // Add space before icon
+									}}
 									value={apiKeyInput}
 									onChange={handleApiKeyChange}
 									onBlur={handleApiKeyInputBlur}
@@ -763,7 +766,7 @@ function App({ toggleTheme, isDarkMode }: AppProps): JSX.Element {
 								/>
 							</Field>
 							<ResultSection
-								rate={rate}
+								rate={typeof rate === "number" ? rate : 0}
 								rateSource={rateSource}
 								amount={amount}
 								fromCurrency={fromCurrency}
@@ -804,15 +807,8 @@ function App({ toggleTheme, isDarkMode }: AppProps): JSX.Element {
 					<div className={styles.rightColumn}>
 						{/* History Section Content */}
 						<div className={styles.historySection}>
-							<div
-								style={{
-									display: "flex",
-									alignItems: "center",
-									justifyContent: "space-between",
-									marginBottom: tokens.spacingVerticalS,
-								}}
-							>
-								<Text weight="semibold" as="h2" style={{ display: "block" }}>
+							<div className={styles.historyHeader}>
+								<Text weight="semibold" as="h2" className={styles.historyTitle}>
 									Conversion History (Last 10)
 								</Text>
 								<Dialog
