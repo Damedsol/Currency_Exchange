@@ -1,19 +1,44 @@
 import {
-	DeleteFilled,
+	makeStyles,
+	shorthands,
+	tokens,
+	Divider,
+	Text,
+	Field,
+	Input,
+	Card,
+	MessageBar,
+	MessageBarBody,
+	MessageBarTitle,
+	Button,
+	type MessageBarIntent,
+	mergeClasses,
+	Tooltip,
+	Dialog,
+	DialogTrigger,
+	DialogSurface,
+	DialogBody,
+	DialogTitle,
+	DialogContent,
+	DialogActions,
+} from "@fluentui/react-components";
+import {
+	DismissRegular,
+	KeyRegular,
+	ArrowClockwiseRegular,
+	CheckmarkCircleRegular,
+	ErrorCircleRegular,
+	WarningRegular,
 	MoneyCalculatorFilled,
-	SaveFilled,
-	ArrowClockwiseFilled,
-	ArrowSyncRegular,
 	HistoryDismissRegular,
 } from "@fluentui/react-icons";
-import type React from "react";
-import { useEffect, useState } from "react";
-import { Button, Link } from "@fluentui/react-components";
-import { ButtonDanger } from "./components/Buttons/danger/ButtonDanger.tsx";
-import { ButtonPrimary } from "./components/Buttons/primary/ButtonPrimary.tsx";
-import { CurrencySelector } from "./components/CurrencySelector/CurrencySelector.tsx";
-import { Field } from "./components/Field/Field.tsx";
-import { Label } from "./components/Label/Label.tsx";
+import { useEffect, useState, useRef } from "react";
+
+import { ActionButtons } from "./components/ActionButtons/ActionButtons";
+import { CurrencyRow } from "./components/CurrencyRow/CurrencyRow";
+import { ConversionHistory } from "./components/History/ConversionHistory";
+import { ResultSection } from "./components/ResultSection/ResultSection";
+import { ThemeSwitcher } from "./components/ThemeSwitcher/ThemeSwitcher";
 import {
 	getCurrencyRate,
 	type CurrencyRateResult,
@@ -28,45 +53,376 @@ import {
 	clearRatesCache,
 	type ConversionHistoryEntry,
 } from "./services/LocalStorage.ts";
-import { ConversionHistory } from "./components/History/ConversionHistory";
-import { ButtonSecondary } from "./components/Buttons/secondary/ButtonSecondary.tsx";
 
+import type React from "react";
+
+// Define RateSource type
 type RateSource = "idle" | "cache" | "api" | "error" | "loading";
 
-function App() {
-	const [fromCurrency, setFromCurrency] = useState<string>("EUR");
-	const [toCurrency, setToCurrency] = useState<string>("USD");
-	const [amount, setAmount] = useState<number>(1);
+// Define API Key Save Status type
+type ApiKeySaveStatus =
+	| "idle"
+	| "validating"
+	| "saving"
+	| "saved"
+	| "invalid"
+	| "error";
+
+// App Message type
+interface AppMessage {
+	text: React.ReactNode | null; // Allow React nodes for links etc.
+	intent: MessageBarIntent;
+	visible: boolean;
+}
+
+// Define breakpoints (adjust values as needed)
+const breakpoints = {
+	small: 320,
+	medium: 600,
+	tablet: 768,
+	large: 1024,
+};
+
+const MESSAGE_TIMEOUT_DURATION = 5000; // 5 seconds
+
+const useStyles = makeStyles({
+	appContainer: {
+		maxWidth: "1250px",
+		margin: `${tokens.spacingVerticalXXL} auto`,
+		paddingLeft: tokens.spacingHorizontalL,
+		paddingRight: tokens.spacingHorizontalL,
+		[`@media (max-width: ${breakpoints.medium}px)`]: {
+			paddingLeft: tokens.spacingHorizontalM,
+			paddingRight: tokens.spacingHorizontalM,
+		},
+	},
+	root: {
+		display: "flex",
+		flexDirection: "column",
+		...shorthands.gap(tokens.spacingVerticalXL),
+		paddingTop: "40px",
+		paddingBottom: tokens.spacingVerticalXXL,
+		paddingLeft: tokens.spacingHorizontalXXL,
+		paddingRight: tokens.spacingHorizontalXXL,
+		backgroundColor: tokens.colorNeutralBackground2,
+		[`@media (max-width: ${breakpoints.medium}px)`]: {
+			paddingTop: tokens.spacingVerticalXXL,
+			paddingBottom: tokens.spacingVerticalL,
+		},
+	},
+	headerContainer: {
+		display: "flex",
+		justifyContent: "flex-end",
+		alignItems: "center",
+		marginBottom: tokens.spacingVerticalM,
+		...shorthands.gap(tokens.spacingHorizontalS),
+	},
+	headerInputWrapper: {
+		transitionProperty: "max-width, opacity",
+		transitionDuration: "0.3s",
+		transitionTimingFunction: "ease-out",
+		overflow: "hidden",
+		maxWidth: 0,
+		opacity: 0,
+	},
+	headerInputWrapperVisible: {
+		maxWidth: "250px",
+		opacity: 1,
+	},
+	mainContent: {
+		display: "flex",
+		flexDirection: "row",
+		...shorthands.gap(tokens.spacingHorizontalXXL),
+		[`@media (max-width: ${breakpoints.tablet}px)`]: {
+			flexDirection: "column",
+			...shorthands.gap(tokens.spacingVerticalXL),
+		},
+	},
+	leftColumn: {
+		display: "flex",
+		flexDirection: "column",
+		flexBasis: "30%",
+		...shorthands.gap(tokens.spacingVerticalL),
+		[`@media (max-width: ${breakpoints.tablet}px)`]: {
+			flexBasis: "100%",
+			order: 1,
+		},
+	},
+	rightColumn: {
+		display: "flex",
+		flexDirection: "column",
+		flexBasis: "70%",
+		...shorthands.gap(tokens.spacingVerticalL),
+		[`@media (max-width: ${breakpoints.tablet}px)`]: {
+			flexBasis: "100%",
+			order: 2,
+		},
+	},
+	historySection: {},
+	controlsSection: {
+		display: "flex",
+		flexDirection: "column",
+		...shorthands.gap(tokens.spacingVerticalL),
+	},
+	apiKeyStoredIcon: {
+		color: tokens.colorStatusSuccessForeground1,
+	},
+	apiKeyMissingIcon: {
+		color: tokens.colorStatusDangerForeground1,
+	},
+	messageBarContainer: {
+		transitionProperty: "max-height, opacity",
+		transitionDuration: "0.3s",
+		transitionTimingFunction: "ease-in-out",
+		overflow: "hidden",
+		maxHeight: 0,
+		opacity: 0,
+	},
+	messageBarContainerVisible: {
+		maxHeight: "60px",
+		opacity: 1,
+		marginBottom: tokens.spacingVerticalM,
+	},
+	amountField: {
+		"& input": {
+			transitionProperty: "outline, box-shadow",
+			transitionDuration: tokens.durationNormal,
+			transitionTimingFunction: tokens.curveEasyEase,
+			outlineStyle: "none",
+		},
+		":focus-within": {
+			"& input": {
+				outlineColor: tokens.colorCompoundBrandStroke,
+				outlineStyle: "solid",
+				outlineWidth: tokens.strokeWidthThick,
+			},
+		},
+	},
+	apiKeySavedIcon: {
+		color: tokens.colorStatusSuccessForeground1,
+	},
+	apiKeyInvalidIcon: {
+		color: tokens.colorStatusWarningForeground1,
+	},
+	apiKeyErrorIcon: {
+		color: tokens.colorStatusDangerForeground1,
+	},
+	apiKeySavingIcon: {
+		// Use default color or a specific one if desired
+	},
+	clearHistoryButton: {
+		marginLeft: tokens.spacingHorizontalS,
+		display: "flex",
+		alignItems: "center",
+		justifyContent: "center",
+		...shorthands.gap(tokens.spacingHorizontalXS),
+	},
+	primaryActionButton: {
+		marginTop: tokens.spacingVerticalS,
+		backgroundColor: tokens.colorBrandBackground,
+		color: tokens.colorNeutralForegroundOnBrand,
+		...shorthands.padding(tokens.spacingVerticalS, tokens.spacingHorizontalL),
+		fontWeight: tokens.fontWeightSemibold,
+		":hover": {
+			backgroundColor: tokens.colorBrandBackgroundHover,
+		},
+		":active": {
+			backgroundColor: tokens.colorBrandBackgroundPressed,
+		},
+		":disabled": {
+			backgroundColor: tokens.colorNeutralBackgroundDisabled,
+			color: tokens.colorNeutralForegroundDisabled,
+		},
+	},
+	headerActionButton: {
+		color: tokens.colorNeutralForeground3,
+		":hover": {
+			color: tokens.colorBrandForeground1,
+			backgroundColor: tokens.colorSubtleBackgroundHover,
+		},
+		":focus": {
+			color: tokens.colorBrandForeground1,
+		},
+	},
+	dismissButton: {
+		color: tokens.colorNeutralForeground2,
+		":hover": {
+			color: tokens.colorNeutralForeground1,
+			backgroundColor: tokens.colorSubtleBackgroundHover,
+		},
+	},
+	destructiveActionButton: {
+		backgroundColor: tokens.colorPaletteRedBackground1,
+		color: tokens.colorNeutralForegroundOnBrand,
+		":hover": {
+			backgroundColor: tokens.colorPaletteRedBackground2,
+		},
+		":active": {
+			backgroundColor: tokens.colorPaletteRedBackground2,
+		},
+	},
+	historyHeader: {
+		display: "flex",
+		alignItems: "center",
+		justifyContent: "space-between",
+		marginBottom: tokens.spacingVerticalS,
+	},
+	historyTitle: {
+		margin: 0,
+		padding: 0,
+		display: "block",
+	},
+	iconButton: {
+		display: "flex",
+		alignItems: "center",
+		justifyContent: "center",
+	},
+});
+
+interface AppProps {
+	toggleTheme: () => void;
+	isDarkMode: boolean;
+}
+
+function App({ toggleTheme, isDarkMode }: AppProps): JSX.Element {
+	const styles = useStyles();
+	const [amount, setAmount] = useState(1000); // Default amount
+	const [fromCurrency, setFromCurrency] = useState("EUR");
+	const [toCurrency, setToCurrency] = useState("USD");
 	const [apiKeyInput, setApiKeyInput] = useState<string>("");
 	const [storedApiKey, setStoredApiKey] = useState<string | null>(null);
 	const [isApiKeyValid, setIsApiKeyValid] = useState<boolean>(true);
-	const [saveError, setSaveError] = useState<string | null>(null);
-	const [rate, setRate] = useState<number | "--">("--");
+	const [rate, setRate] = useState<number>(0);
 	const [rateSource, setRateSource] = useState<RateSource>("idle");
 	const [conversionHistory, setConversionHistory] = useState<
 		ConversionHistoryEntry[]
 	>([]);
+	const [appMessage, setAppMessage] = useState<AppMessage>({
+		text: null,
+		intent: "info",
+		visible: false,
+	});
+	const [isApiKeyHeaderInputVisible, setIsApiKeyHeaderInputVisible] =
+		useState<boolean>(false);
+	const [apiKeySaveStatus, setApiKeySaveStatus] =
+		useState<ApiKeySaveStatus>("idle");
+	const [isHistoryClearDialogOpen, setIsHistoryClearDialogOpen] =
+		useState<boolean>(false);
 
-	const handleFromCurrency = (value: string) => {
+	// Ref to store message timeout ID
+	const messageTimeoutRef = useRef<number | null>(null);
+	// Ref to store blur timeout ID
+	const blurTimeoutRef = useRef<number | null>(null);
+	// Ref to store API Key save debounce timeout ID
+	const saveTimeoutRef = useRef<number | null>(null);
+
+	// Helper function to clear the message timeout
+	const clearMessageTimeout: () => void = () => {
+		if (messageTimeoutRef.current) {
+			clearTimeout(messageTimeoutRef.current);
+			messageTimeoutRef.current = null;
+		}
+	};
+
+	// Helper function to clear the blur timeout
+	const clearBlurTimeout: () => void = () => {
+		if (blurTimeoutRef.current) {
+			clearTimeout(blurTimeoutRef.current);
+			blurTimeoutRef.current = null;
+		}
+	};
+
+	// Helper function to clear the save timeout
+	const clearSaveTimeout: () => void = () => {
+		if (saveTimeoutRef.current) {
+			clearTimeout(saveTimeoutRef.current);
+			saveTimeoutRef.current = null;
+		}
+	};
+
+	// Updated dismissMessage to clear message timeout
+	const dismissMessage: () => void = () => {
+		clearMessageTimeout();
+		setAppMessage((prev) => ({ ...prev, visible: false }));
+	};
+
+	// Helper function to show messages and set timeout
+	const showAppMessage: (
+		text: React.ReactNode,
+		intent: MessageBarIntent,
+		duration?: number,
+	) => void = (
+		text: React.ReactNode,
+		intent: MessageBarIntent,
+		duration: number = MESSAGE_TIMEOUT_DURATION,
+	) => {
+		clearMessageTimeout();
+		setAppMessage({ text, intent, visible: true });
+		messageTimeoutRef.current = setTimeout(() => {
+			dismissMessage();
+		}, duration);
+	};
+
+	// Cleanup timeouts on component unmount
+	useEffect(() => {
+		return () => {
+			clearMessageTimeout();
+			clearBlurTimeout();
+			clearSaveTimeout(); // Clear save timeout on unmount
+		};
+	}, []);
+
+	// Toggle header input visibility
+	const toggleApiKeyHeaderInput: () => void = () => {
+		const willBeVisible = !isApiKeyHeaderInputVisible;
+		setIsApiKeyHeaderInputVisible(willBeVisible);
+		dismissMessage();
+		clearBlurTimeout();
+	};
+
+	// Handle blur for the header API key input
+	const handleApiKeyInputBlur: () => void = () => {
+		clearBlurTimeout();
+		blurTimeoutRef.current = setTimeout(() => {
+			setIsApiKeyHeaderInputVisible(false);
+		}, 150);
+	};
+
+	const handleFromCurrency: (value: string) => void = (value: string) => {
 		setFromCurrency(value);
-		setRate("--");
+		setRate(0);
 		setRateSource("idle");
+		dismissMessage();
 	};
-	const handleToCurrency = (value: string) => {
+	const handleToCurrency: (value: string) => void = (value: string) => {
 		setToCurrency(value);
-		setRate("--");
+		setRate(0);
 		setRateSource("idle");
+		dismissMessage();
 	};
 
-	async function fetchRate(): Promise<void> {
+	const handleAmountChange: (
+		event: React.ChangeEvent<HTMLInputElement>,
+	) => void = (event: React.ChangeEvent<HTMLInputElement>) => {
+		const value = Number(event.target.value);
+		if (!isNaN(value) && value >= 0) {
+			setAmount(value);
+		}
+		setRate(0);
+		setRateSource("idle");
+		dismissMessage();
+	};
+
+	const fetchRate: () => Promise<void> = async () => {
+		dismissMessage();
 		if (!storedApiKey || amount <= 0 || fromCurrency === toCurrency) {
-			setRate(fromCurrency === toCurrency ? 1.0 : "--");
+			setRate(fromCurrency === toCurrency ? 1.0 : 0);
 			setRateSource(fromCurrency === toCurrency ? "api" : "idle");
 			return;
 		}
 
 		setRateSource("loading");
-		setRate("--");
+		setRate(0);
 
 		try {
 			const result: CurrencyRateResult = await getCurrencyRate({
@@ -100,70 +456,111 @@ function App() {
 				console.error(
 					`Failed to get rate (${result.source}), rate: ${result.rate}`,
 				);
-				setRate("--");
+				setRate(0);
 				if (result.source === "error") {
-					// Optionally show a user-facing error message here
+					showAppMessage(
+						"Error fetching currency rate. Check your API key or network connection.",
+						"error",
+					);
 				}
 			}
 		} catch (error) {
 			console.error("Error calling getCurrencyRate service:", error);
-			setRate("--");
+			setRate(0);
 			setRateSource("error");
-		}
-	}
-
-	const handleApiKeyChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-		const newKey = event.target.value.trim();
-		setApiKeyInput(newKey);
-		setSaveError(null);
-		if (newKey === "") {
-			setIsApiKeyValid(true);
-		} else {
-			const isValid = apiKeyRegex.test(newKey);
-			setIsApiKeyValid(isValid);
+			showAppMessage(
+				"An unexpected error occurred while fetching the rate.",
+				"error",
+			);
 		}
 	};
 
-	async function saveApiKey(): Promise<void> {
-		setSaveError(null);
-		const keyToSave = apiKeyInput.trim();
-		if (!isApiKeyValid || keyToSave === "") return;
+	// Modified handleApiKeyChange for auto-save logic
+	const handleApiKeyChange: (
+		event: React.ChangeEvent<HTMLInputElement>,
+	) => void = (event: React.ChangeEvent<HTMLInputElement>) => {
+		clearSaveTimeout(); // Clear any pending save
+		dismissMessage(); // Dismiss previous messages
+		const newKey = event.target.value; // Don't trim here, let validation handle spaces if needed
+		setApiKeyInput(newKey);
+		setIsApiKeyValid(true); // Assume valid initially until debounce checks
 
-		try {
-			await localStorageStoreService(keyToSave);
-			setStoredApiKey(keyToSave);
-			setApiKeyInput(keyToSave);
-			setIsApiKeyValid(true);
-			clearRatesCache();
-			setRate("--");
-			setRateSource("idle");
-		} catch (error) {
-			console.error("Failed to save API key:", error);
-			if (error instanceof Error) {
-				setSaveError(error.message);
-			} else {
-				setSaveError("An unknown error occurred while saving the API key.");
-			}
-			setStoredApiKey(null);
+		if (newKey === "") {
+			setApiKeySaveStatus("idle");
+		} else {
+			setApiKeySaveStatus("validating"); // Set status to validating while typing
 		}
-	}
+	};
 
-	const clearApiAndCache = () => {
+	// useEffect for debounced API Key saving
+	useEffect(() => {
+		// Don't save if the input is empty or just validating
+		if (apiKeyInput === "" || apiKeySaveStatus === "idle") {
+			setApiKeySaveStatus("idle"); // Ensure status is idle if input is empty
+			return;
+		}
+
+		if (apiKeySaveStatus === "validating") {
+			clearSaveTimeout(); // Clear previous timeout if user is still typing
+
+			saveTimeoutRef.current = setTimeout(async () => {
+				const keyToValidate = apiKeyInput.trim(); // Trim now before validation/saving
+				if (keyToValidate === "") {
+					// Check if empty after trim
+					setApiKeySaveStatus("idle");
+					return;
+				}
+
+				const isValidFormat = apiKeyRegex.test(keyToValidate);
+				setIsApiKeyValid(isValidFormat); // Update validity state
+
+				if (!isValidFormat) {
+					setApiKeySaveStatus("invalid");
+					return;
+				}
+
+				// If format is valid, proceed to save
+				setApiKeySaveStatus("saving");
+				try {
+					await localStorageStoreService(keyToValidate);
+					setStoredApiKey(keyToValidate); // Update stored key state
+					setApiKeySaveStatus("saved");
+					clearRatesCache(); // Clear cache on new key save
+					setRate(0);
+					setRateSource("idle");
+				} catch (error) {
+					console.error("Failed to save API key automatically:", error);
+					setApiKeySaveStatus("error");
+					setStoredApiKey(null); // Clear stored key on save error
+				}
+			}, 1000); // Debounce time: 1 second
+		}
+
+		// Cleanup function for the effect
+		return () => {
+			clearSaveTimeout();
+		};
+	}, [apiKeyInput, apiKeySaveStatus]); // Rerun effect when input changes or status becomes validating
+
+	const clearApiAndCache: () => void = () => {
+		dismissMessage();
 		clearLocalStorage();
 		setApiKeyInput("");
 		setStoredApiKey(null);
 		setIsApiKeyValid(true);
-		setSaveError(null);
-		setRate("--");
+		setRate(0);
 		setRateSource("idle");
 		setConversionHistory([]);
 		saveConversionHistoryService([]);
+		showAppMessage("All data cleared.", "warning");
 	};
 
-	const handleClearCacheAndFetch = () => {
+	const handleClearCacheAndFetch: () => void = () => {
+		dismissMessage();
 		clearRatesCache();
-		setRate("--");
+		setRate(0);
 		setRateSource("idle");
+		showAppMessage("Rates cache cleared.", "info");
 		if (storedApiKey && amount > 0 && fromCurrency !== toCurrency) {
 			void fetchRate();
 		}
@@ -181,8 +578,9 @@ function App() {
 				setStoredApiKey(null);
 				setApiKeyInput("");
 				setIsApiKeyValid(false);
-				setSaveError(
-					"Invalid API key loaded from storage. Please enter a valid key.",
+				showAppMessage(
+					"Invalid API key found in storage. Please enter a valid key.",
+					"warning",
 				);
 				clearRatesCache();
 			}
@@ -191,15 +589,19 @@ function App() {
 		setConversionHistory(loadedHistory);
 	}, []);
 
-	const swapCurrencies = () => {
+	const swapCurrencies: () => void = () => {
+		dismissMessage();
 		const temp = fromCurrency;
 		setFromCurrency(toCurrency);
 		setToCurrency(temp);
-		setRate("--");
+		setRate(0);
 		setRateSource("idle");
 	};
 
-	const handleRepeatConversion = (entry: ConversionHistoryEntry) => {
+	const handleRepeatConversion: (entry: ConversionHistoryEntry) => void = (
+		entry: ConversionHistoryEntry,
+	) => {
+		dismissMessage();
 		setFromCurrency(entry.fromCurrency);
 		setToCurrency(entry.toCurrency);
 		setAmount(entry.amount);
@@ -208,184 +610,271 @@ function App() {
 		}
 	};
 
-	const renderRateSourceIndicator = () => {
-		if (rateSource === "loading") {
-			return <span style={{ marginLeft: "8px", fontSize: "small" }}>Loading...</span>;
-		}
-		if (rateSource === "cache") {
-			return (
-				<span
-					title="Data from cache (max 24h old)"
-					style={{ marginLeft: "8px", fontSize: "small", cursor: "help" }}
-				>
-					<ArrowSyncRegular style={{ verticalAlign: "middle" }} /> (cached)
-				</span>
-			);
-		}
-		if (rateSource === "api") {
-			return (
-				<span
-					title="Live data from API"
-					style={{ marginLeft: "8px", fontSize: "small", cursor: "help" }}
-				>
-					<ArrowSyncRegular style={{ verticalAlign: "middle" }} /> (live)
-				</span>
-			);
-		}
-		if (rateSource === "error") {
-			return (
-				<span style={{ marginLeft: "8px", fontSize: "small", color: "red" }}>
-					Error fetching rate
-				</span>
-			);
-		}
-		return null;
-	};
-
-	const clearConversionHistory = () => {
+	const clearConversionHistory: () => void = () => {
+		dismissMessage();
 		setConversionHistory([]);
 		saveConversionHistoryService([]);
+		showAppMessage("Conversion history cleared.", "info");
+	};
+
+	// Function to render the status icon and tooltip
+	const renderApiKeyStatusIcon: () => React.ReactNode = () => {
+		const iconStyle = { fontSize: tokens.fontSizeBase400 }; // Increase icon size
+		switch (apiKeySaveStatus) {
+			case "saving":
+				return (
+					<Tooltip content="Saving API Key..." relationship="label">
+						<ArrowClockwiseRegular
+							className={styles.apiKeySavingIcon}
+							style={iconStyle}
+						/>
+					</Tooltip>
+				);
+			case "saved":
+				return (
+					<Tooltip content="API Key Saved" relationship="label">
+						<CheckmarkCircleRegular
+							className={styles.apiKeySavedIcon}
+							style={iconStyle}
+						/>
+					</Tooltip>
+				);
+			case "invalid":
+				return (
+					<Tooltip content="Invalid API Key Format" relationship="label">
+						<WarningRegular
+							className={styles.apiKeyInvalidIcon}
+							style={iconStyle}
+						/>
+					</Tooltip>
+				);
+			case "error":
+				return (
+					<Tooltip content="Error Saving API Key" relationship="label">
+						<ErrorCircleRegular
+							className={styles.apiKeyErrorIcon}
+							style={iconStyle}
+						/>
+					</Tooltip>
+				);
+			case "validating":
+			case "idle":
+			default:
+				return null; // No icon for idle or validating states
+		}
+	};
+
+	// Handle confirmation to clear history
+	const handleConfirmClearHistory: () => void = () => {
+		clearConversionHistory();
+		setIsHistoryClearDialogOpen(false);
 	};
 
 	return (
-		<>
-			<CurrencySelector
-				value={fromCurrency}
-				onChange={handleFromCurrency}
-				where={"from"}
-			/>
+		<div className={styles.appContainer}>
+			<Card className={styles.root}>
+				{/* Header Row */}
+				<div className={styles.headerContainer}>
+					<div
+						className={mergeClasses(
+							styles.headerInputWrapper,
+							isApiKeyHeaderInputVisible && styles.headerInputWrapperVisible,
+						)}
+						style={{ display: "flex", alignItems: "center" }}
+					>
+						{isApiKeyHeaderInputVisible && (
+							<>
+								<Input
+									aria-label="API Key Header Input"
+									type="password"
+									placeholder="Enter API Key..."
+									size="small"
+									appearance="outline"
+									style={{
+										width: "200px",
+										marginRight: tokens.spacingHorizontalSNudge,
+									}}
+									value={apiKeyInput}
+									onChange={handleApiKeyChange}
+									onBlur={handleApiKeyInputBlur}
+								/>
+								{/* Render the status icon */}
+								{renderApiKeyStatusIcon()}
+							</>
+						)}
+					</div>
+					<Button
+						appearance="subtle"
+						icon={<KeyRegular />}
+						className={mergeClasses(
+							styles.headerActionButton,
+							storedApiKey ? styles.apiKeyStoredIcon : styles.apiKeyMissingIcon,
+						)}
+						onClick={toggleApiKeyHeaderInput}
+						aria-label={
+							isApiKeyHeaderInputVisible
+								? "Hide API Key Input"
+								: "Show API Key Input"
+						}
+					/>
+					<ThemeSwitcher isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
+				</div>
 
-			<ButtonPrimary onClick={swapCurrencies}>
-				<ArrowClockwiseFilled style={{ fontSize: "24px" }} />
-			</ButtonPrimary>
-
-			<CurrencySelector
-				value={toCurrency}
-				onChange={handleToCurrency}
-				where={"to"}
-			/>
-			<Field
-				label={"Amount"}
-				value={amount.toString()}
-				type={"number"}
-				onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-					const value = Number(event.target.value);
-					if (!isNaN(value) && value >= 0) {
-						setAmount(value);
-					}
-					setRate("--");
-					setRateSource("idle");
-				}}
-			/>
-			<Field
-				label={"Api Key"}
-				validationState={
-					saveError || (!isApiKeyValid && apiKeyInput !== "")
-						? "error"
-						: storedApiKey && apiKeyInput === storedApiKey
-							? "success"
-							: isApiKeyValid && apiKeyInput !== ""
-								? "warning"
-								: "none"
-				}
-				validationMessage={
-					saveError
-						? saveError
-						: !isApiKeyValid && apiKeyInput !== ""
-							? "Invalid format. Must start with fca_live_ + 40 alphanumeric chars."
-							: storedApiKey && apiKeyInput === storedApiKey
-								? "API Key is valid and stored."
-								: isApiKeyValid && apiKeyInput !== ""
-									? "Valid format. Press Save to store this key."
-									: apiKeyInput === "" && !storedApiKey
-										? "API Key is required."
-										: ""
-				}
-				required
-				value={apiKeyInput}
-				onChange={handleApiKeyChange}
-			/>
-			<p
-				style={{ fontSize: "small", marginTop: "-10px", marginBottom: "10px" }}
-			>
-				Get your free API key from{" "}
-				<Link
-					href="https://freecurrencyapi.com/"
-					target="_blank"
-					rel="noopener noreferrer"
+				{/* App Message Bar Container */}
+				<div
+					className={mergeClasses(
+						styles.messageBarContainer,
+						appMessage.visible && styles.messageBarContainerVisible,
+					)}
 				>
-					freecurrencyapi.com
-				</Link>
-			</p>
-			<div>
-				<Label
-					text={`Rate: ${typeof rate === "number" ? rate.toFixed(4) : "--"}`}
-					size={"large"}
-				/>
-				{renderRateSourceIndicator()}
-			</div>
-			{typeof rate === "number" && (
-				<Label
-					text={`${amount} ${fromCurrency} = ${(amount * rate).toFixed(2)} ${toCurrency}`}
-					size={"large"}
-				/>
-			)}
+					{appMessage.visible && (
+						<MessageBar intent={appMessage.intent} style={{ width: "100%" }}>
+							<MessageBarBody>
+								<MessageBarTitle></MessageBarTitle>
+								{appMessage.text}
+							</MessageBarBody>
+							<Button
+								appearance="transparent"
+								icon={<DismissRegular />}
+								onClick={dismissMessage}
+								aria-label="Dismiss message"
+								className={styles.dismissButton}
+							/>
+						</MessageBar>
+					)}
+				</div>
 
-			<div style={{ display: "flex", gap: "10px", flexWrap: "nowrap", marginTop: "10px" }}>
-				<ButtonPrimary
-					onClick={fetchRate}
-					disabled={!storedApiKey || amount <= 0 || rateSource === "loading"}
-				>
-					<span>{rateSource === "loading" ? "Calculating..." : "Calculate"}</span>
-					<MoneyCalculatorFilled style={{ fontSize: "24px" }} />
-				</ButtonPrimary>
+				<div className={styles.mainContent}>
+					{/* Left Column: Inputs and Controls */}
+					<div className={styles.leftColumn}>
+						{/* Conversion Block */}
+						<div className={styles.controlsSection}>
+							<CurrencyRow
+								fromCurrency={fromCurrency}
+								toCurrency={toCurrency}
+								onFromChange={handleFromCurrency}
+								onToChange={handleToCurrency}
+								onSwap={swapCurrencies}
+							/>
+							<Field label="Amount" size="large" className={styles.amountField}>
+								<Input
+									type="number"
+									value={amount.toString()}
+									onChange={handleAmountChange}
+									appearance="outline"
+									size="large"
+								/>
+							</Field>
+							<ResultSection
+								rate={typeof rate === "number" ? rate : 0}
+								rateSource={rateSource}
+								amount={amount}
+								fromCurrency={fromCurrency}
+								toCurrency={toCurrency}
+								onRefreshRates={handleClearCacheAndFetch}
+							/>
+						</div>
 
-				<ButtonPrimary
-					onClick={saveApiKey}
-					disabled={
-						!isApiKeyValid ||
-						apiKeyInput === "" ||
-						apiKeyInput === storedApiKey
-					}
-				>
-					<span>Save Key</span>
-					<SaveFilled style={{ fontSize: "24px" }} />
-				</ButtonPrimary>
+						<Button
+							appearance="primary"
+							icon={<MoneyCalculatorFilled />}
+							onClick={fetchRate}
+							disabled={
+								!storedApiKey || amount <= 0 || rateSource === "loading"
+							}
+							className={styles.primaryActionButton}
+						>
+							{rateSource === "loading" ? "Calculating..." : "Calculate"}
+						</Button>
 
-				<ButtonSecondary
-					icon={<ArrowSyncRegular style={{ fontSize: "24px" }} />}
-					appearance="secondary"
-					onClick={handleClearCacheAndFetch}
-					disabled={rateSource === "loading"}
-					title="Clear cached rates and fetch live data"
-				>
-					<span>Refresh Rates</span>
-					<ArrowSyncRegular style={{ fontSize: "24px" }} />	
-				</ButtonSecondary>
+						<Divider />
 
-				<ButtonSecondary
-					icon={<HistoryDismissRegular style={{ fontSize: "24px" }} />}
-					appearance="secondary"
-					onClick={clearConversionHistory}
-					disabled={conversionHistory.length === 0}
-					title="Clear conversion history"
-				>
-					<span>Clear History</span>
-					<HistoryDismissRegular style={{ fontSize: "24px" }} />
-				</ButtonSecondary>
+						<div className={styles.controlsSection}>
+							<ActionButtons
+								storedApiKey={storedApiKey}
+								amount={amount}
+								rateSource={rateSource}
+								isApiKeyValid={isApiKeyValid}
+								apiKeyInput={apiKeyInput}
+								isHistoryEmpty={conversionHistory.length === 0}
+								onClearHistory={clearConversionHistory}
+								onClearAll={clearApiAndCache}
+							/>
+						</div>
+					</div>
 
-				<ButtonDanger onClick={clearApiAndCache}>
-					<span>Clear all data</span>
-					<DeleteFilled style={{ fontSize: "24px" }} />
-				</ButtonDanger>
-
-			</div>
-
-			<ConversionHistory
-				history={conversionHistory}
-				onRepeat={handleRepeatConversion}
-			/>
-		</>
+					{/* Right Column: History */}
+					<div className={styles.rightColumn}>
+						{/* History Section Content */}
+						<div className={styles.historySection}>
+							<div className={styles.historyHeader}>
+								<Text weight="semibold" as="h2" className={styles.historyTitle}>
+									Conversion History (Last 10)
+								</Text>
+								<Dialog
+									open={isHistoryClearDialogOpen}
+									onOpenChange={(_event, data) =>
+										setIsHistoryClearDialogOpen(data.open)
+									}
+								>
+									<DialogTrigger disableButtonEnhancement>
+										<Button
+											appearance="outline"
+											icon={<HistoryDismissRegular />}
+											disabled={conversionHistory.length === 0}
+											title="Clear conversion history"
+											size="small"
+											className={styles.clearHistoryButton}
+										>
+											Clear History
+										</Button>
+									</DialogTrigger>
+									<DialogSurface>
+										<DialogBody>
+											<DialogTitle>
+												<WarningRegular
+													style={{
+														color: tokens.colorPaletteYellowForeground1,
+														fontSize: tokens.fontSizeBase500,
+														marginRight: tokens.spacingHorizontalS,
+													}}
+												/>
+												Confirmar eliminación del historial
+											</DialogTitle>
+											<DialogContent>
+												¿Estás seguro de que deseas eliminar todo el historial
+												de conversiones? Esta acción no se puede deshacer.
+											</DialogContent>
+											<DialogActions>
+												<Button
+													appearance="subtle"
+													onClick={() => setIsHistoryClearDialogOpen(false)}
+													className={styles.dismissButton}
+												>
+													Cancelar
+												</Button>
+												<Button
+													appearance="primary"
+													onClick={handleConfirmClearHistory}
+													className={styles.destructiveActionButton}
+												>
+													Eliminar historial
+												</Button>
+											</DialogActions>
+										</DialogBody>
+									</DialogSurface>
+								</Dialog>
+							</div>
+							<Divider />
+							<ConversionHistory
+								history={conversionHistory}
+								onRepeat={handleRepeatConversion}
+							/>
+						</div>
+					</div>
+				</div>
+			</Card>
+		</div>
 	);
 }
 
