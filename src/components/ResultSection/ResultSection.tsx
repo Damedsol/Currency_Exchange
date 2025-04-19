@@ -32,10 +32,22 @@ const useStyles = makeStyles({
 	refreshButton: {
 		marginRight: tokens.spacingHorizontalS,
 		minWidth: "auto",
-		height: "24px",
+		height: "28px",
+		width: "28px",
 		color: tokens.colorBrandForeground1,
+		backgroundColor: tokens.colorNeutralBackground1,
+		...shorthands.borderRadius("50%"),
+		...shorthands.padding(0),
 		":hover": {
-			color: tokens.colorBrandForeground2,
+			backgroundColor: tokens.colorNeutralBackground1Hover,
+			color: tokens.colorBrandForeground1,
+		},
+		":active": {
+			backgroundColor: tokens.colorNeutralBackground1Pressed,
+		},
+		":disabled": {
+			color: tokens.colorNeutralForegroundDisabled,
+			backgroundColor: tokens.colorNeutralBackgroundDisabled,
 		},
 	},
 });
@@ -68,7 +80,7 @@ export const ResultSection: React.FC<ResultSectionProps> = ({
 			{/* Row for rate and indicator */}
 			<div className={styles.rateRow}>
 				<Button
-					appearance="transparent"
+					appearance="subtle"
 					size="small"
 					icon={<ArrowClockwiseRegular />}
 					onClick={onRefreshRates}

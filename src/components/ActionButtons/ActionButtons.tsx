@@ -11,10 +11,7 @@ import {
 	DialogContent,
 	DialogActions,
 } from "@fluentui/react-components";
-import {
-	DeleteRegular,
-	WarningRegular,
-} from "@fluentui/react-icons";
+import { DeleteRegular, WarningRegular } from "@fluentui/react-icons";
 import React, { useState } from "react";
 
 const actionButtonBreakpoints = {
@@ -32,13 +29,29 @@ const useStyles = makeStyles({
 	clearButton: {
 		backgroundColor: tokens.colorNeutralBackground1,
 		color: tokens.colorPaletteRedForeground1,
+		...shorthands.padding(tokens.spacingVerticalS, tokens.spacingHorizontalL),
 		...shorthands.borderRadius(tokens.borderRadiusMedium),
+		fontWeight: tokens.fontWeightSemibold,
+		...shorthands.border(
+			tokens.strokeWidthThin,
+			"solid",
+			tokens.colorPaletteRedBorder1,
+		),
 		":hover": {
 			backgroundColor: tokens.colorNeutralBackground1Hover,
 			color: tokens.colorPaletteRedForeground1,
+			...shorthands.border(
+				tokens.strokeWidthThin,
+				"solid",
+				tokens.colorPaletteRedBorderActive,
+			),
 		},
 		":active": {
 			backgroundColor: tokens.colorNeutralBackground1Pressed,
+			color: tokens.colorPaletteRedForeground1,
+		},
+		":focus-visible": {
+			outlineColor: tokens.colorPaletteRedBorder1,
 		},
 	},
 	dialogTitle: {
@@ -59,7 +72,7 @@ const useStyles = makeStyles({
 		":active": {
 			backgroundColor: tokens.colorPaletteRedBorderActive,
 		},
-	}
+	},
 });
 
 type RateSource = "idle" | "cache" | "api" | "error" | "loading";
@@ -74,9 +87,7 @@ interface ActionButtonsProps {
 	onClearAll: () => void;
 }
 
-export const ActionButtons: React.FC<ActionButtonsProps> = ({
-	onClearAll,
-}) => {
+export const ActionButtons: React.FC<ActionButtonsProps> = ({ onClearAll }) => {
 	const styles = useStyles();
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -87,7 +98,10 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({
 
 	return (
 		<div className={styles.container}>
-			<Dialog open={isDialogOpen} onOpenChange={(event, data) => setIsDialogOpen(data.open)}>
+			<Dialog
+				open={isDialogOpen}
+				onOpenChange={(event, data) => setIsDialogOpen(data.open)}
+			>
 				<DialogTrigger disableButtonEnhancement>
 					<Button
 						appearance="outline"
@@ -105,13 +119,22 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({
 							Confirmar eliminación
 						</DialogTitle>
 						<DialogContent>
-							¿Estás seguro de que deseas eliminar todos los datos almacenados? Esta acción eliminará tu clave API y todo el historial de conversiones. Esta acción no se puede deshacer.
+							¿Estás seguro de que deseas eliminar todos los datos almacenados?
+							Esta acción eliminará tu clave API y todo el historial de
+							conversiones. Esta acción no se puede deshacer.
 						</DialogContent>
 						<DialogActions>
-							<Button appearance="subtle" onClick={() => setIsDialogOpen(false)}>
+							<Button
+								appearance="subtle"
+								onClick={() => setIsDialogOpen(false)}
+							>
 								Cancelar
 							</Button>
-							<Button appearance="primary" onClick={handleConfirmClear} className={styles.confirmButton}>
+							<Button
+								appearance="primary"
+								onClick={handleConfirmClear}
+								className={styles.confirmButton}
+							>
 								Eliminar datos
 							</Button>
 						</DialogActions>

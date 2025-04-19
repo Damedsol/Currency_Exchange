@@ -21,6 +21,19 @@ const useStyles = makeStyles({
 	swapButton: {
 		// Align the button to the right end instead of center
 		alignSelf: "flex-end",
+		backgroundColor: tokens.colorBrandBackground,
+		color: tokens.colorNeutralForegroundOnBrand,
+		width: "32px",
+		height: "32px",
+		":hover": {
+			backgroundColor: tokens.colorBrandBackgroundHover,
+		},
+		":active": {
+			backgroundColor: tokens.colorBrandBackgroundPressed,
+		},
+		":focus-visible": {
+			outlineColor: tokens.colorBrandStroke1,
+		},
 	},
 });
 

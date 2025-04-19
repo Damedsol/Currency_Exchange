@@ -7,7 +7,7 @@ import {
 import {
 	HistoryRegular,
 	GlobeRegular,
-	ErrorCircleRegular
+	ErrorCircleRegular,
 } from "@fluentui/react-icons";
 import React from "react";
 
@@ -44,7 +44,11 @@ export const RateSourceIndicator: React.FC<RateSourceIndicatorProps> = ({
 	const styles = useStyles();
 
 	// Common props for Text component - se especifica como 200 literal, no number
-	const textProps = { size: 200 as const, as: "span" as const, className: styles.text };
+	const textProps = {
+		size: 200 as const,
+		as: "span" as const,
+		className: styles.text,
+	};
 
 	if (rateSource === "loading") {
 		return <Text {...textProps}>Loading...</Text>;
@@ -56,7 +60,11 @@ export const RateSourceIndicator: React.FC<RateSourceIndicatorProps> = ({
 				title="Data from cache (max 24h old)"
 				className={`${styles.text} ${styles.help}`}
 			>
-				<HistoryRegular className={styles.cacheIcon} style={{ verticalAlign: "middle" }} /> (cached)
+				<HistoryRegular
+					className={styles.cacheIcon}
+					style={{ verticalAlign: "middle" }}
+				/>{" "}
+				(cached)
 			</Text>
 		);
 	}
@@ -67,14 +75,19 @@ export const RateSourceIndicator: React.FC<RateSourceIndicatorProps> = ({
 				title="Live data from API"
 				className={`${styles.text} ${styles.help}`}
 			>
-				<GlobeRegular className={styles.liveIcon} style={{ verticalAlign: "middle" }} /> (live)
+				<GlobeRegular
+					className={styles.liveIcon}
+					style={{ verticalAlign: "middle" }}
+				/>{" "}
+				(live)
 			</Text>
 		);
 	}
 	if (rateSource === "error") {
 		return (
 			<Text {...textProps} className={`${styles.text} ${styles.error}`}>
-				<ErrorCircleRegular style={{ verticalAlign: "middle" }} /> Error fetching rate
+				<ErrorCircleRegular style={{ verticalAlign: "middle" }} /> Error
+				fetching rate
 			</Text>
 		);
 	}

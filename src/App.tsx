@@ -225,8 +225,54 @@ const useStyles = makeStyles({
 			color: tokens.colorNeutralForegroundDisabled,
 			backgroundColor: tokens.colorNeutralBackgroundDisabled,
 		},
-		...shorthands.padding(tokens.spacingHorizontalXS, tokens.spacingHorizontalS),
+		...shorthands.padding(
+			tokens.spacingHorizontalXS,
+			tokens.spacingHorizontalS,
+		),
 		...shorthands.borderRadius(tokens.borderRadiusMedium),
+	},
+	primaryActionButton: {
+		backgroundColor: tokens.colorBrandBackground,
+		color: tokens.colorNeutralForegroundOnBrand,
+		...shorthands.padding(tokens.spacingVerticalS, tokens.spacingHorizontalL),
+		fontWeight: tokens.fontWeightSemibold,
+		":hover": {
+			backgroundColor: tokens.colorBrandBackgroundHover,
+		},
+		":active": {
+			backgroundColor: tokens.colorBrandBackgroundPressed,
+		},
+		":disabled": {
+			backgroundColor: tokens.colorNeutralBackgroundDisabled,
+			color: tokens.colorNeutralForegroundDisabled,
+		},
+	},
+	headerActionButton: {
+		color: tokens.colorNeutralForeground3,
+		":hover": {
+			color: tokens.colorBrandForeground1,
+			backgroundColor: tokens.colorSubtleBackgroundHover,
+		},
+		":focus": {
+			color: tokens.colorBrandForeground1,
+		},
+	},
+	dismissButton: {
+		color: tokens.colorNeutralForeground2,
+		":hover": {
+			color: tokens.colorNeutralForeground1,
+			backgroundColor: tokens.colorSubtleBackgroundHover,
+		},
+	},
+	destructiveActionButton: {
+		backgroundColor: tokens.colorPaletteRedBackground1,
+		color: tokens.colorNeutralForegroundOnBrand,
+		":hover": {
+			backgroundColor: tokens.colorPaletteRedBackground2,
+		},
+		":active": {
+			backgroundColor: tokens.colorPaletteRedBackground2,
+		},
 	},
 });
 
@@ -257,7 +303,8 @@ function App({ toggleTheme, isDarkMode }: AppProps): JSX.Element {
 		useState<boolean>(false);
 	const [apiKeySaveStatus, setApiKeySaveStatus] =
 		useState<ApiKeySaveStatus>("idle");
-	const [isHistoryClearDialogOpen, setIsHistoryClearDialogOpen] = useState<boolean>(false);
+	const [isHistoryClearDialogOpen, setIsHistoryClearDialogOpen] =
+		useState<boolean>(false);
 
 	// Ref to store message timeout ID
 	const messageTimeoutRef = useRef<number | null>(null);
@@ -306,12 +353,12 @@ function App({ toggleTheme, isDarkMode }: AppProps): JSX.Element {
 		intent: MessageBarIntent,
 		duration: number = MESSAGE_TIMEOUT_DURATION,
 	) => {
-			clearMessageTimeout();
-			setAppMessage({ text, intent, visible: true });
-			messageTimeoutRef.current = setTimeout(() => {
-				dismissMessage();
-			}, duration);
-		};
+		clearMessageTimeout();
+		setAppMessage({ text, intent, visible: true });
+		messageTimeoutRef.current = setTimeout(() => {
+			dismissMessage();
+		}, duration);
+	};
 
 	// Cleanup timeouts on component unmount
 	useEffect(() => {
@@ -351,7 +398,9 @@ function App({ toggleTheme, isDarkMode }: AppProps): JSX.Element {
 		dismissMessage();
 	};
 
-	const handleAmountChange: (event: React.ChangeEvent<HTMLInputElement>) => void = (event: React.ChangeEvent<HTMLInputElement>) => {
+	const handleAmountChange: (
+		event: React.ChangeEvent<HTMLInputElement>,
+	) => void = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const value = Number(event.target.value);
 		if (!isNaN(value) && value >= 0) {
 			setAmount(value);
@@ -421,10 +470,12 @@ function App({ toggleTheme, isDarkMode }: AppProps): JSX.Element {
 				"error",
 			);
 		}
-	}
+	};
 
 	// Modified handleApiKeyChange for auto-save logic
-	const handleApiKeyChange: (event: React.ChangeEvent<HTMLInputElement>) => void = (event: React.ChangeEvent<HTMLInputElement>) => {
+	const handleApiKeyChange: (
+		event: React.ChangeEvent<HTMLInputElement>,
+	) => void = (event: React.ChangeEvent<HTMLInputElement>) => {
 		clearSaveTimeout(); // Clear any pending save
 		dismissMessage(); // Dismiss previous messages
 		const newKey = event.target.value; // Don't trim here, let validation handle spaces if needed
@@ -544,7 +595,9 @@ function App({ toggleTheme, isDarkMode }: AppProps): JSX.Element {
 		setRateSource("idle");
 	};
 
-	const handleRepeatConversion: (entry: ConversionHistoryEntry) => void = (entry: ConversionHistoryEntry) => {
+	const handleRepeatConversion: (entry: ConversionHistoryEntry) => void = (
+		entry: ConversionHistoryEntry,
+	) => {
 		dismissMessage();
 		setFromCurrency(entry.fromCurrency);
 		setToCurrency(entry.toCurrency);
@@ -650,9 +703,10 @@ function App({ toggleTheme, isDarkMode }: AppProps): JSX.Element {
 					<Button
 						appearance="subtle"
 						icon={<KeyRegular />}
-						className={
-							storedApiKey ? styles.apiKeyStoredIcon : styles.apiKeyMissingIcon
-						}
+						className={mergeClasses(
+							styles.headerActionButton,
+							storedApiKey ? styles.apiKeyStoredIcon : styles.apiKeyMissingIcon,
+						)}
 						onClick={toggleApiKeyHeaderInput}
 						aria-label={
 							isApiKeyHeaderInputVisible
@@ -681,6 +735,7 @@ function App({ toggleTheme, isDarkMode }: AppProps): JSX.Element {
 								icon={<DismissRegular />}
 								onClick={dismissMessage}
 								aria-label="Dismiss message"
+								className={styles.dismissButton}
 							/>
 						</MessageBar>
 					)}
@@ -721,7 +776,10 @@ function App({ toggleTheme, isDarkMode }: AppProps): JSX.Element {
 							appearance="primary"
 							icon={<MoneyCalculatorFilled />}
 							onClick={fetchRate}
-							disabled={!storedApiKey || amount <= 0 || rateSource === "loading"}
+							disabled={
+								!storedApiKey || amount <= 0 || rateSource === "loading"
+							}
+							className={styles.primaryActionButton}
 						>
 							{rateSource === "loading" ? "Calculating..." : "Calculate"}
 						</Button>
@@ -739,7 +797,6 @@ function App({ toggleTheme, isDarkMode }: AppProps): JSX.Element {
 								onClearHistory={clearConversionHistory}
 								onClearAll={clearApiAndCache}
 							/>
-
 						</div>
 					</div>
 
@@ -747,11 +804,23 @@ function App({ toggleTheme, isDarkMode }: AppProps): JSX.Element {
 					<div className={styles.rightColumn}>
 						{/* History Section Content */}
 						<div className={styles.historySection}>
-							<div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: tokens.spacingVerticalS }}>
+							<div
+								style={{
+									display: "flex",
+									alignItems: "center",
+									justifyContent: "space-between",
+									marginBottom: tokens.spacingVerticalS,
+								}}
+							>
 								<Text weight="semibold" as="h2" style={{ display: "block" }}>
 									Conversion History (Last 10)
 								</Text>
-								<Dialog open={isHistoryClearDialogOpen} onOpenChange={(event, data) => setIsHistoryClearDialogOpen(data.open)}>
+								<Dialog
+									open={isHistoryClearDialogOpen}
+									onOpenChange={(event, data) =>
+										setIsHistoryClearDialogOpen(data.open)
+									}
+								>
 									<DialogTrigger disableButtonEnhancement>
 										<Button
 											appearance="outline"
@@ -767,23 +836,31 @@ function App({ toggleTheme, isDarkMode }: AppProps): JSX.Element {
 									<DialogSurface>
 										<DialogBody>
 											<DialogTitle>
-												<WarningRegular style={{ color: tokens.colorPaletteYellowForeground1, fontSize: tokens.fontSizeBase500, marginRight: tokens.spacingHorizontalS }} />
+												<WarningRegular
+													style={{
+														color: tokens.colorPaletteYellowForeground1,
+														fontSize: tokens.fontSizeBase500,
+														marginRight: tokens.spacingHorizontalS,
+													}}
+												/>
 												Confirmar eliminación del historial
 											</DialogTitle>
 											<DialogContent>
-												¿Estás seguro de que deseas eliminar todo el historial de conversiones? Esta acción no se puede deshacer.
+												¿Estás seguro de que deseas eliminar todo el historial
+												de conversiones? Esta acción no se puede deshacer.
 											</DialogContent>
 											<DialogActions>
-												<Button appearance="subtle" onClick={() => setIsHistoryClearDialogOpen(false)}>
+												<Button
+													appearance="subtle"
+													onClick={() => setIsHistoryClearDialogOpen(false)}
+													className={styles.dismissButton}
+												>
 													Cancelar
 												</Button>
 												<Button
 													appearance="primary"
 													onClick={handleConfirmClearHistory}
-													style={{
-														backgroundColor: tokens.colorPaletteRedBackground1,
-														color: tokens.colorNeutralForegroundOnBrand
-													}}
+													className={styles.destructiveActionButton}
 												>
 													Eliminar historial
 												</Button>
