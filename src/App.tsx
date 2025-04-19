@@ -665,7 +665,7 @@ function App({ toggleTheme, isDarkMode }: AppProps): JSX.Element {
 	};
 
 	// Handle confirmation to clear history
-	const handleConfirmClearHistory = () => {
+	const handleConfirmClearHistory: () => void = () => {
 		clearConversionHistory();
 		setIsHistoryClearDialogOpen(false);
 	};
@@ -813,7 +813,7 @@ function App({ toggleTheme, isDarkMode }: AppProps): JSX.Element {
 								</Text>
 								<Dialog
 									open={isHistoryClearDialogOpen}
-									onOpenChange={(event, data) =>
+									onOpenChange={(_event, data) =>
 										setIsHistoryClearDialogOpen(data.open)
 									}
 								>

@@ -14,10 +14,6 @@ import {
 import { DeleteRegular, WarningRegular } from "@fluentui/react-icons";
 import React, { useState } from "react";
 
-const actionButtonBreakpoints = {
-	mobile: 480,
-};
-
 const useStyles = makeStyles({
 	container: {
 		display: "flex",
@@ -91,7 +87,7 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({ onClearAll }) => {
 	const styles = useStyles();
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-	const handleConfirmClear = () => {
+	const handleConfirmClear: () => void = () => {
 		onClearAll();
 		setIsDialogOpen(false);
 	};
@@ -100,7 +96,7 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({ onClearAll }) => {
 		<div className={styles.container}>
 			<Dialog
 				open={isDialogOpen}
-				onOpenChange={(event, data) => setIsDialogOpen(data.open)}
+				onOpenChange={(_event, data) => setIsDialogOpen(data.open)}
 			>
 				<DialogTrigger disableButtonEnhancement>
 					<Button

@@ -129,7 +129,7 @@ const formatShortDate = (timestamp: string): string => {
 export const ConversionHistory = ({
 	history,
 	onRepeat,
-}: ConversionHistoryProps) => {
+}: ConversionHistoryProps): JSX.Element => {
 	const styles = useStyles();
 	// State for visibility transition
 	const [isVisible, setIsVisible] = useState(false);
@@ -244,11 +244,11 @@ export const ConversionHistory = ({
 									</TableCell>
 									<TableCell className={styles.timestampCell}>
 										<Tooltip
-											content={formatTimestamp(entry.timestamp)}
+											content={formatTimestamp(entry.timestamp.toString())}
 											relationship="label"
 										>
 											<TableCellLayout truncate>
-												{formatShortDate(entry.timestamp)}
+												{formatShortDate(entry.timestamp.toString())}
 											</TableCellLayout>
 										</Tooltip>
 									</TableCell>
