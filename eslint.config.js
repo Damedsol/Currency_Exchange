@@ -42,7 +42,7 @@ export default [
 			"import/order": [
 				"error",
 				{
-					"groups": [
+					groups: [
 						"builtin", // Módulos de Node.js
 						"external", // Paquetes npm
 						"internal", // Imports marcados como internos en el proyecto
@@ -50,14 +50,14 @@ export default [
 						"sibling", // Imports que comienzan con .
 						"index", // Imports del mismo directorio
 						"object", // Imports de tipo object
-						"type" // Imports de tipo
+						"type", // Imports de tipo
 					],
 					"newlines-between": "always", // Siempre línea en blanco entre grupos
-					"alphabetize": {
-						"order": "asc", // Ordenar alfabéticamente
-						"caseInsensitive": true // Ignorar mayúsculas y minúsculas
-					}
-				}
+					alphabetize: {
+						order: "asc", // Ordenar alfabéticamente
+						caseInsensitive: true, // Ignorar mayúsculas y minúsculas
+					},
+				},
 			],
 
 			// Reglas para eliminar importaciones no utilizadas
@@ -66,19 +66,22 @@ export default [
 			"unused-imports/no-unused-vars": [
 				"warn",
 				{
-					"vars": "all", // Comprobar todas las variables
-					"varsIgnorePattern": "^_", // Ignorar variables que empiezan con _
-					"args": "after-used", // Comprobar argumentos después de los utilizados
-					"argsIgnorePattern": "^_" // Ignorar argumentos que empiezan con _
-				}
+					vars: "all", // Comprobar todas las variables
+					varsIgnorePattern: "^_", // Ignorar variables que empiezan con _
+					args: "after-used", // Comprobar argumentos después de los utilizados
+					argsIgnorePattern: "^_", // Ignorar argumentos que empiezan con _
+				},
 			],
 
 			// Reglas para mantener consistencia en el código
 			"@typescript-eslint/no-explicit-any": "warn", // Advertir sobre el uso de 'any'
-			"@typescript-eslint/explicit-function-return-type": ["warn", {
-				"allowExpressions": true,
-				"allowTypedFunctionExpressions": true
-			}], // Exigir tipos de retorno explícitos en funciones
+			"@typescript-eslint/explicit-function-return-type": [
+				"warn",
+				{
+					allowExpressions: true,
+					allowTypedFunctionExpressions: true,
+				},
+			], // Exigir tipos de retorno explícitos en funciones
 			"@typescript-eslint/no-unused-vars": "off", // Desactivamos la regla TS en favor de unused-imports
 		},
 	},
