@@ -356,12 +356,12 @@ function App({ toggleTheme, isDarkMode }: AppProps): JSX.Element {
 		intent: MessageBarIntent,
 		duration: number = MESSAGE_TIMEOUT_DURATION,
 	) => {
-			clearMessageTimeout();
-			setAppMessage({ text, intent, visible: true });
-			messageTimeoutRef.current = setTimeout(() => {
-				dismissMessage();
-			}, duration);
-		};
+		clearMessageTimeout();
+		setAppMessage({ text, intent, visible: true });
+		messageTimeoutRef.current = setTimeout(() => {
+			dismissMessage();
+		}, duration);
+	};
 
 	// Cleanup timeouts on component unmount
 	useEffect(() => {

@@ -3,7 +3,6 @@ import {
 	makeStyles,
 	shorthands,
 	tokens,
-	Text,
 	TableBody,
 	TableCell,
 	TableRow,
@@ -174,7 +173,10 @@ export const ConversionHistory = ({
 							<TableHeaderCell className={styles.headerCell}>
 								Timestamp
 							</TableHeaderCell>
-							<TableHeaderCell className={styles.headerCell} style={{ width: "60px" }}>
+							<TableHeaderCell
+								className={styles.headerCell}
+								style={{ width: "60px" }}
+							>
 								Action
 							</TableHeaderCell>
 						</TableRow>
@@ -241,7 +243,10 @@ export const ConversionHistory = ({
 										</Tooltip>
 									</TableCell>
 									<TableCell className={styles.timestampCell}>
-										<Tooltip content={formatTimestamp(entry.timestamp)} relationship="label">
+										<Tooltip
+											content={formatTimestamp(entry.timestamp)}
+											relationship="label"
+										>
 											<TableCellLayout truncate>
 												{formatShortDate(entry.timestamp)}
 											</TableCellLayout>
