@@ -7,7 +7,6 @@ import {
 	Tooltip,
 } from "@fluentui/react-components";
 import { ArrowClockwiseRegular } from "@fluentui/react-icons";
-import React from "react";
 
 import { RateSourceIndicator } from "../RateSourceIndicator/RateSourceIndicator";
 
@@ -81,7 +80,7 @@ export const ResultSection = ({
 	fromCurrency,
 	toCurrency,
 	onRefreshRates,
-}: ResultSectionProps) => {
+}: ResultSectionProps): JSX.Element => {
 	const styles = useStyles();
 
 	// Calculate the conversion result

@@ -24,7 +24,7 @@ export function CurrencySelector(props: {
 }): React.JSX.Element {
 	const styles = useStyles();
 	const id = useId();
-	const handleInputChange = (event: { target: { value: string } }) => {
+	const handleInputChange = (event: { target: { value: string } }): void => {
 		props.onChange(event.target.value);
 	};
 	const TransformData: Currency[] = Array.from(
