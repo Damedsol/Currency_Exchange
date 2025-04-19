@@ -1,7 +1,7 @@
 # Currency Exchange 💱
 
 [![License: CC BY 4.0](https://img.shields.io/badge/License-CC_BY_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/)
-[![Version](https://img.shields.io/badge/version-1.3.0-blue.svg)](https://github.com/your-username/currencyExchange)
+[![Version](https://img.shields.io/badge/version-1.5.0-blue.svg)](https://github.com/your-username/currencyExchange)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8.3-blue?logo=typescript)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-18.2.0-blue?logo=react)](https://reactjs.org/)
 [![Vite](https://img.shields.io/badge/Vite-6.3.1-646CFF?logo=vite)](https://vitejs.dev/)
