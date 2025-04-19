@@ -22,6 +22,7 @@ import {
 	CheckmarkCircleRegular,
 	ErrorCircleRegular,
 	WarningRegular,
+	MoneyCalculatorFilled,
 } from "@fluentui/react-icons";
 import { useEffect, useState, useRef } from "react";
 
@@ -682,6 +683,15 @@ function App({ toggleTheme, isDarkMode }: AppProps): JSX.Element {
 							/>
 						</div>
 
+						<Button
+							appearance="primary"
+							icon={<MoneyCalculatorFilled />}
+							onClick={fetchRate}
+							disabled={!storedApiKey || amount <= 0 || rateSource === "loading"}
+						>
+							{rateSource === "loading" ? "Calculating..." : "Calculate"}
+						</Button>
+
 						<Divider />
 
 						<div className={styles.controlsSection}>
@@ -692,11 +702,11 @@ function App({ toggleTheme, isDarkMode }: AppProps): JSX.Element {
 								isApiKeyValid={isApiKeyValid}
 								apiKeyInput={apiKeyInput}
 								isHistoryEmpty={conversionHistory.length === 0}
-								onCalculate={fetchRate}
 								onRefreshRates={handleClearCacheAndFetch}
 								onClearHistory={clearConversionHistory}
 								onClearAll={clearApiAndCache}
 							/>
+
 						</div>
 					</div>
 

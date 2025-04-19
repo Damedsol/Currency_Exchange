@@ -5,7 +5,6 @@ import {
 	tokens,
 } from "@fluentui/react-components";
 import {
-	MoneyCalculatorFilled,
 	ArrowSyncRegular,
 	HistoryDismissRegular,
 } from "@fluentui/react-icons";
@@ -57,18 +56,14 @@ interface ActionButtonsProps {
 	isApiKeyValid: boolean;
 	apiKeyInput: string;
 	isHistoryEmpty: boolean;
-	onCalculate: () => void;
 	onRefreshRates: () => void;
 	onClearHistory: () => void;
 	onClearAll: () => void;
 }
 
 export const ActionButtons: React.FC<ActionButtonsProps> = ({
-	storedApiKey,
-	amount,
 	rateSource,
 	isHistoryEmpty,
-	onCalculate,
 	onRefreshRates,
 	onClearHistory,
 	onClearAll,
@@ -79,14 +74,6 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({
 		<div className={styles.container}>
 			{/* Main Actions Group */}
 			<div className={styles.mainActions}>
-				<Button
-					appearance="primary"
-					icon={<MoneyCalculatorFilled />}
-					onClick={onCalculate}
-					disabled={!storedApiKey || amount <= 0 || rateSource === "loading"}
-				>
-					{rateSource === "loading" ? "Calculating..." : "Calculate"}
-				</Button>
 
 				<Button
 					appearance="secondary"
