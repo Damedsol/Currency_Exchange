@@ -4,6 +4,7 @@ import {
 	makeStyles,
 	shorthands,
 	tokens,
+	useId,
 } from "@fluentui/react-components";
 import React from "react";
 // Import Label from Fluent UI directly
@@ -29,13 +30,14 @@ export const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({
 	toggleTheme,
 }) => {
 	const styles = useStyles();
+	const switchId = useId("theme-switch");
 
 	return (
 		<div className={styles.container}>
-			<Label size="medium">
+			<Label htmlFor={switchId} size="medium">
 				{isDarkMode ? "Dark Mode Active" : "Light Mode Active"}
 			</Label>
-			<Switch checked={isDarkMode} onChange={toggleTheme} />
+			<Switch id={switchId} checked={isDarkMode} onChange={toggleTheme} />
 		</div>
 	);
 };

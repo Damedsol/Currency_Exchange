@@ -3,6 +3,7 @@ import {
 	makeStyles,
 	shorthands,
 	tokens,
+	mergeClasses,
 } from "@fluentui/react-components";
 import {
 	HistoryRegular,
@@ -43,24 +44,28 @@ export const RateSourceIndicator: React.FC<RateSourceIndicatorProps> = ({
 }) => {
 	const styles = useStyles();
 
-	// Common props for Text component - se especifica como 200 literal, no number
+	// textProps no longer needs className, as it will be merged below
 	const textProps = {
 		size: 200 as const,
 		as: "span" as const,
-		className: styles.text,
 	};
 
 	if (rateSource === "loading") {
-		return <Text {...textProps}>Loading...</Text>;
+		return (
+			<Text {...textProps} className={styles.text}>
+				Loading...
+			</Text>
+		);
 	}
 	if (rateSource === "cache") {
 		return (
 			<Text
 				{...textProps}
 				title="Data from cache (max 24h old)"
-				className={`${styles.text} ${styles.help}`}
+				className={mergeClasses(styles.text, styles.help)}
 			>
 				<HistoryRegular
+					aria-hidden="true"
 					className={styles.cacheIcon}
 					style={{ verticalAlign: "middle" }}
 				/>{" "}
@@ -73,9 +78,10 @@ export const RateSourceIndicator: React.FC<RateSourceIndicatorProps> = ({
 			<Text
 				{...textProps}
 				title="Live data from API"
-				className={`${styles.text} ${styles.help}`}
+				className={mergeClasses(styles.text, styles.help)}
 			>
 				<GlobeRegular
+					aria-hidden="true"
 					className={styles.liveIcon}
 					style={{ verticalAlign: "middle" }}
 				/>{" "}
@@ -85,9 +91,12 @@ export const RateSourceIndicator: React.FC<RateSourceIndicatorProps> = ({
 	}
 	if (rateSource === "error") {
 		return (
-			<Text {...textProps} className={`${styles.text} ${styles.error}`}>
-				<ErrorCircleRegular style={{ verticalAlign: "middle" }} /> Error
-				fetching rate
+			<Text {...textProps} className={mergeClasses(styles.text, styles.error)}>
+				<ErrorCircleRegular
+					aria-hidden="true"
+					style={{ verticalAlign: "middle" }}
+				/>{" "}
+				Error fetching rate
 			</Text>
 		);
 	}

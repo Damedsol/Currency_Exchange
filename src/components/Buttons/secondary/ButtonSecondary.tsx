@@ -1,57 +1,13 @@
-import { ButtonProps, makeStyles, tokens } from "@fluentui/react-components";
+import { Button, ButtonProps } from "@fluentui/react-components";
 import React from "react";
 
-const useButtonStyles: () => Record<string | number, string> = makeStyles({
-	root: {
-		background: tokens.colorCompoundBrandBackground,
-		border: "none",
-		borderRadius: tokens.borderRadiusMedium,
-		cursor: "pointer",
-		width: "170px",
-		height: "40px",
-		padding: "6px 12px",
-		fontFamily: tokens.fontFamilyBase,
-		fontSize: tokens.fontSizeBase400,
-		fontWeight: tokens.fontWeightSemibold,
-		boxShadow: tokens.shadow16,
-		color: "white",
-		"&:hover": {
-			background: tokens.colorCompoundBrandBackgroundHover,
-		},
-		"&:active": {
-			background: tokens.colorCompoundBrandBackgroundPressed,
-		},
-		"&:disabled": {
-			cursor: "not-allowed",
-			background: tokens.colorNeutralBackgroundDisabled,
-			boxShadow: "none",
-			color: tokens.colorNeutralForegroundDisabled,
-			"&:hover": {
-				background: tokens.colorNeutralBackgroundDisabled,
-			},
-			"&:active": {
-				background: tokens.colorNeutralBackgroundDisabled,
-			},
-		},
-	},
-	span: {
-		display: "flex",
-		justifyContent: "center",
-		alignItems: "center",
-		width: "100%",
-		height: "100%",
-	},
-});
+// No custom styles needed if using standard appearance="outline"
 
-export const ButtonSecondary: (props: ButtonProps) => React.JSX.Element = (
-	props: ButtonProps,
-) => {
-	const { root, span } = useButtonStyles();
+export const ButtonSecondary: React.FC<ButtonProps> = (props) => {
+	// Use Fluent UI Button directly with appearance="outline"
 	return (
-		<button disabled={props.disabled} className={root}>
-			<span className={span} {...props}>
-				{props.children}
-			</span>
-		</button>
+		<Button appearance="outline" {...props}>
+			{props.children}
+		</Button>
 	);
 };
