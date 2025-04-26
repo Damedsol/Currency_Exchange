@@ -11,6 +11,7 @@ export default defineConfig({
 		},
 		watch: {
 			usePolling: true, // Use polling for file system events if regular watching fails in Docker
+			interval: 300, // Check for file changes every 300ms
 		},
 	},
 });
