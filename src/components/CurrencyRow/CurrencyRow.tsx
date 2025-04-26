@@ -1,5 +1,4 @@
 import {
-	Field,
 	makeStyles,
 	shorthands,
 	tokens,
@@ -57,25 +56,14 @@ export const CurrencyRow: React.FC<CurrencyRowProps> = ({
 
 	return (
 		<div className={styles.container}>
-			{/* From Field wrapping CurrencySelector */}
-			<Field label="From" size="large">
-				<CurrencySelector
-					value={fromCurrency}
-					onChange={onFromChange}
-					where={"from"}
-				/>
-			</Field>
+			{/* From CurrencySelector (already includes label) */}
+			<CurrencySelector
+				value={fromCurrency}
+				onChange={onFromChange}
+				where={"from"}
+			/>
 
-			{/* Swap Button - Circular, relies on only having icon prop */}
-
-			{/* To Field wrapping CurrencySelector */}
-			<Field label="To" size="large">
-				<CurrencySelector
-					value={toCurrency}
-					onChange={onToChange}
-					where={"to"}
-				/>
-			</Field>
+			{/* Swap Button - Place between selectors */}
 			<Button
 				appearance="primary"
 				size="medium"
@@ -85,6 +73,9 @@ export const CurrencyRow: React.FC<CurrencyRowProps> = ({
 				aria-label="Swap currencies"
 				icon={<ArrowSwapRegular />}
 			/>
+
+			{/* To CurrencySelector (already includes label) */}
+			<CurrencySelector value={toCurrency} onChange={onToChange} where={"to"} />
 		</div>
 	);
 };

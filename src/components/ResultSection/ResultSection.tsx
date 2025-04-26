@@ -95,7 +95,7 @@ export const ResultSection = ({
 
 	return (
 		<div className={styles.container}>
-			<div className={styles.resultRow}>
+			<div className={styles.resultRow} aria-live="polite" aria-atomic="true">
 				<Text size={200}>Result</Text>
 				<Text size={600} weight="semibold" className={styles.resultAmount}>
 					{calculateResult()}
@@ -103,7 +103,7 @@ export const ResultSection = ({
 			</div>
 
 			<div className={styles.rateRow}>
-				<div className={styles.rateValue}>
+				<div className={styles.rateValue} aria-live="polite" aria-atomic="true">
 					<Text size={200}>Rate: </Text>
 					<Text size={200} weight="medium">
 						1 {fromCurrency} = {formatNumber(rate)} {toCurrency}

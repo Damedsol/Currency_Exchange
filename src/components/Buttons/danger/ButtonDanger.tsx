@@ -1,45 +1,48 @@
-import { ButtonProps, makeStyles, tokens } from "@fluentui/react-components";
+import {
+	Button,
+	ButtonProps,
+	makeStyles,
+	tokens,
+} from "@fluentui/react-components";
 import React from "react";
 
-const useButtonStyles: () => Record<string | number, string> = makeStyles({
-	root: {
-		background: tokens.colorStatusDangerBackground3,
-		border: "none",
-		borderRadius: tokens.borderRadiusMedium,
-		cursor: "pointer",
-		width: "170px",
-		height: "40px",
-		padding: "6px 12px",
-		fontFamily: tokens.fontFamilyBase,
-		fontSize: tokens.fontSizeBase400,
-		fontWeight: tokens.fontWeightSemibold,
-		color: "white",
-		boxShadow: tokens.shadow16,
+// Custom styles to override primary appearance for danger state
+const useDangerButtonStyles = makeStyles({
+	danger: {
+		backgroundColor: tokens.colorPaletteRedBackground3,
+		color: tokens.colorNeutralForegroundOnBrand,
+		borderColor: tokens.colorPaletteRedBorderActive,
 		"&:hover": {
-			background: tokens.colorStatusDangerBackground3Hover,
+			backgroundColor: tokens.colorPaletteRedBackground3Hover,
+			borderColor: tokens.colorPaletteRedBorderActive, // Keep border color consistent on hover
+			color: tokens.colorNeutralForegroundOnBrand, // Keep text color consistent
 		},
 		"&:active": {
-			background: tokens.colorStatusDangerBackground3Pressed,
+			backgroundColor: tokens.colorPaletteRedBackground3Pressed,
+			borderColor: tokens.colorPaletteRedBorderActive, // Keep border color consistent on active
+			color: tokens.colorNeutralForegroundOnBrand, // Keep text color consistent
 		},
-	},
-	span: {
-		display: "flex",
-		justifyContent: "center",
-		alignItems: "center",
-		width: "100%",
-		height: "100%",
+		// Ensure disabled styles are also applied if needed, although Fluent UI might handle this
+		":disabled": {
+			backgroundColor: tokens.colorNeutralBackgroundDisabled,
+			color: tokens.colorNeutralForegroundDisabled,
+			borderColor: tokens.colorNeutralStrokeDisabled,
+		},
+		":disabled:hover": {
+			backgroundColor: tokens.colorNeutralBackgroundDisabled,
+			color: tokens.colorNeutralForegroundDisabled,
+			borderColor: tokens.colorNeutralStrokeDisabled,
+		},
 	},
 });
 
-export const ButtonDanger: (props: ButtonProps) => React.JSX.Element = (
-	props: ButtonProps,
-) => {
-	const { root, span } = useButtonStyles();
+export const ButtonDanger: React.FC<ButtonProps> = (props) => {
+	const styles = useDangerButtonStyles();
+
+	// Use Fluent UI Button with appearance="primary" and apply custom danger styles
 	return (
-		<button className={root}>
-			<span className={span} {...props}>
-				{props.children}
-			</span>
-		</button>
+		<Button appearance="primary" className={styles.danger} {...props}>
+			{props.children}
+		</Button>
 	);
 };

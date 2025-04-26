@@ -101,8 +101,7 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({ onClearAll }) => {
 				<DialogTrigger disableButtonEnhancement>
 					<Button
 						appearance="outline"
-						icon={<DeleteRegular />}
-						title="Clear all stored data (API Key and History)"
+						icon={<DeleteRegular aria-hidden="true" />}
 						className={styles.clearButton}
 					>
 						Clear all data
@@ -111,7 +110,10 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({ onClearAll }) => {
 				<DialogSurface>
 					<DialogBody>
 						<DialogTitle className={styles.dialogTitle}>
-							<WarningRegular className={styles.warningIcon} />
+							<WarningRegular
+								aria-hidden="true"
+								className={styles.warningIcon}
+							/>
 							Confirmar eliminación
 						</DialogTitle>
 						<DialogContent>
