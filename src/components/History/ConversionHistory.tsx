@@ -104,8 +104,18 @@ const formatNumber = (
 };
 
 // Helper to format timestamp for better readability
-const formatTimestamp = (timestamp: string): string => {
+const formatTimestamp = (
+	timestamp: number | string | undefined | null,
+): string => {
+	// Check if timestamp is valid before creating Date object
+	if (!timestamp) {
+		return "Invalid date";
+	}
 	const date = new Date(timestamp);
+	// Check if the created date is valid
+	if (isNaN(date.getTime())) {
+		return "Invalid date";
+	}
 	return date.toLocaleString(undefined, {
 		year: "numeric",
 		month: "2-digit",
@@ -117,8 +127,18 @@ const formatTimestamp = (timestamp: string): string => {
 };
 
 // Helper to format timestamp showing only the date part
-const formatShortDate = (timestamp: string): string => {
+const formatShortDate = (
+	timestamp: number | string | undefined | null,
+): string => {
+	// Check if timestamp is valid before creating Date object
+	if (!timestamp) {
+		return "Invalid date";
+	}
 	const date = new Date(timestamp);
+	// Check if the created date is valid
+	if (isNaN(date.getTime())) {
+		return "Invalid date";
+	}
 	return date.toLocaleString(undefined, {
 		year: "numeric",
 		month: "2-digit",
@@ -244,11 +264,11 @@ export const ConversionHistory = ({
 									</TableCell>
 									<TableCell className={styles.timestampCell}>
 										<Tooltip
-											content={formatTimestamp(entry.timestamp.toString())}
+											content={formatTimestamp(entry.timestamp)}
 											relationship="label"
 										>
 											<TableCellLayout truncate>
-												{formatShortDate(entry.timestamp.toString())}
+												{formatShortDate(entry.timestamp)}
 											</TableCellLayout>
 										</Tooltip>
 									</TableCell>
