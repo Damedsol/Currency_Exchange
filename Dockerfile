@@ -4,26 +4,26 @@ ARG NODE_VERSION=lts-alpine
 # Stage 1: Development Environment
 FROM node:${NODE_VERSION} AS dev
 
+# Set working directory first
 WORKDIR /app
 
-# Create a non-root user and group
-RUN addgroup -g 1001 node && \
-    adduser -u 1001 -G node -s /bin/sh -D node && \
-    # Install pnpm globally
-    npm install -g pnpm && \
-    # Create app directory owned by node user
-    mkdir -p /app && chown -R node:node /app
+# Create the app directory and change ownership to the 'node' user
+# THEN install pnpm globally. Do this as root.
+RUN mkdir -p /app && chown -R node:node /app && \
+    npm install -g pnpm
 
-# Switch to the non-root user
+# Switch to the existing non-root user from the base image
 USER node
 
-# Copy package manifests
+# Now that USER is node, subsequent COPY/RUN commands are executed as node
+
+# Copy package manifests as the node user
 COPY --chown=node:node package.json pnpm-lock.yaml ./
 
-# Install dependencies using pnpm
+# Install dependencies using pnpm as the node user
 RUN pnpm install
 
-# Copy the rest of the application code
+# Copy the rest of the application code as the node user
 # Note: We copy everything here, but in 'docker run' for dev, we mount ./src
 COPY --chown=node:node . .
 
@@ -36,33 +36,30 @@ CMD ["pnpm", "run", "dev", "--", "--host"]
 # Stage 2: Build Environment
 FROM node:${NODE_VERSION} AS builder
 
+# Set working directory first
 WORKDIR /app
 
-# Create a non-root user and group
-RUN addgroup -g 1001 node && \
-    adduser -u 1001 -G node -s /bin/sh -D node && \
-    # Install pnpm globally
-    npm install -g pnpm && \
-    # Create app directory owned by node user
-    mkdir -p /app && chown -R node:node /app
+# Create the app directory and change ownership to the 'node' user
+# THEN install pnpm globally. Do this as root.
+RUN mkdir -p /app && chown -R node:node /app && \
+    npm install -g pnpm
 
-# Switch to the non-root user
+# Switch to the existing non-root user from the base image
 USER node
 
-# Copy package manifests
+# Now that USER is node, subsequent COPY/RUN commands are executed as node
+
+# Copy package manifests as the node user
 COPY --chown=node:node package.json pnpm-lock.yaml ./
 
-# Install dependencies using pnpm frozen lockfile for reproducibility
+# Install dependencies using pnpm frozen lockfile for reproducibility as the node user
 RUN pnpm install --frozen-lockfile
 
-# Copy the rest of the application code
+# Copy the rest of the application code as the node user
 COPY --chown=node:node . .
 
-# Build the application
+# Build the application as the node user
 RUN pnpm run build
-
-# Optional: Prune development dependencies if necessary, though build output is copied anyway
-# RUN pnpm prune --prod
 
 # Stage 3: Production Environment
 FROM nginx:alpine AS prod
@@ -71,6 +68,7 @@ FROM nginx:alpine AS prod
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Copy built artifacts from the builder stage
+# Nginx runs as a non-root user by default, permissions should be fine
 COPY --from=builder /app/dist /usr/share/nginx/html
 
 # Expose Nginx port
