@@ -1,4 +1,4 @@
-import { Select, useId, makeStyles } from "@fluentui/react-components";
+import { Select, useId, makeStyles, Label } from "@fluentui/react-components";
 
 import data from "./currencySelectorData.json";
 
@@ -15,6 +15,11 @@ const useStyles = makeStyles({
 		width: "100%",
 		maxWidth: "100%",
 	},
+	root: {
+		display: "flex",
+		flexDirection: "column",
+		gap: "2px",
+	},
 });
 
 export function CurrencySelector(props: {
@@ -23,33 +28,35 @@ export function CurrencySelector(props: {
 	where: "from" | "to";
 }): React.JSX.Element {
 	const styles = useStyles();
-	const id = useId();
-	const handleInputChange = (event: { target: { value: string } }): void => {
+	const selectId = useId("currency-select");
+	const handleInputChange = (
+		event: React.ChangeEvent<HTMLSelectElement>,
+	): void => {
 		props.onChange(event.target.value);
 	};
 	const TransformData: Currency[] = Array.from(
 		Object.values(data as Record<string, Currency>),
 	);
 
+	const labelText = props.where === "from" ? "Convert From" : "Convert To";
+
 	return (
-		<Select
-			className={styles.select}
-			id={id}
-			value={props.value}
-			onChange={handleInputChange}
-			appearance={"outline"}
-			size={"large"}
-			aria-label={
-				props.where === "from"
-					? "Select currency to convert from"
-					: "Select currency to convert to"
-			}
-		>
-			{TransformData.map((item) => (
-				<option key={item.code} value={item.code}>
-					{item.symbol} - {item.name}
-				</option>
-			))}
-		</Select>
+		<div className={styles.root}>
+			<Label htmlFor={selectId}>{labelText}</Label>
+			<Select
+				className={styles.select}
+				id={selectId}
+				value={props.value}
+				onChange={handleInputChange}
+				appearance={"outline"}
+				size={"large"}
+			>
+				{TransformData.map((item) => (
+					<option key={item.code} value={item.code}>
+						{item.symbol} - {item.name}
+					</option>
+				))}
+			</Select>
+		</div>
 	);
 }

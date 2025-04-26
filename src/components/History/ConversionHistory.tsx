@@ -170,7 +170,7 @@ export const ConversionHistory = ({
 			>
 				<Table
 					className={styles.tableLayoutFixed}
-					arial-label="Conversion History Table"
+					aria-label="Conversion History Table"
 					size="medium"
 				>
 					<TableHeader>

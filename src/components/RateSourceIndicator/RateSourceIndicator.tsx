@@ -61,6 +61,7 @@ export const RateSourceIndicator: React.FC<RateSourceIndicatorProps> = ({
 				className={`${styles.text} ${styles.help}`}
 			>
 				<HistoryRegular
+					aria-hidden="true"
 					className={styles.cacheIcon}
 					style={{ verticalAlign: "middle" }}
 				/>{" "}
@@ -76,6 +77,7 @@ export const RateSourceIndicator: React.FC<RateSourceIndicatorProps> = ({
 				className={`${styles.text} ${styles.help}`}
 			>
 				<GlobeRegular
+					aria-hidden="true"
 					className={styles.liveIcon}
 					style={{ verticalAlign: "middle" }}
 				/>{" "}
@@ -86,8 +88,11 @@ export const RateSourceIndicator: React.FC<RateSourceIndicatorProps> = ({
 	if (rateSource === "error") {
 		return (
 			<Text {...textProps} className={`${styles.text} ${styles.error}`}>
-				<ErrorCircleRegular style={{ verticalAlign: "middle" }} /> Error
-				fetching rate
+				<ErrorCircleRegular
+					aria-hidden="true"
+					style={{ verticalAlign: "middle" }}
+				/>{" "}
+				Error fetching rate
 			</Text>
 		);
 	}

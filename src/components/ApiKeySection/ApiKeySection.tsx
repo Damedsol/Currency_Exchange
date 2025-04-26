@@ -5,6 +5,7 @@ import {
 	tokens,
 	Field,
 	Input,
+	useId,
 } from "@fluentui/react-components";
 import React from "react";
 
@@ -38,6 +39,8 @@ export const ApiKeySection: React.FC<ApiKeySectionProps> = ({
 	onApiKeyChange,
 }) => {
 	const styles = useStyles();
+	const inputId = useId("api-key-input");
+	const messageId = useId("api-key-message");
 
 	// Simplified validation logic based only on format validity and storage status
 	const validationState =
@@ -64,18 +67,21 @@ export const ApiKeySection: React.FC<ApiKeySectionProps> = ({
 	return (
 		<div className={styles.container}>
 			<Field
-				label="Api Key"
+				label={{ children: "Api Key", htmlFor: inputId }}
 				required
 				validationState={validationState}
+				validationMessageId={messageId}
 				validationMessage={validationMessage}
 				size="large"
 			>
 				<Input
+					id={inputId}
 					type="password"
 					value={apiKeyInput}
 					onChange={onApiKeyChange}
 					appearance="outline"
 					size="large"
+					aria-describedby={validationMessage ? messageId : undefined}
 				/>
 			</Field>
 			<p className={styles.link}>
