@@ -2,43 +2,19 @@ import {
 	makeStyles,
 	shorthands,
 	tokens,
-	Divider,
-	Text,
-	Field,
-	Input,
 	Card,
-	MessageBar,
-	MessageBarBody,
-	MessageBarTitle,
-	Button,
 	type MessageBarIntent,
-	mergeClasses,
-	Tooltip,
-	Dialog,
-	DialogTrigger,
-	DialogSurface,
-	DialogBody,
-	DialogTitle,
-	DialogContent,
-	DialogActions,
 } from "@fluentui/react-components";
-import {
-	DismissRegular,
-	KeyRegular,
-	ArrowClockwiseRegular,
-	CheckmarkCircleRegular,
-	ErrorCircleRegular,
-	WarningRegular,
-	MoneyCalculatorFilled,
-	HistoryDismissRegular,
-} from "@fluentui/react-icons";
+import {} from // Icons are now primarily used within sub-components
+"@fluentui/react-icons";
 import { useEffect, useState, useRef } from "react";
 
-import { ActionButtons } from "./components/ActionButtons/ActionButtons";
-import { CurrencyRow } from "./components/CurrencyRow/CurrencyRow";
-import { ConversionHistory } from "./components/History/ConversionHistory";
-import { ResultSection } from "./components/ResultSection/ResultSection";
-import { ThemeSwitcher } from "./components/ThemeSwitcher/ThemeSwitcher";
+// Import new layout components
+import { AppHeader } from "./components/AppHeader/AppHeader";
+import { AppMessageBar } from "./components/AppMessageBar/AppMessageBar";
+import { ConversionControls } from "./components/ConversionControls/ConversionControls";
+import { HistoryPanel } from "./components/HistoryPanel/HistoryPanel";
+// Keep service imports
 import {
 	getCurrencyRate,
 	type CurrencyRateResult,
@@ -56,10 +32,8 @@ import {
 
 import type React from "react";
 
-// Define RateSource type
+// Keep type definitions
 type RateSource = "idle" | "cache" | "api" | "error" | "loading";
-
-// Define API Key Save Status type
 type ApiKeySaveStatus =
 	| "idle"
 	| "validating"
@@ -67,24 +41,22 @@ type ApiKeySaveStatus =
 	| "saved"
 	| "invalid"
 	| "error";
-
-// App Message type
 interface AppMessage {
-	text: React.ReactNode | null; // Allow React nodes for links etc.
+	text: React.ReactNode | null;
 	intent: MessageBarIntent;
 	visible: boolean;
 }
 
-// Define breakpoints (adjust values as needed)
+// Keep breakpoints and constants
 const breakpoints = {
 	small: 320,
 	medium: 600,
 	tablet: 768,
 	large: 1024,
 };
+const MESSAGE_TIMEOUT_DURATION = 5000;
 
-const MESSAGE_TIMEOUT_DURATION = 5000; // 5 seconds
-
+// Simplify useStyles for App.tsx - keep only top-level layout styles
 const useStyles = makeStyles({
 	appContainer: {
 		maxWidth: "1250px",
@@ -99,35 +71,12 @@ const useStyles = makeStyles({
 	root: {
 		display: "flex",
 		flexDirection: "column",
-		...shorthands.gap(tokens.spacingVerticalXL),
-		paddingTop: "40px",
+		...shorthands.gap(tokens.spacingVerticalL),
+		paddingTop: "20px",
 		paddingBottom: tokens.spacingVerticalXXL,
-		paddingLeft: tokens.spacingHorizontalXXL,
-		paddingRight: tokens.spacingHorizontalXXL,
+		paddingLeft: tokens.spacingHorizontalXL,
+		paddingRight: tokens.spacingHorizontalXL,
 		backgroundColor: tokens.colorNeutralBackground2,
-		[`@media (max-width: ${breakpoints.medium}px)`]: {
-			paddingTop: tokens.spacingVerticalXXL,
-			paddingBottom: tokens.spacingVerticalL,
-		},
-	},
-	headerContainer: {
-		display: "flex",
-		justifyContent: "flex-end",
-		alignItems: "center",
-		marginBottom: tokens.spacingVerticalM,
-		...shorthands.gap(tokens.spacingHorizontalS),
-	},
-	headerInputWrapper: {
-		transitionProperty: "max-width, opacity",
-		transitionDuration: "0.3s",
-		transitionTimingFunction: "ease-out",
-		overflow: "hidden",
-		maxWidth: 0,
-		opacity: 0,
-	},
-	headerInputWrapperVisible: {
-		maxWidth: "250px",
-		opacity: 1,
 	},
 	mainContent: {
 		display: "flex",
@@ -138,145 +87,6 @@ const useStyles = makeStyles({
 			...shorthands.gap(tokens.spacingVerticalXL),
 		},
 	},
-	leftColumn: {
-		display: "flex",
-		flexDirection: "column",
-		flexBasis: "30%",
-		...shorthands.gap(tokens.spacingVerticalL),
-		[`@media (max-width: ${breakpoints.tablet}px)`]: {
-			flexBasis: "100%",
-			order: 1,
-		},
-	},
-	rightColumn: {
-		display: "flex",
-		flexDirection: "column",
-		flexBasis: "70%",
-		...shorthands.gap(tokens.spacingVerticalL),
-		[`@media (max-width: ${breakpoints.tablet}px)`]: {
-			flexBasis: "100%",
-			order: 2,
-		},
-	},
-	historySection: {},
-	controlsSection: {
-		display: "flex",
-		flexDirection: "column",
-		...shorthands.gap(tokens.spacingVerticalL),
-	},
-	apiKeyStoredIcon: {
-		color: tokens.colorStatusSuccessForeground1,
-	},
-	apiKeyMissingIcon: {
-		color: tokens.colorStatusDangerForeground1,
-	},
-	messageBarContainer: {
-		transitionProperty: "max-height, opacity",
-		transitionDuration: "0.3s",
-		transitionTimingFunction: "ease-in-out",
-		overflow: "hidden",
-		maxHeight: 0,
-		opacity: 0,
-	},
-	messageBarContainerVisible: {
-		maxHeight: "60px",
-		opacity: 1,
-		marginBottom: tokens.spacingVerticalM,
-	},
-	amountField: {
-		"& input": {
-			transitionProperty: "outline, box-shadow",
-			transitionDuration: tokens.durationNormal,
-			transitionTimingFunction: tokens.curveEasyEase,
-			outlineStyle: "none",
-		},
-		":focus-within": {
-			"& input": {
-				outlineColor: tokens.colorCompoundBrandStroke,
-				outlineStyle: "solid",
-				outlineWidth: tokens.strokeWidthThick,
-			},
-		},
-	},
-	apiKeySavedIcon: {
-		color: tokens.colorStatusSuccessForeground1,
-	},
-	apiKeyInvalidIcon: {
-		color: tokens.colorStatusWarningForeground1,
-	},
-	apiKeyErrorIcon: {
-		color: tokens.colorStatusDangerForeground1,
-	},
-	apiKeySavingIcon: {
-		// Use default color or a specific one if desired
-	},
-	clearHistoryButton: {
-		marginLeft: tokens.spacingHorizontalS,
-		display: "flex",
-		alignItems: "center",
-		justifyContent: "center",
-		...shorthands.gap(tokens.spacingHorizontalXS),
-	},
-	primaryActionButton: {
-		marginTop: tokens.spacingVerticalS,
-		backgroundColor: tokens.colorBrandBackground,
-		color: tokens.colorNeutralForegroundOnBrand,
-		...shorthands.padding(tokens.spacingVerticalS, tokens.spacingHorizontalL),
-		fontWeight: tokens.fontWeightSemibold,
-		":hover": {
-			backgroundColor: tokens.colorBrandBackgroundHover,
-		},
-		":active": {
-			backgroundColor: tokens.colorBrandBackgroundPressed,
-		},
-		":disabled": {
-			backgroundColor: tokens.colorNeutralBackgroundDisabled,
-			color: tokens.colorNeutralForegroundDisabled,
-		},
-	},
-	headerActionButton: {
-		color: tokens.colorNeutralForeground3,
-		":hover": {
-			color: tokens.colorBrandForeground1,
-			backgroundColor: tokens.colorSubtleBackgroundHover,
-		},
-		":focus": {
-			color: tokens.colorBrandForeground1,
-		},
-	},
-	dismissButton: {
-		color: tokens.colorNeutralForeground2,
-		":hover": {
-			color: tokens.colorNeutralForeground1,
-			backgroundColor: tokens.colorSubtleBackgroundHover,
-		},
-	},
-	destructiveActionButton: {
-		backgroundColor: tokens.colorPaletteRedBackground1,
-		color: tokens.colorNeutralForegroundOnBrand,
-		":hover": {
-			backgroundColor: tokens.colorPaletteRedBackground2,
-		},
-		":active": {
-			backgroundColor: tokens.colorPaletteRedBackground2,
-		},
-	},
-	historyHeader: {
-		display: "flex",
-		alignItems: "center",
-		justifyContent: "space-between",
-		marginBottom: tokens.spacingVerticalS,
-	},
-	historyTitle: {
-		margin: 0,
-		padding: 0,
-		display: "block",
-	},
-	iconButton: {
-		display: "flex",
-		alignItems: "center",
-		justifyContent: "center",
-	},
 });
 
 interface AppProps {
@@ -286,7 +96,7 @@ interface AppProps {
 
 function App({ toggleTheme, isDarkMode }: AppProps): JSX.Element {
 	const styles = useStyles();
-	const [amount, setAmount] = useState(1000); // Default amount
+	const [amount, setAmount] = useState(1000);
 	const [fromCurrency, setFromCurrency] = useState("EUR");
 	const [toCurrency, setToCurrency] = useState("USD");
 	const [apiKeyInput, setApiKeyInput] = useState<string>("");
@@ -617,262 +427,52 @@ function App({ toggleTheme, isDarkMode }: AppProps): JSX.Element {
 		showAppMessage("Conversion history cleared.", "info");
 	};
 
-	// Function to render the status icon and tooltip
-	const renderApiKeyStatusIcon: () => React.ReactNode = () => {
-		const iconStyle = { fontSize: tokens.fontSizeBase400 }; // Increase icon size
-		switch (apiKeySaveStatus) {
-			case "saving":
-				return (
-					<Tooltip content="Saving API Key..." relationship="label">
-						<ArrowClockwiseRegular
-							className={styles.apiKeySavingIcon}
-							style={iconStyle}
-						/>
-					</Tooltip>
-				);
-			case "saved":
-				return (
-					<Tooltip content="API Key Saved" relationship="label">
-						<CheckmarkCircleRegular
-							className={styles.apiKeySavedIcon}
-							style={iconStyle}
-						/>
-					</Tooltip>
-				);
-			case "invalid":
-				return (
-					<Tooltip content="Invalid API Key Format" relationship="label">
-						<WarningRegular
-							className={styles.apiKeyInvalidIcon}
-							style={iconStyle}
-						/>
-					</Tooltip>
-				);
-			case "error":
-				return (
-					<Tooltip content="Error Saving API Key" relationship="label">
-						<ErrorCircleRegular
-							className={styles.apiKeyErrorIcon}
-							style={iconStyle}
-						/>
-					</Tooltip>
-				);
-			case "validating":
-			case "idle":
-			default:
-				return null; // No icon for idle or validating states
-		}
-	};
-
-	// Handle confirmation to clear history
-	const handleConfirmClearHistory: () => void = () => {
-		clearConversionHistory();
-		setIsHistoryClearDialogOpen(false);
-	};
-
 	return (
 		<div className={styles.appContainer}>
 			<Card className={styles.root}>
-				{/* Header Row */}
-				<div className={styles.headerContainer}>
-					<div
-						className={mergeClasses(
-							styles.headerInputWrapper,
-							isApiKeyHeaderInputVisible && styles.headerInputWrapperVisible,
-						)}
-						style={{ display: "flex", alignItems: "center" }}
-					>
-						{isApiKeyHeaderInputVisible && (
-							<>
-								<Input
-									aria-label="API Key Header Input"
-									type="password"
-									placeholder="Enter API Key..."
-									size="small"
-									appearance="outline"
-									style={{
-										width: "200px",
-										marginRight: tokens.spacingHorizontalSNudge,
-									}}
-									value={apiKeyInput}
-									onChange={handleApiKeyChange}
-									onBlur={handleApiKeyInputBlur}
-								/>
-								{/* Render the status icon */}
-								{renderApiKeyStatusIcon()}
-							</>
-						)}
-					</div>
-					<Button
-						appearance="subtle"
-						icon={<KeyRegular />}
-						className={mergeClasses(
-							styles.headerActionButton,
-							storedApiKey ? styles.apiKeyStoredIcon : styles.apiKeyMissingIcon,
-						)}
-						onClick={toggleApiKeyHeaderInput}
-						aria-label={
-							isApiKeyHeaderInputVisible
-								? "Hide API Key Input"
-								: "Show API Key Input"
-						}
+				<AppHeader
+					isDarkMode={isDarkMode}
+					toggleTheme={toggleTheme}
+					storedApiKey={storedApiKey}
+					isApiKeyHeaderInputVisible={isApiKeyHeaderInputVisible}
+					apiKeyInput={apiKeyInput}
+					apiKeySaveStatus={apiKeySaveStatus}
+					handleApiKeyChange={handleApiKeyChange}
+					handleApiKeyInputBlur={handleApiKeyInputBlur}
+					toggleApiKeyHeaderInput={toggleApiKeyHeaderInput}
+				/>
+
+				<AppMessageBar
+					appMessage={appMessage}
+					dismissMessage={dismissMessage}
+				/>
+
+				<main className={styles.mainContent}>
+					<ConversionControls
+						fromCurrency={fromCurrency}
+						toCurrency={toCurrency}
+						amount={amount}
+						rate={rate}
+						rateSource={rateSource}
+						storedApiKey={storedApiKey}
+						isApiKeyValid={isApiKeyValid}
+						apiKeyInput={apiKeyInput}
+						conversionHistory={conversionHistory}
+						handleFromCurrency={handleFromCurrency}
+						handleToCurrency={handleToCurrency}
+						swapCurrencies={swapCurrencies}
+						handleAmountChange={handleAmountChange}
+						handleClearCacheAndFetch={handleClearCacheAndFetch}
+						fetchRate={fetchRate}
+						clearConversionHistory={clearConversionHistory}
+						clearApiAndCache={clearApiAndCache}
 					/>
-					<ThemeSwitcher isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
-				</div>
-
-				{/* App Message Bar Container */}
-				<div
-					className={mergeClasses(
-						styles.messageBarContainer,
-						appMessage.visible && styles.messageBarContainerVisible,
-					)}
-				>
-					{appMessage.visible && (
-						<MessageBar intent={appMessage.intent} style={{ width: "100%" }}>
-							<MessageBarBody>
-								<MessageBarTitle></MessageBarTitle>
-								{appMessage.text}
-							</MessageBarBody>
-							<Button
-								appearance="transparent"
-								icon={<DismissRegular />}
-								onClick={dismissMessage}
-								aria-label="Dismiss message"
-								className={styles.dismissButton}
-							/>
-						</MessageBar>
-					)}
-				</div>
-
-				<div className={styles.mainContent}>
-					{/* Left Column: Inputs and Controls */}
-					<div className={styles.leftColumn}>
-						{/* Conversion Block */}
-						<div className={styles.controlsSection}>
-							<CurrencyRow
-								fromCurrency={fromCurrency}
-								toCurrency={toCurrency}
-								onFromChange={handleFromCurrency}
-								onToChange={handleToCurrency}
-								onSwap={swapCurrencies}
-							/>
-							<Field label="Amount" size="large" className={styles.amountField}>
-								<Input
-									type="number"
-									value={amount.toString()}
-									onChange={handleAmountChange}
-									appearance="outline"
-									size="large"
-								/>
-							</Field>
-							<ResultSection
-								rate={typeof rate === "number" ? rate : 0}
-								rateSource={rateSource}
-								amount={amount}
-								fromCurrency={fromCurrency}
-								toCurrency={toCurrency}
-								onRefreshRates={handleClearCacheAndFetch}
-							/>
-						</div>
-
-						<Button
-							appearance="primary"
-							icon={<MoneyCalculatorFilled />}
-							onClick={fetchRate}
-							disabled={
-								!storedApiKey || amount <= 0 || rateSource === "loading"
-							}
-							className={styles.primaryActionButton}
-						>
-							{rateSource === "loading" ? "Calculating..." : "Calculate"}
-						</Button>
-
-						<Divider />
-
-						<div className={styles.controlsSection}>
-							<ActionButtons
-								storedApiKey={storedApiKey}
-								amount={amount}
-								rateSource={rateSource}
-								isApiKeyValid={isApiKeyValid}
-								apiKeyInput={apiKeyInput}
-								isHistoryEmpty={conversionHistory.length === 0}
-								onClearHistory={clearConversionHistory}
-								onClearAll={clearApiAndCache}
-							/>
-						</div>
-					</div>
-
-					{/* Right Column: History */}
-					<div className={styles.rightColumn}>
-						{/* History Section Content */}
-						<div className={styles.historySection}>
-							<div className={styles.historyHeader}>
-								<Text weight="semibold" as="h2" className={styles.historyTitle}>
-									Conversion History (Last 10)
-								</Text>
-								<Dialog
-									open={isHistoryClearDialogOpen}
-									onOpenChange={(_event, data) =>
-										setIsHistoryClearDialogOpen(data.open)
-									}
-								>
-									<DialogTrigger disableButtonEnhancement>
-										<Button
-											appearance="outline"
-											icon={<HistoryDismissRegular />}
-											disabled={conversionHistory.length === 0}
-											title="Clear conversion history"
-											size="small"
-											className={styles.clearHistoryButton}
-										>
-											Clear History
-										</Button>
-									</DialogTrigger>
-									<DialogSurface>
-										<DialogBody>
-											<DialogTitle>
-												<WarningRegular
-													style={{
-														color: tokens.colorPaletteYellowForeground1,
-														fontSize: tokens.fontSizeBase500,
-														marginRight: tokens.spacingHorizontalS,
-													}}
-												/>
-												Confirmar eliminación del historial
-											</DialogTitle>
-											<DialogContent>
-												¿Estás seguro de que deseas eliminar todo el historial
-												de conversiones? Esta acción no se puede deshacer.
-											</DialogContent>
-											<DialogActions>
-												<Button
-													appearance="subtle"
-													onClick={() => setIsHistoryClearDialogOpen(false)}
-													className={styles.dismissButton}
-												>
-													Cancelar
-												</Button>
-												<Button
-													appearance="primary"
-													onClick={handleConfirmClearHistory}
-													className={styles.destructiveActionButton}
-												>
-													Eliminar historial
-												</Button>
-											</DialogActions>
-										</DialogBody>
-									</DialogSurface>
-								</Dialog>
-							</div>
-							<Divider />
-							<ConversionHistory
-								history={conversionHistory}
-								onRepeat={handleRepeatConversion}
-							/>
-						</div>
-					</div>
-				</div>
+					<HistoryPanel
+						history={conversionHistory}
+						onRepeatConversion={handleRepeatConversion}
+						clearConversionHistory={clearConversionHistory}
+					/>
+				</main>
 			</Card>
 		</div>
 	);
