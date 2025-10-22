@@ -70,7 +70,6 @@ export const ApiKeySection: React.FC<ApiKeySectionProps> = ({
 				label={{ children: "Api Key", htmlFor: inputId }}
 				required
 				validationState={validationState}
-				validationMessageId={messageId}
 				validationMessage={validationMessage}
 				size="large"
 			>

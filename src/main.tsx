@@ -11,7 +11,7 @@ import App from "./App.tsx";
 import "./styles/main.css";
 
 // Create a container component to manage theme state
-function AppContainer(): JSX.Element {
+function AppContainer(): React.JSX.Element {
 	// State for the current theme, initialize with dark theme by default
 	const [theme, setTheme] = useState<Theme>(webDarkTheme);
 	const [isDarkMode, setIsDarkMode] = useState<boolean>(true);

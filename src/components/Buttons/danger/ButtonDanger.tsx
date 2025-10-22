@@ -11,27 +11,22 @@ const useDangerButtonStyles = makeStyles({
 	danger: {
 		backgroundColor: tokens.colorPaletteRedBackground3,
 		color: tokens.colorNeutralForegroundOnBrand,
-		borderColor: tokens.colorPaletteRedBorderActive,
 		"&:hover": {
-			backgroundColor: tokens.colorPaletteRedBackground3Hover,
-			borderColor: tokens.colorPaletteRedBorderActive, // Keep border color consistent on hover
+			backgroundColor: tokens.colorPaletteRedBackground3,
 			color: tokens.colorNeutralForegroundOnBrand, // Keep text color consistent
 		},
 		"&:active": {
-			backgroundColor: tokens.colorPaletteRedBackground3Pressed,
-			borderColor: tokens.colorPaletteRedBorderActive, // Keep border color consistent on active
+			backgroundColor: tokens.colorPaletteRedBackground3,
 			color: tokens.colorNeutralForegroundOnBrand, // Keep text color consistent
 		},
 		// Ensure disabled styles are also applied if needed, although Fluent UI might handle this
 		":disabled": {
 			backgroundColor: tokens.colorNeutralBackgroundDisabled,
 			color: tokens.colorNeutralForegroundDisabled,
-			borderColor: tokens.colorNeutralStrokeDisabled,
 		},
 		":disabled:hover": {
 			backgroundColor: tokens.colorNeutralBackgroundDisabled,
 			color: tokens.colorNeutralForegroundDisabled,
-			borderColor: tokens.colorNeutralStrokeDisabled,
 		},
 	},
 });
