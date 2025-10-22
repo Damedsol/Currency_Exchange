@@ -61,4 +61,4 @@ volumes:
   node_modules:
     driver: local
   vite_cache:
-    driver: local 
+    driver: local

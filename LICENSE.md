@@ -24,4 +24,4 @@ No warranties are given. The license may not give you all of the permissions nec
 ## Full License Text
 
 The full text of the CC BY 4.0 license is available at:
-[https://creativecommons.org/licenses/by/4.0/legalcode](https://creativecommons.org/licenses/by/4.0/legalcode) 
+[https://creativecommons.org/licenses/by/4.0/legalcode](https://creativecommons.org/licenses/by/4.0/legalcode)
