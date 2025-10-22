@@ -80,7 +80,7 @@ export const ResultSection = ({
 	fromCurrency,
 	toCurrency,
 	onRefreshRates,
-}: ResultSectionProps): JSX.Element => {
+}: ResultSectionProps): React.JSX.Element => {
 	const styles = useStyles();
 
 	// Calculate the conversion result
