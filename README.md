@@ -1,7 +1,7 @@
 # Currency Exchange 💱
 
 [![License: CC BY 4.0](https://img.shields.io/badge/License-CC_BY_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/)
-[![Version](https://img.shields.io/badge/version-1.7.1-blue.svg)](https://github.com/Damedsol/Currency_Exchange)
+[![Version](https://img.shields.io/badge/version-1.8.0-blue.svg)](https://github.com/Damedsol/Currency_Exchange)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9.3-blue?logo=typescript)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-19.2.0-blue?logo=react)](https://reactjs.org/)
 [![Vite](https://img.shields.io/badge/Vite-7.1.11-646CFF?logo=vite)](https://vitejs.dev/)
@@ -43,6 +43,8 @@ A modern, responsive web application for real-time currency conversion built wit
 - **TypeScript** - Full type safety and better development experience
 - **Docker Support** - Containerized development and production environments
 - **Code Quality** - ESLint, Prettier, and Husky for consistent code quality
+- **Strict Type Checking** - Enhanced TypeScript configuration with strict type safety
+- **Automated Quality Gates** - Pre-commit hooks with type checking and code formatting
 
 ## 🛠️ Technology Stack
 
@@ -244,7 +246,7 @@ pnpm prepare                # Setup Husky git hooks
 ## 🔧 Configuration Files
 
 - **`vite.config.ts`** - Vite configuration with HMR and polling for Docker
-- **`tsconfig.json`** - TypeScript configuration
+- **`tsconfig.json`** - TypeScript configuration with strict type checking
 - **`eslint.config.js`** - ESLint rules and TypeScript integration
 - **`package.json`** - Dependencies and scripts configuration
 - **`docker-compose.yml`** - Multi-environment Docker orchestration
