@@ -149,7 +149,7 @@ const formatShortDate = (
 export const ConversionHistory = ({
 	history,
 	onRepeat,
-}: ConversionHistoryProps): JSX.Element => {
+}: ConversionHistoryProps): React.JSX.Element => {
 	const styles = useStyles();
 	// State for visibility transition
 	const [isVisible, setIsVisible] = useState(false);
