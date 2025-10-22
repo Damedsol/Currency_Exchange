@@ -22,6 +22,8 @@ Web application for currency conversion using the [Free Currency API](https://fr
 
 ## Technologies Used
 
+### Frontend
+
 - React 18
 - TypeScript
 - Vite
@@ -29,12 +31,28 @@ Web application for currency conversion using the [Free Currency API](https://fr
 - ESLint + Prettier
 - Husky (Git hooks)
 
+### DevOps & Deployment
+
+- Docker & Docker Compose
+- Nginx (Production)
+- Multi-stage builds
+- Environment-specific configurations
+
 ## Requirements
+
+### For Local Development
 
 - Node.js (version 16 or higher)
 - PNPM
 
+### For Docker (Recommended)
+
+- Docker
+- Docker Compose
+
 ## Installation
+
+### 🚀 Quick Start (Docker - Recommended)
 
 1. Clone this repository:
 
@@ -43,19 +61,35 @@ Web application for currency conversion using the [Free Currency API](https://fr
    cd currencyExchange
    ```
 
-2. Install dependencies:
+2. Start development environment:
+
+   ```bash
+   # Development with hot reload
+   docker-compose --profile development up
+
+   # Production build
+   docker-compose --profile production up
+   ```
+
+3. Access the application:
+   - **Development**: [http://localhost:5173](http://localhost:5173)
+   - **Production**: [http://localhost:80](http://localhost:80)
+
+### 🛠️ Local Development
+
+1. Install dependencies:
 
    ```bash
    pnpm install
    ```
 
-3. Start the development server:
+2. Start the development server:
 
    ```bash
    pnpm dev
    ```
 
-4. Open your browser at [http://localhost:5173](http://localhost:5173)
+3. Open your browser at [http://localhost:5173](http://localhost:5173)
 
 ## How to Use the Application
 
@@ -69,12 +103,22 @@ Web application for currency conversion using the [Free Currency API](https://fr
 ## Project Structure
 
 ```
-src/
-  ├── components/     # Reusable React components
-  ├── services/       # API and local storage services
-  ├── styles/         # Global styles
-  ├── App.tsx         # Main component
-  └── main.tsx        # Entry point
+currencyExchange/
+├── src/                    # Source code
+│   ├── components/         # Reusable React components
+│   ├── services/          # API and local storage services
+│   ├── styles/            # Global styles
+│   ├── App.tsx            # Main component
+│   └── main.tsx           # Entry point
+├── docker/                # Docker configuration
+│   ├── nginx/            # Nginx configurations
+│   ├── .env.development  # Development environment variables
+│   └── .env.production   # Production environment variables
+├── docs/                  # Documentation
+│   └── docker-usage.md   # Docker usage guide
+├── Dockerfile            # Multi-stage Docker build
+├── docker-compose.yml    # Docker Compose with profiles
+└── README.md            # This file
 ```
 
 ## Development Workflow
@@ -91,12 +135,26 @@ For versioning, we follow [Semantic Versioning](https://semver.org/) principles.
 
 ## Available Scripts
 
+### 🐳 Docker Commands
+
+- `docker-compose --profile development up`: Start development environment
+- `docker-compose --profile production up`: Start production environment
+- `docker-compose --profile development down`: Stop development environment
+- `docker-compose --profile production down`: Stop production environment
+
+### 🛠️ Local Development Scripts
+
 - `pnpm dev`: Start the development server
 - `pnpm build`: Build the application for production
 - `pnpm preview`: Preview the built version
 - `pnpm lint`: Run ESLint to check the code
 - `pnpm format`: Format the code with Prettier
 - `pnpm fix`: Run lint and format to fix issues
+
+## 📚 Documentation
+
+- **[Docker Usage Guide](docs/docker-usage.md)**: Complete Docker setup and usage instructions
+- **[Project Structure](#project-structure)**: Code organization and architecture
 
 ## Contributing
 
