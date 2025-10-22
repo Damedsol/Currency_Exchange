@@ -94,7 +94,7 @@ interface AppProps {
 	isDarkMode: boolean;
 }
 
-function App({ toggleTheme, isDarkMode }: AppProps): JSX.Element {
+function App({ toggleTheme, isDarkMode }: AppProps): React.JSX.Element {
 	const styles = useStyles();
 	const [amount, setAmount] = useState(1000);
 	const [fromCurrency, setFromCurrency] = useState("EUR");
@@ -116,8 +116,6 @@ function App({ toggleTheme, isDarkMode }: AppProps): JSX.Element {
 		useState<boolean>(false);
 	const [apiKeySaveStatus, setApiKeySaveStatus] =
 		useState<ApiKeySaveStatus>("idle");
-	const [isHistoryClearDialogOpen, setIsHistoryClearDialogOpen] =
-		useState<boolean>(false);
 
 	// Ref to store message timeout ID
 	const messageTimeoutRef = useRef<number | null>(null);
