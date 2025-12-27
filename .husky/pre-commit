@@ -1,3 +1,5 @@
+#!/usr/bin/env sh
+
 echo '👀 Running linters and formatters on staged files...'
 echo ''
 
