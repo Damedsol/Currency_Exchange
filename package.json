@@ -1,7 +1,13 @@
 {
 	"name": "currencyexchange",
 	"private": true,
-	"version": "1.9.0",
+	"version": "1.9.1",
+	"author": {
+		"email": "contact@damedsol.dev",
+		"name": "Damedsol",
+		"url": "https://www.linkedin.com/in/david-medina-soloza/"
+	},
+	"license": "CC BY 4.0",
 	"type": "module",
 	"scripts": {
 		"dev": "vite",
