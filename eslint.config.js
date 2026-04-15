@@ -1,23 +1,41 @@
 import globals from "globals";
 import tseslint from "typescript-eslint";
-import pluginReactConfig from "eslint-plugin-react/configs/recommended.js";
 import js from "@eslint/js";
 import eslintConfigPrettier from "eslint-config-prettier";
 import importPlugin from "eslint-plugin-import";
 import unusedImportsPlugin from "eslint-plugin-unused-imports";
+import { fixupPluginRules } from "@eslint/compat";
+import reactPlugin from "eslint-plugin-react";
+
+// Parcheamos el plugin de React una sola vez para usarlo en toda la configuración
+const patchedReactPlugin = fixupPluginRules(reactPlugin);
+const patchedImportPlugin = fixupPluginRules(importPlugin);
 
 export default [
-	{ languageOptions: { globals: globals.browser } },
+	{
+		// Configuración global
+		files: ["**/*.{js,jsx,ts,tsx}"],
+		languageOptions: {
+			globals: {
+				...globals.browser,
+				...globals.node,
+			},
+		},
+	},
 	js.configs.recommended,
 	...tseslint.configs.recommended,
-	pluginReactConfig,
 	{
-		files: ["**/*.{ts,tsx}"], // Apply React specific settings only to TS/TSX files
+		// Bloque consolidado para React e Importaciones
+		files: ["**/*.{js,jsx,ts,tsx}"],
+		plugins: {
+			react: patchedReactPlugin,
+			import: patchedImportPlugin,
+			"unused-imports": unusedImportsPlugin,
+		},
 		settings: {
 			react: {
-				version: "detect", // Automatically detect the React version
+				version: "19",
 			},
-			// Configuración para el plugin de importaciones
 			"import/resolver": {
 				node: {
 					extensions: [".js", ".jsx", ".ts", ".tsx"],
@@ -28,61 +46,56 @@ export default [
 				},
 			},
 		},
-		plugins: {
-			import: importPlugin,
-			"unused-imports": unusedImportsPlugin,
-		},
 		rules: {
+			// Reglas recomendadas de React (extraídas manualmente para evitar conflictos de plugins)
+			...reactPlugin.configs.recommended.rules,
 			"react/react-in-jsx-scope": "off",
 
-			// Reglas para organizar y limpiar importaciones
-			"import/first": "error", // Las importaciones deben estar al principio del archivo
-			"import/newline-after-import": "error", // Línea en blanco después de las importaciones
-			"import/no-duplicates": "error", // No permitir importaciones duplicadas
+			// Reglas de Importaciones
+			"import/first": "error",
+			"import/newline-after-import": "error",
+			"import/no-duplicates": "error",
 			"import/order": [
 				"error",
 				{
 					groups: [
-						"builtin", // Módulos de Node.js
-						"external", // Paquetes npm
-						"internal", // Imports marcados como internos en el proyecto
-						"parent", // Imports que comienzan con ..
-						"sibling", // Imports que comienzan con .
-						"index", // Imports del mismo directorio
-						"object", // Imports de tipo object
-						"type", // Imports de tipo
+						"builtin",
+						"external",
+						"internal",
+						"parent",
+						"sibling",
+						"index",
+						"object",
+						"type",
 					],
-					"newlines-between": "always", // Siempre línea en blanco entre grupos
-					alphabetize: {
-						order: "asc", // Ordenar alfabéticamente
-						caseInsensitive: true, // Ignorar mayúsculas y minúsculas
-					},
+					"newlines-between": "always",
+					alphabetize: { order: "asc", caseInsensitive: true },
 				},
 			],
 
-			// Reglas para eliminar importaciones no utilizadas
-			"no-unused-vars": "off", // Desactivar la regla estándar
-			"unused-imports/no-unused-imports": "error", // Marcar como error las importaciones no utilizadas
+			// Variables no usadas
+			"no-unused-vars": "off",
+			"unused-imports/no-unused-imports": "error",
 			"unused-imports/no-unused-vars": [
 				"warn",
 				{
-					vars: "all", // Comprobar todas las variables
-					varsIgnorePattern: "^_", // Ignorar variables que empiezan con _
-					args: "after-used", // Comprobar argumentos después de los utilizados
-					argsIgnorePattern: "^_", // Ignorar argumentos que empiezan con _
+					vars: "all",
+					varsIgnorePattern: "^_",
+					args: "after-used",
+					argsIgnorePattern: "^_",
 				},
 			],
 
-			// Reglas para mantener consistencia en el código
-			"@typescript-eslint/no-explicit-any": "warn", // Advertir sobre el uso de 'any'
+			// Reglas de TypeScript
+			"@typescript-eslint/no-explicit-any": "warn",
 			"@typescript-eslint/explicit-function-return-type": [
 				"warn",
 				{
 					allowExpressions: true,
 					allowTypedFunctionExpressions: true,
 				},
-			], // Exigir tipos de retorno explícitos en funciones
-			"@typescript-eslint/no-unused-vars": "off", // Desactivamos la regla TS en favor de unused-imports
+			],
+			"@typescript-eslint/no-unused-vars": "off",
 		},
 	},
 	{
@@ -92,7 +105,7 @@ export default [
 			"**/*.config.js",
 			"**/*.config.ts",
 			"**/*.cjs",
-		], // Ignore build outputs, dependencies and config files
+		],
 	},
 	eslintConfigPrettier,
 ];
