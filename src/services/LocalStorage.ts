@@ -42,6 +42,7 @@ export function localStorageStoreService(apiKey: string): void {
 		// Re-throw the error to allow calling code to handle it.
 		throw new Error(
 			`Failed to store API key: ${error instanceof Error ? error.message : String(error)}`,
+			{ cause: error },
 		);
 	}
 }
@@ -62,6 +63,7 @@ export function clearLocalStorage(): void {
 		// Re-throw the error.
 		throw new Error(
 			`Failed to clear API key: ${error instanceof Error ? error.message : String(error)}`,
+			{ cause: error },
 		);
 	}
 }
