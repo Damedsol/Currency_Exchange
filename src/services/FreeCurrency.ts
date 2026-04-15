@@ -27,7 +27,7 @@ export const getCurrencyRate = async ({
 	}
 
 	// 1. Try loading from cache
-	let cachedRates = loadRatesFromCache();
+	const cachedRates = loadRatesFromCache();
 
 	if (cachedRates) {
 		console.log("Using cached rates.");
@@ -38,8 +38,7 @@ export const getCurrencyRate = async ({
 			console.warn(
 				`Could not calculate rate ${fromCurrency} -> ${toCurrency} from cache. Fetching fresh data.`,
 			);
-			// Invalidate cache if calculation fails (e.g., missing currency)
-			cachedRates = null;
+			// Invalidate local reference if calculation fails
 		}
 	}
 
