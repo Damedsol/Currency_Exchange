@@ -1,7 +1,7 @@
 {
 	"name": "currencyexchange",
 	"private": true,
-	"version": "1.10.0",
+	"version": "1.10.1",
 	"author": {
 		"email": "contact@damedsol.dev",
 		"name": "Damedsol",
@@ -67,7 +67,13 @@
 	"packageManager": "pnpm@10.33.0",
 	"pnpm": {
 		"overrides": {
-			"js-yaml": ">=4.1.1"
+			"js-yaml": ">=4.1.1",
+			"flatted@^3.0.0": "3.4.2",
+			"picomatch@^2.0.0": "2.3.2",
+			"picomatch@^4.0.0": "4.0.4",
+			"yaml": "2.8.3",
+			"brace-expansion@^1.0.0": "1.1.13",
+			"minimatch@^3.0.0": "3.1.5"
 		}
 	}
 }
