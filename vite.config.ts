@@ -14,4 +14,23 @@ export default defineConfig({
 			interval: 300, // Check for file changes every 300ms
 		},
 	},
+	build: {
+		rolldownOptions: {
+			output: {
+				manualChunks(id) {
+					if (id.includes("node_modules")) {
+						if (id.includes("react-dom")) {
+							return "react-dom";
+						}
+						if (id.includes("react") || id.includes("scheduler")) {
+							return "react";
+						}
+						if (id.includes("@fluentui")) {
+							return "fluent";
+						}
+					}
+				},
+			},
+		},
+	},
 });
