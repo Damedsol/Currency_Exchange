@@ -1,27 +1,28 @@
-# Contexto del Proyecto: currencyExchange
+# 🧠 Contexto del Proyecto y Aprendizajes: currencyExchange (Root)
 
-## Estado del Proyecto
-Migración e integración completa y exitosa a herramientas de análisis estático modernas (**Biome** y **Oxlint**), habiendo eliminado totalmente **ESLint** y **Prettier** sin provocar regresiones ni roturas.
+Este documento registra dinámicamente los aprendizajes técnicos, decisiones arquitectónicas y el historial de cambios activos durante el desarrollo del proyecto.
 
-## Decisiones Técnicas y Herramientas
+## 🚀 Stack y Configuración (Aprendizajes)
 
-### 1. Formateador Exclusivo: Biome
-- **Decisión:** Usar Biome únicamente como formateador de código para el espacio de trabajo.
-- **Configuración (`biome.json`):**
-  - **Formateador:** Mapea con precisión absoluta las reglas de `.prettierrc.json` (uso de tabuladores, ancho 2, ancho de línea 80, comillas dobles, comas finales en todo).
-  - **Linter y Imports:** Deshabilitados por completo en Biome (`enabled: false`) a petición del usuario.
+- **Linter Primario:** **Oxlint** para análisis estático ultra-rápido sin ESLint. Reglas de corrección, rendimiento y sospechosas habilitadas en `.oxlintrc.json`.
+- **Formateador Exclusivo:** **Biome** para formatear estéticamente archivos JS, TS, TSX, CSS y JSON en tiempo récord. El linter interno de Biome está deshabilitado para evitar conflictos.
+  - *Configuración:* Mapea con precisión absoluta el uso de tabuladores, ancho 2, ancho de línea 80, comillas dobles y comas finales obligatorias.
+- **Linter de Nombres de Archivos:** **ls-lint** garantiza la consistencia de nombres: componentes en `PascalCase.tsx`, utilidades/servicios en `camelCase.ts` y configuraciones en `kebab-case`/`dot-notation`.
+- **UI & Framework:** **React 19** y **Fluent UI React Components v9** (`@fluentui/react-components`), inyectando el tema a través de `FluentProvider` y utilizando `makeStyles` (CSS-in-JS atómico de Griffel).
+- **Gestión de Paquetes:** **pnpm** con prioridad absoluta en el entorno (usando catálogos/workspaces de pnpm).
 
-### 2. Linter Único: Oxlint
-- **Decisión:** Utilizar `oxlint` como el único y exclusivo linter de código del proyecto tras la remoción de ESLint.
-- **Flujo:** Las comprobaciones de análisis estático y errores comunes de JavaScript/TypeScript se delegan en su totalidad a Oxlint.
+## 🧠 Decisiones Estratégicas
 
-### 3. File Linter: ls-lint
-- **Decisión:** Garantizar coherencia en la estructura de archivos del proyecto.
-- **Reglas:** PascalCase para componentes reactivos (`.tsx`), camelCase para estilos/servicios generales y dot-notation/kebab-case para archivos de configuración en la raíz.
+- **Exclusividad de Linters/Formatters en Rust:** ESLint y Prettier fueron completamente eliminados del proyecto. Reinstalarlos está estrictamente prohibido.
+- **Configuración Agéntica Local:** Adoptado el "Estándar Agéntico" a través de `/AGENTS.md` (archivo maestro raíz único, menos de 150 líneas) y el sistema de memoria `context.md`.
+- **Skills Técnicas Locales:** Separación del conocimiento local en `.gemini/` (CLI) y `.agents/` (Antigravity IDE), con habilidades documentadas de más de 400 líneas para `modern-linting` y `fluent-ui-react`.
 
-### 4. Git Hooks: Lint-Staged
-- **Configuración (`.lintstagedrc.json`):** Optimizado para ejecutar `oxlint` y `biome format --write` secuencialmente en el pre-commit de archivos de código, y `biome format --write` en estilos y JSON.
+## 📈 Historial de Cambios Relevante
 
-## Aprendizajes y Notas
-- Biome y Oxlint reemplazan completamente la necesidad de ESLint y Prettier.
-- Para limpiar completamente el espacio de trabajo local se deben borrar los archivos antiguos de configuración: `eslint.config.js` y `.prettierrc.json`.
+- **2026-05-30: Inicialización del Sistema Agéntico del Proyecto**
+  - **Detalles del Cambio:**
+    - Creado el archivo maestro `AGENTS.md` en la raíz (PROFILE, CONTEXT, INSTRUCTIONS, TOOLS & GUARDRAILS).
+    - Creado el sistema de skills locales en `.gemini/skills/` y `.agents/skills/` para `modern-linting` y `fluent-ui-react`.
+    - Actualizado el archivo de memoria estratégica `context.md` en la raíz.
+  - **Lecciones de QA:** Verificado que `AGENTS.md` y `context.md` no violan los límites de líneas (<150 y <200 líneas respectivamente).
+  - **Rama / Commit Asociado:** `feature/agentic-system`
