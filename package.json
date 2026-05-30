@@ -14,66 +14,34 @@
 		"build": "tsc && vite build",
 		"preview": "vite preview",
 		"typecheck": "tsc --noEmit",
-		"typecheck:watch": "tsc --noEmit --watch",
-		"typecheck:strict": "tsc --noEmit --strict",
-		"lint": "eslint . --fix",
-		"lint:check": "eslint .",
-		"format": "prettier --write .",
-		"format:check": "prettier --check .",
-		"fix": "pnpm lint && pnpm format",
-		"check": "pnpm typecheck && pnpm lint:check && pnpm format:check",
+		"lint": "pnpm exec oxlint . --fix && pnpm ls-lint",
+		"format": "biome format --write .",
 		"prepare": "husky"
 	},
-	"lint-staged": {
-		"*.{js,jsx,ts,tsx}": [
-			"eslint --fix",
-			"prettier --write"
-		],
-		"*.{json,css,md}": [
-			"prettier --write"
-		]
-	},
 	"dependencies": {
-		"@fluentui/react-components": "9.73.7",
-		"@fluentui/react-icons": "2.0.324",
-		"react": "19.2.5",
-		"react-dom": "19.2.5",
-		"scheduler": "0.27.0"
+		"@fluentui/react-components": "catalog:",
+		"@fluentui/react-icons": "catalog:",
+		"react": "catalog:",
+		"react-dom": "catalog:",
+		"scheduler": "catalog:"
 	},
 	"devDependencies": {
-		"@commitlint/cli": "20.5.0",
-		"@commitlint/config-conventional": "20.5.0",
-		"@eslint/compat": "^2.0.5",
-		"@eslint/js": "10.0.1",
-		"@types/react": "19.2.14",
-		"@types/react-dom": "19.2.3",
-		"@typescript-eslint/eslint-plugin": "8.58.2",
-		"@typescript-eslint/parser": "8.58.2",
-		"@vitejs/plugin-react": "6.0.1",
-		"eslint": "10.2.0",
-		"eslint-config-prettier": "10.1.8",
-		"eslint-import-resolver-typescript": "4.4.4",
-		"eslint-plugin-import": "2.32.0",
-		"eslint-plugin-react": "7.37.5",
-		"eslint-plugin-unused-imports": "4.4.1",
-		"globals": "17.5.0",
-		"husky": "9.1.7",
-		"lint-staged": "16.4.0",
-		"prettier": "3.8.3",
-		"typescript": "6.0.2",
-		"typescript-eslint": "8.58.2",
-		"vite": "8.0.8"
+		"@biomejs/biome": "catalog:",
+		"@commitlint/cli": "catalog:",
+		"@commitlint/config-conventional": "catalog:",
+		"@ls-lint/ls-lint": "catalog:",
+		"@types/react": "catalog:",
+		"@types/react-dom": "catalog:",
+		"@vitejs/plugin-react": "catalog:",
+		"husky": "catalog:",
+		"lint-staged": "catalog:",
+		"oxlint": "catalog:",
+		"typescript": "catalog:",
+		"vite": "catalog:"
 	},
-	"packageManager": "pnpm@10.33.0",
-	"pnpm": {
-		"overrides": {
-			"js-yaml": ">=4.1.1",
-			"flatted@^3.0.0": "3.4.2",
-			"picomatch@^2.0.0": "2.3.2",
-			"picomatch@^4.0.0": "4.0.4",
-			"yaml": "2.8.3",
-			"brace-expansion@^1.0.0": "1.1.13",
-			"minimatch@^3.0.0": "3.1.5"
-		}
+	"engineStrict": true,
+	"engines": {
+		"node": ">=24.0.0",
+		"pnpm": ">=11.0.0"
 	}
 }
