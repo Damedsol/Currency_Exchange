@@ -1,0 +1,49 @@
+ls:
+  src:
+    .dir: lowercase
+    
+  src/components:
+    .dir: lowercase
+    
+  src/components/*:
+    .dir: pascalcase
+    
+  src/components/*/*:
+    .dir: lowercase
+    
+  src/services:
+    .dir: lowercase
+    
+  src/styles:
+    .dir: lowercase
+
+  src/main.tsx: camelcase
+  src/App.tsx: pascalcase
+  
+  "src/components/**/*.tsx": pascalcase
+  "src/components/**/*.json": camelcase
+  "src/services/*.ts": pascalcase
+  "src/styles/*.css": kebabcase
+
+ignore:
+  - .git
+  - node_modules
+  - dist
+  - build
+  - .husky
+  - .idea
+  - .gemini
+  - docker
+  - docs
+  - LICENSE.md
+  - README.md
+  - package.json
+  - tsconfig.json
+  - tsconfig.node.json
+  - pnpm-lock.yaml
+  - pnpm-workspace.yaml
+  - biome.json
+  - .commitlintrc.json
+  - .lintstagedrc.json
+  - .ls-lint.yml
+  - .oxlintrc.json
