@@ -1,192 +1,121 @@
-# 🐳 Guía de Uso Docker - Currency Exchange
+# 🐳 Docker Usage Guide - Currency Exchange (Unified & Adaptable)
 
-## 📋 Comandos Principales
+This guide details the operation of the unified and modular Docker environment for the project, dynamically configured to ease local development, production simulation, and deployments on external servers while guaranteeing security by obscurity.
 
-### 🚀 Desarrollo
+---
 
-```bash
-# Levantar entorno de desarrollo
-docker-compose --profile development up
+## 📋 Initial Setup
 
-# Levantar en segundo plano
-docker-compose --profile development up -d
-
-# Ver logs del entorno de desarrollo
-docker-compose --profile development logs -f
-
-# Parar entorno de desarrollo
-docker-compose --profile development down
-```
-
-### 🏭 Producción
+Before starting any container, each developer must initialize their local environment configuration file from the generic template in the root:
 
 ```bash
-# Levantar entorno de producción
-docker-compose --profile production up
+# For local development environment:
+cp .env.example .env.development
 
-# Levantar en segundo plano
-docker-compose --profile production up -d
-
-# Ver logs del entorno de producción
-docker-compose --profile production logs -f
-
-# Parar entorno de producción
-docker-compose --profile production down
+# For local simulated production environment:
+cp .env.example .env.production
 ```
 
-## 🔧 Comandos de Construcción
+---
 
-### Construir imágenes específicas
+## 🚀 Unified Execution Commands
+
+The `docker-compose.yml` file in the root defines a single dynamic `frontend` service that automatically adapts using environment variables and smart defaults.
+
+### 💻 Local Development Environment
+Spins up the Vite development server with Hot Module Replacement (HMR) and live-reloading mapped directly to your source code.
+
+- **Default Port**: `http://localhost:5173`
+- **Commands**:
+  ```bash
+  # Start the development environment
+  docker compose up --build
+
+  # Start in the background (detached mode)
+  docker compose up -d --build
+
+  # View container logs in real time
+  docker compose logs -f
+
+  # Stop the development environment
+  docker compose down
+  ```
+
+### 🏭 Local Production Environment (Simulation)
+Spins up an Nginx web server with security hardening applied, SPA routing, and active gzip compression.
+
+- **Configured Port**: `http://localhost:8080` (customizable via the `PORT` environment variable)
+- **Commands**:
+  ```bash
+  # Start production simulation
+  NODE_ENV=production DOCKER_TARGET=production PORT=8080 INTERNAL_PORT=80 docker compose up --build
+
+  # Start in the background (detached mode)
+  NODE_ENV=production DOCKER_TARGET=production PORT=8080 INTERNAL_PORT=80 docker compose up -d --build
+
+  # Stop the production environment
+  NODE_ENV=production DOCKER_TARGET=production docker compose down
+  ```
+
+---
+
+## 📁 Docker File Structure
+
+All Docker and Nginx configurations are centralized directly in the root directory for maximum transparency and cleanliness:
+
+```
+├── Dockerfile           # Multi-stage build (development, builder, production)
+├── docker-compose.yml   # Unified, flexible, and dynamic service definition
+├── nginx.conf           # Production Nginx server with applied security hardening
+├── .env.example         # Generic and secure environment variables template
+└── .dockerignore        # Exclusion rules for unnecessary local files
+```
+
+---
+
+## 🛡️ Security Hardening in `nginx.conf`
+
+The Nginx production stage includes strict policies to mitigate common attack vectors:
+- **`server_tokens off;`**: Hides the Nginx version in HTTP response headers.
+- **Hidden Files Protection**: Silently blocks access to any hidden files or folders starting with a dot (e.g. `.env`, `.git`) by returning an **HTTP 404** status code.
+- **Global Security Headers**:
+  - `X-Frame-Options: SAMEORIGIN` (mitigates Clickjacking).
+  - `X-Content-Type-Options: nosniff` (mitigates MIME-type Sniffing).
+  - `X-XSS-Protection: 1; mode=block` (mitigates cross-site scripting attacks).
+  - `Referrer-Policy: strict-origin-when-cross-origin`.
+
+---
+
+## 🧹 Environment Cleanup
 
 ```bash
-# Construir solo imagen de desarrollo
-docker-compose --profile development build
+# Stop the service and remove development volumes (e.g. persisted node_modules)
+docker compose down -v
 
-# Construir solo imagen de producción
-docker-compose --profile production build
-
-# Reconstruir sin cache
-docker-compose --profile development build --no-cache
+# Clean up all unused or dangling docker images
+docker system prune -af
 ```
 
-## 🧹 Limpieza
-
-### Limpiar contenedores y volúmenes
-
-```bash
-# Parar y eliminar contenedores
-docker-compose --profile development down -v
-
-# Eliminar imágenes no utilizadas
-docker system prune -f
-
-# Eliminar volúmenes no utilizados
-docker volume prune -f
-```
-
-## 🌐 Puertos
-
-- **Desarrollo**: `http://localhost:5173`
-- **Producción**: `http://localhost:80`
-
-## 📁 Estructura de Archivos Docker
-
-```
-docker/
-├── nginx/
-│   ├── nginx.dev.conf      # Configuración Nginx para desarrollo
-│   └── nginx.prod.conf     # Configuración Nginx para producción
-├── .env.development        # Variables de entorno para desarrollo
-└── .env.production         # Variables de entorno para producción
-```
+---
 
 ## 🔍 Troubleshooting
 
-### Problemas Comunes
-
-#### 1. Puerto ya en uso
-
+### 1. Port already in use
+If port `5173` or `8080` is already taken by another service, you can run the container by mapping a different host port:
 ```bash
-# Verificar qué proceso usa el puerto
-netstat -ano | findstr :5173
-netstat -ano | findstr :80
-
-# Matar proceso si es necesario
-taskkill /PID <PID> /F
+PORT=8081 docker compose up --build
 ```
 
-#### 2. Volúmenes no se montan correctamente
-
+### 2. Error looking for .env.development or .env.production
+If Docker throws an error indicating that the `.env.development` file is missing, make sure you copied the initial template:
 ```bash
-# Recrear volúmenes
-docker-compose --profile development down -v
-docker-compose --profile development up
+cp .env.example .env.development
 ```
 
-#### 3. Cache de Vite no funciona
-
+### 3. Clear Vite internal cache
+If you experience issues resolving Node.js dependencies in development:
 ```bash
-# Limpiar cache de Vite
-docker-compose --profile development exec frontend-dev rm -rf /app/node_modules/.vite
+# Stop containers and clean volumes to force a fresh install
+docker compose down -v
+docker compose up --build
 ```
-
-### Logs y Debugging
-
-#### Ver logs en tiempo real
-
-```bash
-# Logs de desarrollo
-docker-compose --profile development logs -f frontend-dev
-
-# Logs de producción
-docker-compose --profile production logs -f frontend-prod
-```
-
-#### Acceder al contenedor
-
-```bash
-# Desarrollo
-docker-compose --profile development exec frontend-dev sh
-
-# Producción
-docker-compose --profile production exec frontend-prod sh
-```
-
-## 🚀 Desarrollo Rápido
-
-### Workflow Recomendado
-
-1. **Iniciar desarrollo**:
-
-   ```bash
-   docker-compose --profile development up
-   ```
-
-2. **Hacer cambios** en el código (hot reload automático)
-
-3. **Probar producción**:
-
-   ```bash
-   docker-compose --profile production up
-   ```
-
-4. **Limpiar** cuando termines:
-   ```bash
-   docker-compose --profile development down
-   docker-compose --profile production down
-   ```
-
-## 📊 Monitoreo
-
-### Ver estado de contenedores
-
-```bash
-# Estado de desarrollo
-docker-compose --profile development ps
-
-# Estado de producción
-docker-compose --profile production ps
-```
-
-### Ver uso de recursos
-
-```bash
-# Estadísticas de contenedores
-docker stats
-```
-
-## 🔒 Variables de Entorno
-
-### Desarrollo
-
-- `NODE_ENV=development`
-- `VITE_DEBUG=true`
-- `VITE_HMR=true`
-- `CHOKIDAR_USEPOLLING=true`
-
-### Producción
-
-- `NODE_ENV=production`
-- `VITE_DEBUG=false`
-- `VITE_HMR=false`
-- Logs mínimos para rendimiento
