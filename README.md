@@ -42,9 +42,9 @@ A modern, responsive web application for real-time currency conversion built wit
 - **Hot Module Replacement** - Instant development feedback
 - **TypeScript** - Full type safety and better development experience
 - **Docker Support** - Containerized development and production environments
-- **Code Quality** - ESLint, Prettier, and Husky for consistent code quality
+- **Code Quality** - Oxlint, Biome, and Husky for consistent code quality and ultra-fast checks
 - **Strict Type Checking** - Enhanced TypeScript configuration with strict type safety
-- **Automated Quality Gates** - Pre-commit hooks with type checking and code formatting
+- **Automated Quality Gates** - Pre-commit hooks with type checking and formatting
 
 ## 🛠️ Technology Stack
 
@@ -57,8 +57,9 @@ A modern, responsive web application for real-time currency conversion built wit
 
 ### **Development Tools**
 
-- **ESLint 9.38.0** - Code linting with TypeScript support
-- **Prettier 3.6.2** - Code formatting and style consistency
+- **Oxlint** - Ultra-fast static analysis tool (Rust-powered correctness)
+- **Biome** - Blazing-fast formatting and import organization (Rust-powered)
+- **ls-lint** - Filename consistency enforcer
 - **Husky 9.1.7** - Git hooks for code quality
 - **Commitlint** - Conventional commit message validation
 - **Lint-staged** - Pre-commit code quality checks
@@ -66,17 +67,16 @@ A modern, responsive web application for real-time currency conversion built wit
 ### **DevOps & Deployment**
 
 - **Docker** - Containerized development and production
-- **Docker Compose** - Multi-environment orchestration
-- **Nginx** - Production web server with optimizations
+- **Docker Compose** - Unified, flexible, and dynamic orchestration
+- **Nginx** - Production web server with hardening, gzip compression, and SPA optimizations
 - **Multi-stage builds** - Optimized Docker images
-- **Environment profiles** - Development and production configurations
 
 ## Requirements
 
 ### For Local Development
 
-- Node.js (version 16 or higher)
-- PNPM
+- Node.js (version 24 or higher)
+- PNPM (version 11 or higher)
 
 ### For Docker (Recommended)
 
@@ -94,19 +94,42 @@ A modern, responsive web application for real-time currency conversion built wit
    cd Currency_Exchange
    ```
 
-2. Start development environment:
+2. Initialize your local configuration file:
+
+   ```bash
+   cp .env.example .env.development
+   ```
+
+3. Start development environment:
 
    ```bash
    # Development with hot reload
-   docker-compose --profile development up
-
-   # Production build
-   docker-compose --profile production up
+   docker compose up --build
    ```
 
-3. Access the application:
+4. Access the application:
    - **Development**: [http://localhost:5173](http://localhost:5173)
-   - **Production**: [http://localhost:80](http://localhost:80)
+
+---
+
+### 🏭 Simulating Production (Local)
+
+1. Copy the production environment template:
+
+   ```bash
+   cp .env.example .env.production
+   ```
+
+2. Spin up Nginx and the production build:
+
+   ```bash
+   NODE_ENV=production DOCKER_TARGET=production PORT=8080 INTERNAL_PORT=80 docker compose up --build
+   ```
+
+3. Open in your browser:
+   - **Production Simulation**: [http://localhost:8080](http://localhost:8080)
+
+---
 
 ### 🛠️ Local Development
 
@@ -124,6 +147,8 @@ A modern, responsive web application for real-time currency conversion built wit
 
 3. Open your browser at [http://localhost:5173](http://localhost:5173)
 
+---
+
 ## 🚀 How to Use the Application
 
 ### **Getting Started**
@@ -135,13 +160,7 @@ A modern, responsive web application for real-time currency conversion built wit
 5. **Convert** - Click the "Convert" button to get real-time exchange rates
 6. **View History** - Check your conversion history in the side panel
 
-### **Advanced Features**
-
-- **Rate Source Indicator** - See if rates come from cache or live API
-- **Theme Switching** - Toggle between light and dark themes
-- **History Management** - View, clear, or export your conversion history
-- **Smart Caching** - Automatic rate caching to reduce API calls
-- **Error Handling** - Clear error messages and validation feedback
+---
 
 ## 📁 Project Structure
 
@@ -168,22 +187,20 @@ currencyExchange/
 │   ├── styles/                    # Global styles
 │   ├── App.tsx                    # Main application component
 │   └── main.tsx                   # Application entry point
-├── docker/                        # Docker configuration
-│   ├── nginx/                    # Nginx configurations
-│   │   ├── nginx.dev.conf         # Development Nginx config
-│   │   └── nginx.prod.conf        # Production Nginx config
-│   ├── .env.development           # Development environment variables
-│   └── .env.production            # Production environment variables
 ├── docs/                          # Documentation
-│   └── docker-usage.md            # Docker usage guide
+│   └── docker-usage.md            # Docker usage guide (English)
 ├── public/                        # Static assets
 ├── Dockerfile                     # Multi-stage Docker build
-├── docker-compose.yml             # Docker Compose with profiles
+├── docker-compose.yml             # Unified dynamic Docker Compose definition
+├── nginx.conf                     # Unified production Nginx config with hardening
+├── .env.example                   # Generic environment variables template
 ├── package.json                   # Dependencies and scripts
 ├── vite.config.ts                 # Vite configuration
 ├── tsconfig.json                  # TypeScript configuration
 └── README.md                      # This file
 ```
+
+---
 
 ## Development Workflow
 
@@ -197,24 +214,20 @@ This project follows the [Gitflow](https://www.atlassian.com/git/tutorials/compa
 
 For versioning, we follow [Semantic Versioning](https://semver.org/) principles.
 
+---
+
 ## 🚀 Available Scripts
 
 ### 🐳 **Docker Commands (Recommended)**
 
 ```bash
 # Development Environment
-docker-compose --profile development up          # Start dev with hot reload
-docker-compose --profile development up -d         # Start in background
-docker-compose --profile development down        # Stop development
+docker compose up --build          # Start dev with hot reload
+docker compose up -d --build       # Start dev in background
+docker compose down                # Stop development
 
-# Production Environment
-docker-compose --profile production up           # Start production build
-docker-compose --profile production up -d        # Start in background
-docker-compose --profile production down         # Stop production
-
-# Build Commands
-docker-compose --profile development build       # Build dev image
-docker-compose --profile production build        # Build production image
+# Production Simulation
+NODE_ENV=production DOCKER_TARGET=production PORT=8080 INTERNAL_PORT=80 docker compose up --build
 ```
 
 ### 🛠️ **Local Development Scripts**
@@ -225,32 +238,30 @@ pnpm dev                    # Start development server with HMR
 pnpm build                  # Build for production
 pnpm preview                # Preview production build
 
-# Code Quality
-pnpm lint                   # Run ESLint with auto-fix
-pnpm lint:check             # Check linting without fixing
-pnpm format                 # Format code with Prettier
-pnpm format:check           # Check formatting without fixing
-pnpm fix                    # Run lint + format
-
-# Git Hooks
-pnpm prepare                # Setup Husky git hooks
+# Code Quality (Oxlint & Biome)
+pnpm format                 # Format code with Biome
+pnpm format:check           # Check formatting with Biome
 ```
+
+---
 
 ## 📚 Documentation
 
-- **[Docker Usage Guide](docs/docker-usage.md)**: Complete Docker setup and usage instructions
+- **[Docker Usage Guide](docs/docker-usage.md)**: Complete Docker setup and usage instructions (English)
 - **[Project Structure](#project-structure)**: Detailed code organization and architecture
 - **[API Integration](src/services/FreeCurrency.ts)**: Free Currency API implementation
 - **[Local Storage](src/services/LocalStorage.ts)**: Data persistence and caching logic
+
+---
 
 ## 🔧 Configuration Files
 
 - **`vite.config.ts`** - Vite configuration with HMR and polling for Docker
 - **`tsconfig.json`** - TypeScript configuration with strict type checking
-- **`eslint.config.js`** - ESLint rules and TypeScript integration
 - **`package.json`** - Dependencies and scripts configuration
-- **`docker-compose.yml`** - Multi-environment Docker orchestration
+- **`docker-compose.yml`** - Dynamic multi-environment Docker orchestration
 - **`Dockerfile`** - Multi-stage container build configuration
+- **`nginx.conf`** - Production Nginx web server configurations
 
 ## Contributing
 
