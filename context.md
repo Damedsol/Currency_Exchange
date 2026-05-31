@@ -1,28 +1,40 @@
-# 🧠 Contexto del Proyecto y Aprendizajes: currencyExchange (Root)
+# 🧠 Project Context and Learnings: currencyExchange (Root)
 
-Este documento registra dinámicamente los aprendizajes técnicos, decisiones arquitectónicas y el historial de cambios activos durante el desarrollo del proyecto.
+This document dynamically records technical learnings, architectural decisions, and the active history of changes during the development of the project.
 
-## 🚀 Stack y Configuración (Aprendizajes)
+## 🚀 Stack and Configuration (Learnings)
 
-- **Linter Primario:** **Oxlint** para análisis estático ultra-rápido sin ESLint. Reglas de corrección, rendimiento y sospechosas habilitadas en `.oxlintrc.json`.
-- **Formateador Exclusivo:** **Biome** para formatear estéticamente archivos JS, TS, TSX, CSS y JSON en tiempo récord. El linter interno de Biome está deshabilitado para evitar conflictos.
-  - *Configuración:* Mapea con precisión absoluta el uso de tabuladores, ancho 2, ancho de línea 80, comillas dobles y comas finales obligatorias.
-- **Linter de Nombres de Archivos:** **ls-lint** garantiza la consistencia de nombres: componentes en `PascalCase.tsx`, utilidades/servicios en `camelCase.ts` y configuraciones en `kebab-case`/`dot-notation`.
-- **UI & Framework:** **React 19** y **Fluent UI React Components v9** (`@fluentui/react-components`), inyectando el tema a través de `FluentProvider` y utilizando `makeStyles` (CSS-in-JS atómico de Griffel).
-- **Gestión de Paquetes:** **pnpm** con prioridad absoluta en el entorno (usando catálogos/workspaces de pnpm).
+- **Primary Linter:** **Oxlint** for ultra-fast static analysis without ESLint. Correctness, performance, and suspicious rules are enabled in `.oxlintrc.json`.
+- **Exclusive Formatter:** **Biome** to aesthetically format JS, TS, TSX, CSS, and JSON files in record time. Biome's internal linter is disabled to prevent conflicts.
+  - *Configuration:* Absolute precision in tab usage, width of 2, line width of 80, double quotes, and trailing commas.
+- **Filename Linter:** **ls-lint** guarantees consistency in naming conventions: components in `PascalCase.tsx`, utilities/services in `camelCase.ts`, and configurations in `kebab-case`/`dot-notation`.
+- **UI & Framework:** **React 19** and **Fluent UI React Components v9** (`@fluentui/react-components`), injecting the theme via `FluentProvider` and using `makeStyles` (atomic CSS-in-JS from Griffel).
+- **Package Management:** **pnpm** with absolute priority in the environment (using pnpm workspaces/catalogs).
 
-## 🧠 Decisiones Estratégicas
+## 🧠 Strategic Decisions
 
-- **Exclusividad de Linters/Formatters en Rust:** ESLint y Prettier fueron completamente eliminados del proyecto. Reinstalarlos está estrictamente prohibido.
-- **Configuración Agéntica Local:** Adoptado el "Estándar Agéntico" a través de `/AGENTS.md` (archivo maestro raíz único, menos de 150 líneas) y el sistema de memoria `context.md`.
-- **Skills Técnicas Locales:** Separación del conocimiento local en `.gemini/` (CLI) y `.agents/` (Antigravity IDE), con habilidades documentadas de más de 400 líneas para `modern-linting` y `fluent-ui-react`.
+- **Exclusivity of Rust-based Linters/Formatters:** ESLint and Prettier were completely removed from the project. Reinstalling them is strictly forbidden.
+- **Local Agentic Configuration:** Adopted the "Agentic Standard" via `/AGENTS.md` (single root master file, less than 150 lines) and the `context.md` memory system.
+- **Local Technical Skills:** Separating local knowledge into `.gemini/` (CLI) and `.agents/` (Antigravity IDE), with documented skills of over 400 lines for `modern-linting` and `fluent-ui-react`.
 
-## 📈 Historial de Cambios Relevante
+## 📈 Relevant Change History
 
-- **2026-05-30: Inicialización del Sistema Agéntico del Proyecto**
-  - **Detalles del Cambio:**
-    - Creado el archivo maestro `AGENTS.md` en la raíz (PROFILE, CONTEXT, INSTRUCTIONS, TOOLS & GUARDRAILS).
-    - Creado el sistema de skills locales en `.gemini/skills/` y `.agents/skills/` para `modern-linting` y `fluent-ui-react`.
-    - Actualizado el archivo de memoria estratégica `context.md` en la raíz.
-  - **Lecciones de QA:** Verificado que `AGENTS.md` y `context.md` no violan los límites de líneas (<150 y <200 líneas respectivamente).
-  - **Rama / Commit Asociado:** `feature/agentic-system`
+- **2026-05-30: Project Agentic System Initialization**
+  - **Change Details:**
+    - Created the `AGENTS.md` master file in the root (PROFILE, CONTEXT, INSTRUCTIONS, TOOLS & GUARDRAILS).
+    - Created the local skills system in `.gemini/skills/` and `.agents/skills/` for `modern-linting` and `fluent-ui-react`.
+    - Updated the strategic memory file `context.md` in the root.
+  - **QA Lessons:** Verified that `AGENTS.md` and `context.md` do not violate line limits (<150 and <200 lines respectively).
+  - **Branch / Associated Commit:** `feature/agentic-system`
+
+- **2026-05-31: Unified Docker Refactoring and Security Hardening**
+  - **Change Details:**
+    - Removed the duplicate `docker/` directory and its internal files.
+    - Created the `.env.example` file with generic configurations and recursively ignored all real `.env` files in `.gitignore`.
+    - Created and unified `nginx.conf` in the root with SPA optimization, gzip compression, and advanced security directives (`server_tokens off`, hidden files blocking).
+    - Modified the `Dockerfile` to use the unified Nginx configuration in the root.
+    - Simplified `docker-compose.yml` by removing the obsolete version directive and unifying services into a single dynamic container with safe, generic defaults.
+  - **QA Lessons:**
+    - Validated Docker Compose syntax with `docker compose config` without warnings.
+    - Keep VPS-specific internal networks and configurations (`private_services`) 100% private and locally injected to guarantee the **security by obscurity** principle in public repositories.
+  - **Branch / Associated Commit:** `refactor/docker-vps-adaptability`

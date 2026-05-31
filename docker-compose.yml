@@ -1,57 +1,24 @@
 services:
-  # Frontend para desarrollo
-  frontend-dev:
-    container_name: currency-exchange-frontend-dev
+  frontend:
+    container_name: currency-exchange-frontend
     build:
       context: .
-      target: development
+      target: ${DOCKER_TARGET:-development}
     ports:
-      - "5173:5173"
+      - "${PORT:-5173}:${INTERNAL_PORT:-5173}"
     volumes:
-      # Mount source code for hot reloading
+      # Estos volúmenes se aplican en desarrollo local para hot-reloading
       - ./src:/app/src:delegated
-      # Mount public directory if needed
       - ./public:/app/public:delegated
-      # Use a named volume for node_modules to avoid overriding container's node_modules
       - node_modules:/app/node_modules
-      # Mount vite cache for better performance (with proper permissions)
       - vite_cache:/app/node_modules/.vite:rw
     environment:
-      - NODE_ENV=development
-      - VITE_API_URL=http://localhost:3000/api
-      - VITE_DEBUG=true
-      - CHOKIDAR_USEPOLLING=true
-      - WATCHPACK_POLLING=true
-      - FAST_REFRESH=true
-      - VITE_HMR=true
-      - VITE_CACHE_DIR=/app/node_modules/.vite
+      - NODE_ENV=${NODE_ENV:-development}
     env_file:
-      - ./docker/.env.development
+      - .env.${NODE_ENV:-development}
     restart: unless-stopped
     networks:
       - currency-exchange-network
-    profiles:
-      - development
-
-  # Frontend para producción
-  frontend-prod:
-    container_name: currency-exchange-frontend-prod
-    build:
-      context: .
-      target: production
-    ports:
-      - "80:80"
-    environment:
-      - NODE_ENV=production
-    env_file:
-      - ./docker/.env.production
-    restart: unless-stopped
-    networks:
-      - currency-exchange-network
-    logging:
-      driver: "none"
-    profiles:
-      - production
 
 networks:
   currency-exchange-network:
