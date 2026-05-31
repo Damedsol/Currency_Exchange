@@ -26,7 +26,7 @@ ENV VITE_HMR=true
 RUN mkdir -p /app/node_modules/.vite && chown -R node:node /app/node_modules/.vite
 
 # Copy package manifests as the node user
-COPY --chown=node:node package.json pnpm-lock.yaml ./
+COPY --chown=node:node package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
 # Install dependencies using pnpm as the node user
 RUN pnpm install
@@ -59,7 +59,7 @@ USER node
 ENV NODE_ENV=production
 
 # Copy package manifests as the node user
-COPY --chown=node:node package.json pnpm-lock.yaml ./
+COPY --chown=node:node package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
 # Install dependencies using pnpm frozen lockfile for reproducibility as the node user
 # If lockfile has issues, fallback to regular install
@@ -75,7 +75,7 @@ RUN pnpm run build
 FROM nginx:alpine AS production
 
 # Copy custom Nginx configuration for production
-COPY docker/nginx/nginx.prod.conf /etc/nginx/conf.d/default.conf
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Copy built artifacts from the builder stage
 # Nginx runs as a non-root user by default, permissions should be fine
