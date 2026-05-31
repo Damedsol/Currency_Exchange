@@ -22,3 +22,13 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Env variables and private secrets
+.env
+.env.development
+.env.production
+.env.local
+.env.*.local
+.env.*
+!.env.example
+

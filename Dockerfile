@@ -75,7 +75,7 @@ RUN pnpm run build
 FROM nginx:alpine AS production
 
 # Copy custom Nginx configuration for production
-COPY docker/nginx/nginx.prod.conf /etc/nginx/conf.d/default.conf
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Copy built artifacts from the builder stage
 # Nginx runs as a non-root user by default, permissions should be fine

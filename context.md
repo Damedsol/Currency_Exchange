@@ -26,3 +26,15 @@ Este documento registra dinámicamente los aprendizajes técnicos, decisiones ar
     - Actualizado el archivo de memoria estratégica `context.md` en la raíz.
   - **Lecciones de QA:** Verificado que `AGENTS.md` y `context.md` no violan los límites de líneas (<150 y <200 líneas respectivamente).
   - **Rama / Commit Asociado:** `feature/agentic-system`
+
+- **2026-05-31: Refactorización Unificada de Docker y Hardening de Seguridad**
+  - **Detalles del Cambio:**
+    - Eliminado el directorio duplicado `docker/` y sus archivos internos.
+    - Creado archivo `.env.example` con configuraciones genéricas e ignorados todos los `.env` reales recursivamente en `.gitignore`.
+    - Creado y unificado `nginx.conf` en la raíz con optimización SPA, compresión gzip y directivas avanzadas de seguridad (`server_tokens off`, bloqueo de archivos ocultos).
+    - Modificado `Dockerfile` para usar el Nginx unificado en la raíz.
+    - Simplificado `docker-compose.yml` eliminando la directiva de versión obsoleta y unificando servicios en un único contenedor dinámico con valores por defecto genéricos e inocuos.
+  - **Lecciones de QA:**
+    - Validada sintaxis de Docker Compose con `docker compose config` sin warnings.
+    - Mantener las redes y configuraciones internas específicas de la VPS (`private_services`) de forma 100% privada e inyectada localmente para garantizar el principio de **seguridad por oscuridad** en repositorios públicos.
+  - **Rama / Commit Asociado:** `refactor/docker-vps-adaptability`
