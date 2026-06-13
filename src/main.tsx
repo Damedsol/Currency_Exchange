@@ -1,10 +1,11 @@
 import { FluentProvider } from "@fluentui/react-components";
-import React, { useEffect, useState } from "react";
+import React, { useLayoutEffect, useState } from "react";
 import ReactDOM from "react-dom/client";
 
 import App from "./App.tsx";
 import { neonDarkTheme, neonLightTheme } from "./theme/neonTheme";
 import "./styles/main.css";
+import { useGlobalStyles } from "./styles/globalStyles";
 
 function resolveSystemTheme(): typeof neonDarkTheme {
 	return window.matchMedia("(prefers-color-scheme: dark)").matches
@@ -12,11 +13,23 @@ function resolveSystemTheme(): typeof neonDarkTheme {
 		: neonLightTheme;
 }
 
+function GlobalStylesSlot(): null {
+	useGlobalStyles();
+	return null;
+}
+
 function AppContainer(): React.JSX.Element {
 	const [theme, setTheme] = useState(resolveSystemTheme);
 	const [isDarkMode, setIsDarkMode] = useState(() => theme === neonDarkTheme);
 
-	useEffect(() => {
+	useLayoutEffect(() => {
+		document.documentElement.setAttribute(
+			"data-theme",
+			isDarkMode ? "dark" : "light",
+		);
+	}, [isDarkMode]);
+
+	useLayoutEffect(() => {
 		const mq = window.matchMedia("(prefers-color-scheme: dark)");
 		const handler = (e: MediaQueryListEvent) => {
 			const next = e.matches ? neonDarkTheme : neonLightTheme;
@@ -35,6 +48,7 @@ function AppContainer(): React.JSX.Element {
 
 	return (
 		<FluentProvider id="app-container" theme={theme}>
+			<GlobalStylesSlot />
 			<App toggleTheme={toggleTheme} isDarkMode={isDarkMode} />
 		</FluentProvider>
 	);

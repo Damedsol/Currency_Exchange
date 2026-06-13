@@ -1,3 +1,5 @@
+@import "./fonts.css";
+
 * {
 	box-sizing: border-box;
 }
@@ -6,6 +8,16 @@ body {
 	min-height: 100dvh;
 	margin: 0;
 	padding: 0;
+}
+
+:root {
+	--card-border: 1px solid #2a3d2a;
+	--card-border-subtle: 1px solid #1e2e1e;
+}
+
+[data-theme="light"] {
+	--card-border: 1px solid #c8d8c8;
+	--card-border-subtle: 1px solid #dce8dc;
 }
 
 #app-container {
