@@ -125,3 +125,20 @@ This document dynamically records technical learnings, architectural decisions, 
     - `React.StrictMode` double-renders in development cause `getByLabelText` to match multiple elements — use `getAllBy*` and index `[0]`.
     - Fluent `Input` `autoComplete` prop maps to native `autocomplete` HTML attribute.
   - **Branch / Associated Commit:** `feature/hook-architecture`
+
+- **2026-06-13: Test Infrastructure Setup and Test Suite**
+  - **Change Details:**
+    - Created `vitest.config.ts` with jsdom environment, globals, setup file, and coverage v8 config.
+    - Created `src/test/setup.ts` with `@testing-library/jest-dom/vitest` matchers, `matchMedia` mock (default `matches: false`), and `BroadcastChannel` class stub.
+    - Added `src/services/LocalStorage.test.ts` (15 tests): 3 regex validation, 2 fetch, 3 store, 1 clear, 3 rates cache, 3 conversion history.
+    - Added `src/hooks/useAppMessage.test.ts` (5 tests): init, show, auto-dismiss, manual dismiss, custom duration.
+    - Added `src/hooks/useConversionHistory.test.ts` (5 tests): init empty, init preloaded, addEntry with persistence, 10-entry limit, clear.
+    - Created `playwright.config.ts` with webServer pointing to `pnpm preview` on port 4173.
+    - Added `coverage/`, `e2e/test-results/`, `playwright-report/` to `.gitignore`.
+  - **QA Lessons:**
+    - vitest globals (`vi`, `describe`, etc.) require `import { vi } from "vitest"` in setup files for TypeScript to resolve types, even with `globals: true` in config.
+    - `vi.hoisted()` is needed for mock variables referenced inside `vi.mock()` factory callbacks to ensure proper hoisting order.
+    - Fake timers with `vi.useFakeTimers()` must be cleaned up per-test with `vi.useRealTimers()`; `afterEach` ensures cleanup even on failure.
+    - jsdom `localStorage` is shared across tests — `localStorage.clear()` in `beforeEach` prevents test pollution.
+    - Freecurrencyapi test key requires exactly 40 alphanumeric chars after `fca_live_` prefix.
+  - **Branch / Associated Commit:** `feature/tdd-test-suite`
