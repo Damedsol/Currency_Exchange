@@ -1,6 +1,6 @@
+import type { Theme } from "@fluentui/react-components";
 import { describe, expect, it } from "vitest";
 import { neonDarkTheme, neonLightTheme } from "./neonTheme";
-import type { Theme } from "@fluentui/react-components";
 
 describe("neonDarkTheme", () => {
 	it("is a Fluent Theme", () => {

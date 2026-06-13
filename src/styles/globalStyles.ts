@@ -1,4 +1,4 @@
-import { tokens, makeStyles } from "@fluentui/react-components";
+import { makeStyles, tokens } from "@fluentui/react-components";
 
 export const useGlobalStyles = makeStyles({
 	focusRing: {
