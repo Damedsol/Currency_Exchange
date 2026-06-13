@@ -28,3 +28,16 @@ body {
 	flex-direction: column;
 	gap: 20px;
 }
+
+.skip-link {
+	position: absolute;
+	top: -100%;
+	left: 8px;
+	padding: 8px 16px;
+	color: #1b2d1b;
+	z-index: 9999;
+}
+
+.skip-link:focus {
+	top: 8px;
+}
