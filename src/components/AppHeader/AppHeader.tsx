@@ -168,6 +168,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
 							placeholder="Enter API Key..."
 							size="small"
 							appearance="outline"
+							autoComplete="new-password"
 							style={{
 								width: "200px", // Fixed width for the input itself
 							}}
