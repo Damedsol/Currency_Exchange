@@ -1,7 +1,6 @@
-import { useCallback, useEffect, useRef, useState } from "react";
 import type React from "react";
-import type { MessageBarIntent } from "../types";
-import type { AppMessage } from "../types";
+import { useCallback, useEffect, useRef, useState } from "react";
+import type { AppMessage, MessageBarIntent } from "../types";
 
 const MESSAGE_TIMEOUT_DURATION = 5000;
 

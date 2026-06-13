@@ -1,9 +1,9 @@
-import { useCallback, useState } from "react";
 import type React from "react";
+import { useCallback, useState } from "react";
 
 import {
-	getCurrencyRate,
 	type CurrencyRateResult,
+	getCurrencyRate,
 } from "../services/FreeCurrency";
 import type { ConversionHistoryEntry } from "../services/LocalStorage";
 import type { RateSource } from "../types";

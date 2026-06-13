@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from "react";
 import type React from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import {
 	apiKeyRegex,
@@ -18,6 +18,7 @@ export interface UseApiKeyReturn {
 	handleApiKeyChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 	handleApiKeyInputBlur: () => void;
 	toggleApiKeyHeaderInput: () => void;
+	clearApiKey: () => void;
 }
 
 export function useApiKey(): UseApiKeyReturn {
@@ -91,6 +92,14 @@ export function useApiKey(): UseApiKeyReturn {
 		}, 150);
 	}, [clearBlurTimeout]);
 
+	const clearApiKey = useCallback(() => {
+		clearSaveTimeout();
+		setApiKeyInput("");
+		setStoredApiKey(null);
+		setIsApiKeyValid(true);
+		setApiKeySaveStatus("idle");
+	}, [clearSaveTimeout]);
+
 	// Debounced save effect
 	useEffect(() => {
 		if (apiKeyInput === "" || apiKeySaveStatus === "idle") {
@@ -142,5 +151,6 @@ export function useApiKey(): UseApiKeyReturn {
 		handleApiKeyChange,
 		handleApiKeyInputBlur,
 		toggleApiKeyHeaderInput,
+		clearApiKey,
 	};
 }
