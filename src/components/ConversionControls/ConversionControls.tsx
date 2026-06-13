@@ -1,20 +1,18 @@
 import {
-	makeStyles,
-	shorthands,
-	tokens,
+	Button,
 	Divider,
 	Field,
 	Input,
-	Button,
+	makeStyles,
+	shorthands,
+	tokens,
 } from "@fluentui/react-components";
 import { MoneyCalculatorFilled } from "@fluentui/react-icons";
 import React from "react";
-
+import type { ConversionHistoryEntry } from "../../services/LocalStorage";
 import { ActionButtons } from "../ActionButtons/ActionButtons";
 import { CurrencyRow } from "../CurrencyRow/CurrencyRow";
 import { ResultSection } from "../ResultSection/ResultSection";
-
-import type { ConversionHistoryEntry } from "../../services/LocalStorage";
 
 // Define RateSource type
 type RateSource = "idle" | "cache" | "api" | "error" | "loading";

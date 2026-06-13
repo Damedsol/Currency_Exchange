@@ -1,10 +1,10 @@
 import {
-	Text,
+	Button,
 	makeStyles,
 	shorthands,
-	tokens,
-	Button,
+	Text,
 	Tooltip,
+	tokens,
 } from "@fluentui/react-components";
 import { ArrowClockwiseRegular } from "@fluentui/react-icons";
 

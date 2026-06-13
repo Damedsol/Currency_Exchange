@@ -2,18 +2,18 @@ import {
 	Button,
 	makeStyles,
 	shorthands,
-	tokens,
+	Table,
 	TableBody,
 	TableCell,
-	TableRow,
+	TableCellLayout,
 	TableHeader,
 	TableHeaderCell,
-	Table,
-	TableCellLayout,
+	TableRow,
 	Tooltip,
+	tokens,
 } from "@fluentui/react-components";
 import { ArrowRepeatAllRegular } from "@fluentui/react-icons";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import type { ConversionHistoryEntry } from "../../services/LocalStorage";
 
