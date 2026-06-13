@@ -68,3 +68,18 @@ This document dynamically records technical learnings, architectural decisions, 
     - `/// <reference types="node" />` required at top of test files using `node:fs`, `node:path`, `node:url`.
     - `setTimeout` return type changes from `number` to `NodeJS.Timeout` when `@types/node` is installed — use `ReturnType<typeof setTimeout>` for refs.
   - **Branch / Associated Commit:** `feature/security-infrastructure`
+
+- **2026-06-13: Neon-Code Theme System Creation**
+  - **Change Details:**
+    - Created `src/theme/neonTheme.ts` with 16-shade `BrandVariants` centered on neon green (#b9f27c), `createDarkTheme`/`createLightTheme` wrappers, and 20 token overrides per theme (shadows → none, border-radius capped at 4px, font weights ≤500 in dark, Figtree + IBM Plex Mono fonts, green-tinted neutral surfaces).
+    - Created `src/styles/fonts.css` with `@font-face` declarations for Figtree (variable weight 300-900) and IBM Plex Mono (400/700) using `font-display: swap`.
+    - Created `src/styles/globalStyles.ts` with `makeStyles` hooks for WCAG double focus ring, text prefixes (`[OK]`, `[!]`, `[?]`).
+    - Updated `src/styles/main.css` to import fonts, add `--card-border`/`--card-border-subtle` CSS custom properties with dark/light variants via `[data-theme]`.
+    - Updated `src/main.tsx`: replaced `webDarkTheme`/`webLightTheme` with `neonDarkTheme`/`neonLightTheme`, added `prefers-color-scheme` media query listener with cleanup, `useLayoutEffect` to set `data-theme` on `<html>`, `GlobalStylesSlot` component for `useGlobalStyles` call.
+  - **QA Lessons:**
+    - `BrandVariants` type is `Record<10 | 20 | ... | 160, string>` (16 shades, not 10 as assumed).
+    - `fontWeightSemibold` token is `number` (not `string`). Override must use numeric literal.
+    - `borderRadiusMedium`/`borderRadiusLarge`/`borderRadiusXLarge` tokens are strings like `"4px"`.
+    - `makeStyles` hooks must be called inside a component's render tree — created `GlobalStylesSlot` pattern.
+    - `useLayoutEffect` preferred over `useEffect` for DOM attribute mutations (`data-theme`) to avoid flash of wrong styles.
+  - **Branch / Associated Commit:** `feature/neon-theme`

@@ -1,31 +1,54 @@
-import {
-	FluentProvider,
-	type Theme,
-	webDarkTheme,
-	webLightTheme,
-} from "@fluentui/react-components";
-import React, { useState } from "react";
+import { FluentProvider } from "@fluentui/react-components";
+import React, { useLayoutEffect, useState } from "react";
 import ReactDOM from "react-dom/client";
 
 import App from "./App.tsx";
+import { neonDarkTheme, neonLightTheme } from "./theme/neonTheme";
 import "./styles/main.css";
+import { useGlobalStyles } from "./styles/globalStyles";
 
-// Create a container component to manage theme state
+function resolveSystemTheme(): typeof neonDarkTheme {
+	return window.matchMedia("(prefers-color-scheme: dark)").matches
+		? neonDarkTheme
+		: neonLightTheme;
+}
+
+function GlobalStylesSlot(): null {
+	useGlobalStyles();
+	return null;
+}
+
 function AppContainer(): React.JSX.Element {
-	// State for the current theme, initialize with dark theme by default
-	const [theme, setTheme] = useState<Theme>(webDarkTheme);
-	const [isDarkMode, setIsDarkMode] = useState<boolean>(true);
+	const [theme, setTheme] = useState(resolveSystemTheme);
+	const [isDarkMode, setIsDarkMode] = useState(() => theme === neonDarkTheme);
 
-	// Function to toggle the theme
-	const toggleTheme: () => void = () => {
-		const newTheme = isDarkMode ? webLightTheme : webDarkTheme;
-		setTheme(newTheme);
+	useLayoutEffect(() => {
+		document.documentElement.setAttribute(
+			"data-theme",
+			isDarkMode ? "dark" : "light",
+		);
+	}, [isDarkMode]);
+
+	useLayoutEffect(() => {
+		const mq = window.matchMedia("(prefers-color-scheme: dark)");
+		const handler = (e: MediaQueryListEvent) => {
+			const next = e.matches ? neonDarkTheme : neonLightTheme;
+			setTheme(next);
+			setIsDarkMode(e.matches);
+		};
+		mq.addEventListener("change", handler);
+		return () => mq.removeEventListener("change", handler);
+	}, []);
+
+	const toggleTheme = () => {
+		const next = isDarkMode ? neonLightTheme : neonDarkTheme;
+		setTheme(next);
 		setIsDarkMode(!isDarkMode);
 	};
 
 	return (
 		<FluentProvider id="app-container" theme={theme}>
-			{/* Pass the toggle function and current state to App */}
+			<GlobalStylesSlot />
 			<App toggleTheme={toggleTheme} isDarkMode={isDarkMode} />
 		</FluentProvider>
 	);
