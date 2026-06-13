@@ -51,3 +51,20 @@ This document dynamically records technical learnings, architectural decisions, 
     - `pnpm-workspace.yaml` `minimumReleaseAge: 7200` prevents installing packages published less than 2 hours ago. Catalog versions must resolve to mature versions.
     - husky pre-commit hook triggers `lint-staged` → `oxlint` + `biome` → `tsc --noEmit`. No auto-install unless lint-staged detects unresolvable catalog entries.
   - **Branch / Associated Commit:** `feature/dependency-update-plan`
+
+- **2026-06-13: Security Infrastructure Hardening**
+  - **Change Details:**
+    - Added Content-Security-Policy header to nginx.conf with strict directives (default-src 'self', connect-src restricted to api.freecurrencyapi.com, frame-ancestors 'none').
+    - Added HSTS (max-age=63072000), Permissions-Policy (camera/mic/geolocation off), and Cross-Origin security headers to all nginx location blocks.
+    - Extracted CSP policy string into a reusable nginx `$csp_header` variable to avoid duplication across location blocks.
+    - Fixed critical nginx bug: `add_header` in `location /` and `location ~*` was wiping server-level security headers. Security headers now explicit in every location block.
+    - Updated `.dockerignore` to exclude `.env`, `.env.*` files (keeping `.env.example`).
+    - Pinned Dockerfile `NODE_VERSION` from floating `lts-alpine` to fixed `22-alpine`.
+    - Added `@types/node` (v24.13.1) to devDependencies and catalog for config file tests.
+    - Fixed 3 `useRef<number>` type errors in App.tsx by using `ReturnType<typeof setTimeout>` (conflict with `@types/node`).
+    - Created 3 config validation tests: nginx security headers (4 cases), .dockerignore (5 cases), Dockerfile (1 case).
+  - **QA Lessons:**
+    - `import.meta.dirname` not recognized by TypeScript with `moduleResolution: "bundler"` — used `fileURLToPath` + `dirname` instead.
+    - `/// <reference types="node" />` required at top of test files using `node:fs`, `node:path`, `node:url`.
+    - `setTimeout` return type changes from `number` to `NodeJS.Timeout` when `@types/node` is installed — use `ReturnType<typeof setTimeout>` for refs.
+  - **Branch / Associated Commit:** `feature/security-infrastructure`
