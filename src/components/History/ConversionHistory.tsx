@@ -13,7 +13,7 @@ import {
 	tokens,
 } from "@fluentui/react-components";
 import { ArrowRepeatAllRegular } from "@fluentui/react-icons";
-import { useEffect, useState } from "react";
+import { useDeferredValue, useEffect, useState } from "react";
 
 import type { ConversionHistoryEntry } from "../../services/LocalStorage";
 
@@ -151,6 +151,8 @@ export const ConversionHistory = ({
 	onRepeat,
 }: ConversionHistoryProps): React.JSX.Element => {
 	const styles = useStyles();
+	const deferredHistory = useDeferredValue(history);
+	const isStale = history !== deferredHistory;
 	// State for visibility transition
 	const [isVisible, setIsVisible] = useState(false);
 
@@ -172,6 +174,7 @@ export const ConversionHistory = ({
 					className={styles.tableLayoutFixed}
 					aria-label="Conversion History Table"
 					size="medium"
+					style={{ opacity: isStale ? 0.6 : 1 }}
 				>
 					<TableHeader>
 						<TableRow>
@@ -203,7 +206,7 @@ export const ConversionHistory = ({
 						</TableRow>
 					</TableHeader>
 					<TableBody>
-						{history.length === 0 ? (
+						{deferredHistory.length === 0 ? (
 							<TableRow>
 								<TableCell colSpan={7}>
 									<TableCellLayout
@@ -217,7 +220,7 @@ export const ConversionHistory = ({
 								</TableCell>
 							</TableRow>
 						) : (
-							history.map((entry) => (
+							deferredHistory.map((entry) => (
 								<TableRow key={entry.timestamp} className={styles.tableRow}>
 									<TableCell className={styles.amountCell}>
 										<Tooltip

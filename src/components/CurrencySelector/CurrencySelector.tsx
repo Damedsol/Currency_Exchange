@@ -1,5 +1,5 @@
 import { Label, makeStyles, Select, useId } from "@fluentui/react-components";
-import type React from "react";
+import React from "react";
 import data from "./currencySelectorData.json";
 
 interface Currency {
@@ -20,11 +20,11 @@ const useStyles = makeStyles({
 	},
 });
 
-export function CurrencySelector(props: {
+export const CurrencySelector: React.FC<{
 	onChange: (value: string) => void;
 	value: string;
 	where: "from" | "to";
-}): React.JSX.Element {
+}> = React.memo(function CurrencySelector(props) {
 	const styles = useStyles();
 	const selectId = useId("currency-select");
 	const handleInputChange = (
@@ -57,4 +57,4 @@ export function CurrencySelector(props: {
 			</Select>
 		</div>
 	);
-}
+});

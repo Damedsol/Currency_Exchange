@@ -4,12 +4,19 @@ import {
 	shorthands,
 	tokens,
 } from "@fluentui/react-components";
-import { useCallback, useMemo } from "react";
+import React, { lazy, Suspense, useCallback, useMemo } from "react";
 
 import { AppHeader } from "./components/AppHeader/AppHeader";
 import { AppMessageBar } from "./components/AppMessageBar/AppMessageBar";
 import { ConversionControls } from "./components/ConversionControls/ConversionControls";
-import { HistoryPanel } from "./components/HistoryPanel/HistoryPanel";
+import { ErrorBoundary } from "./components/ErrorBoundary/ErrorBoundary";
+
+const HistoryPanel = lazy(() =>
+	import("./components/HistoryPanel/HistoryPanel").then((m) => ({
+		default: m.HistoryPanel,
+	})),
+);
+
 import { useApiKey } from "./hooks/useApiKey";
 import { useAppMessage } from "./hooks/useAppMessage";
 import { useConversion } from "./hooks/useConversion";
@@ -143,11 +150,19 @@ function App({ toggleTheme, isDarkMode }: AppProps): React.JSX.Element {
 						clearConversionHistory={history.clearConversionHistory}
 						clearApiAndCache={handleClearApiAndCache}
 					/>
-					<HistoryPanel
-						history={history.conversionHistory}
-						onRepeatConversion={conversion.repeatConversion}
-						clearConversionHistory={history.clearConversionHistory}
-					/>
+					<ErrorBoundary>
+						<Suspense
+							fallback={
+								<div style={{ padding: "16px" }}>Loading history...</div>
+							}
+						>
+							<HistoryPanel
+								history={history.conversionHistory}
+								onRepeatConversion={conversion.repeatConversion}
+								clearConversionHistory={history.clearConversionHistory}
+							/>
+						</Suspense>
+					</ErrorBoundary>
 				</main>
 			</Card>
 		</div>
