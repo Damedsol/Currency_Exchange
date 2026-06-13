@@ -20,5 +20,59 @@ const brandVariants: BrandVariants = {
 	160: "#010500",
 };
 
-export const neonDarkTheme: Theme = createDarkTheme(brandVariants);
-export const neonLightTheme: Theme = createLightTheme(brandVariants);
+const baseDark: Theme = { ...createDarkTheme(brandVariants) };
+const baseLight: Theme = { ...createLightTheme(brandVariants) };
+
+const fontFamilyBase =
+	"'Figtree', 'Segoe UI', 'Segoe UI Web (West European)', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', sans-serif";
+
+const fontFamilyMonospace =
+	"'IBM Plex Mono', Consolas, 'Courier New', Courier, monospace";
+
+const shadowReset = "none";
+
+const darkOverrides: Partial<Theme> = {
+	fontFamilyBase,
+	fontFamilyMonospace,
+	fontFamilyNumeric: fontFamilyMonospace,
+	shadow2: shadowReset,
+	shadow4: shadowReset,
+	shadow8: shadowReset,
+	shadow16: shadowReset,
+	shadow28: shadowReset,
+	shadow64: shadowReset,
+	borderRadiusLarge: "4px",
+	borderRadiusXLarge: "4px",
+	fontWeightSemibold: 500,
+	colorCompoundBrandStroke: "#b9f27c",
+	colorBrandStroke1: "#b9f27c",
+	colorBrandStroke2: "#a6df6a",
+	colorNeutralBackground1: "#0f1a0f",
+	colorNeutralBackground2: "#141f14",
+	colorNeutralBackground3: "#1a251a",
+	colorSubtleBackgroundHover: "#1e2e1e",
+};
+
+const lightOverrides: Partial<Theme> = {
+	fontFamilyBase,
+	fontFamilyMonospace,
+	fontFamilyNumeric: fontFamilyMonospace,
+	shadow2: shadowReset,
+	shadow4: shadowReset,
+	shadow8: shadowReset,
+	shadow16: shadowReset,
+	shadow28: shadowReset,
+	shadow64: shadowReset,
+	borderRadiusLarge: "4px",
+	borderRadiusXLarge: "4px",
+	colorCompoundBrandStroke: "#b9f27c",
+	colorBrandStroke1: "#b9f27c",
+	colorBrandStroke2: "#a6df6a",
+	colorNeutralBackground1: "#f2f9f2",
+	colorNeutralBackground2: "#eaf5ea",
+	colorNeutralBackground3: "#e0f0e0",
+	colorSubtleBackgroundHover: "#d4e8d4",
+};
+
+export const neonDarkTheme: Theme = { ...baseDark, ...darkOverrides };
+export const neonLightTheme: Theme = { ...baseLight, ...lightOverrides };
