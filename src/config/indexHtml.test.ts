@@ -16,4 +16,10 @@ describe("index.html accessibility", () => {
 	it("has a skip-link to main content", () => {
 		expect(indexHtml).toMatch(/skip-link|skip-to-main|skipnavigation/i);
 	});
+
+	it("preloads fonts", () => {
+		const preloads = indexHtml.match(/rel="preload".*as="font"/g);
+		expect(preloads).not.toBeNull();
+		expect(preloads!.length).toBeGreaterThanOrEqual(2);
+	});
 });
