@@ -99,3 +99,12 @@ This document dynamically records technical learnings, architectural decisions, 
     - `lang="en"` was already present in `index.html`, no change needed.
     - Component tests require `// @vitest-environment jsdom` pragma at file top. React imports are unnecessary with `react-jsx` JSX transform.
   - **Branch / Associated Commit:** `feature/accessibility-wcag`
+
+- **2026-06-13: Component Adaptations for Neon-Code Aesthetics**
+  - **Change Details:**
+    - Added `autoComplete="new-password"` to AppHeader API key input (modern browsers ignore `autocomplete="off"` on password fields).
+  - **QA Lessons:**
+    - `getByLabelText` in testing-library matches multiple elements when components render twice (likely a test environment artifact). Use `getAllByLabelText()[0]` pattern.
+    - Most neon-code visual adaptations (colors, shadows, border-radius, fonts) flow naturally from theme token overrides — minimal component-level CSS changes needed.
+    - Fluent `Input` component supports `autoComplete` prop which maps to native `autocomplete` attribute.
+  - **Branch / Associated Commit:** `feature/component-adaptations`
