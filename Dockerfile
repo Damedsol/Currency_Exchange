@@ -1,5 +1,5 @@
 # Use the official Node.js LTS Alpine image as a base
-ARG NODE_VERSION=lts-alpine
+ARG NODE_VERSION=22-alpine
 
 # Stage 1: Development Environment
 FROM node:${NODE_VERSION} AS development

@@ -116,11 +116,11 @@ function App({ toggleTheme, isDarkMode }: AppProps): React.JSX.Element {
 		useState<ApiKeySaveStatus>("idle");
 
 	// Ref to store message timeout ID
-	const messageTimeoutRef = useRef<number | null>(null);
+	const messageTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 	// Ref to store blur timeout ID
-	const blurTimeoutRef = useRef<number | null>(null);
+	const blurTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 	// Ref to store API Key save debounce timeout ID
-	const saveTimeoutRef = useRef<number | null>(null);
+	const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
 	// Helper function to clear the message timeout
 	const clearMessageTimeout: () => void = () => {
