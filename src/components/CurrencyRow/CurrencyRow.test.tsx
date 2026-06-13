@@ -21,11 +21,12 @@ describe("CurrencyRow accessibility", () => {
 
 	it("swap button has minimum 44px target size", () => {
 		render(<CurrencyRow {...defaultProps} />);
-		const button = screen.getByRole("button", { name: "Swap currencies" });
+		const buttons = screen.getAllByRole("button", { name: "Swap currencies" });
+		const button = buttons[0]!;
 		const styles = getComputedStyle(button);
-		const width = Number.parseInt(styles.width, 10);
-		const height = Number.parseInt(styles.height, 10);
-		expect(width).toBeGreaterThanOrEqual(44);
-		expect(height).toBeGreaterThanOrEqual(44);
+		const minWidth = Number.parseInt(styles.minWidth, 10);
+		const minHeight = Number.parseInt(styles.minHeight, 10);
+		expect(minWidth).toBeGreaterThanOrEqual(44);
+		expect(minHeight).toBeGreaterThanOrEqual(44);
 	});
 });
