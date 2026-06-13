@@ -22,8 +22,8 @@ const useStyles = makeStyles({
 		alignSelf: "flex-end",
 		backgroundColor: tokens.colorBrandBackground,
 		color: tokens.colorNeutralForegroundOnBrand,
-		width: "32px",
-		height: "32px",
+		minWidth: "44px",
+		minHeight: "44px",
 		":hover": {
 			backgroundColor: tokens.colorBrandBackgroundHover,
 		},

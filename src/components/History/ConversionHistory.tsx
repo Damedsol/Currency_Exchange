@@ -164,7 +164,7 @@ export const ConversionHistory = ({
 	}, []);
 
 	return (
-		<div>
+		<div role="region" aria-label="Conversion History">
 			<div
 				className={`${styles.tableWrapper} ${isVisible ? styles.tableWrapperVisible : ""}`}
 			>
@@ -175,27 +175,28 @@ export const ConversionHistory = ({
 				>
 					<TableHeader>
 						<TableRow>
-							<TableHeaderCell className={styles.headerCell}>
+							<TableHeaderCell className={styles.headerCell} scope="col">
 								Amount
 							</TableHeaderCell>
-							<TableHeaderCell className={styles.headerCell}>
+							<TableHeaderCell className={styles.headerCell} scope="col">
 								From
 							</TableHeaderCell>
-							<TableHeaderCell className={styles.headerCell}>
+							<TableHeaderCell className={styles.headerCell} scope="col">
 								To
 							</TableHeaderCell>
-							<TableHeaderCell className={styles.headerCell}>
+							<TableHeaderCell className={styles.headerCell} scope="col">
 								Result
 							</TableHeaderCell>
-							<TableHeaderCell className={styles.headerCell}>
+							<TableHeaderCell className={styles.headerCell} scope="col">
 								Rate
 							</TableHeaderCell>
-							<TableHeaderCell className={styles.headerCell}>
+							<TableHeaderCell className={styles.headerCell} scope="col">
 								Timestamp
 							</TableHeaderCell>
 							<TableHeaderCell
 								className={styles.headerCell}
 								style={{ width: "60px" }}
+								scope="col"
 							>
 								Action
 							</TableHeaderCell>
