@@ -1,12 +1,13 @@
 import {
 	Label,
-	Switch,
 	makeStyles,
+	Switch,
 	shorthands,
 	tokens,
 	useId,
 } from "@fluentui/react-components";
 import React from "react";
+
 // Import Label from Fluent UI directly
 
 // Define styles specific to this component

@@ -1,14 +1,14 @@
 import {
+	Card,
+	type MessageBarIntent,
 	makeStyles,
 	shorthands,
 	tokens,
-	Card,
-	type MessageBarIntent,
 } from "@fluentui/react-components";
 import {} from // Icons are now primarily used within sub-components
 "@fluentui/react-icons";
-import { useEffect, useState, useRef } from "react";
-
+import type React from "react";
+import { useEffect, useRef, useState } from "react";
 // Import new layout components
 import { AppHeader } from "./components/AppHeader/AppHeader";
 import { AppMessageBar } from "./components/AppMessageBar/AppMessageBar";
@@ -16,21 +16,19 @@ import { ConversionControls } from "./components/ConversionControls/ConversionCo
 import { HistoryPanel } from "./components/HistoryPanel/HistoryPanel";
 // Keep service imports
 import {
-	getCurrencyRate,
 	type CurrencyRateResult,
+	getCurrencyRate,
 } from "./services/FreeCurrency";
 import {
+	apiKeyRegex,
+	type ConversionHistoryEntry,
 	clearLocalStorage,
+	clearRatesCache,
+	loadConversionHistoryService,
 	localStorageFetchService,
 	localStorageStoreService,
-	apiKeyRegex,
-	loadConversionHistoryService,
 	saveConversionHistoryService,
-	clearRatesCache,
-	type ConversionHistoryEntry,
 } from "./services/LocalStorage.ts";
-
-import type React from "react";
 
 // Keep type definitions
 type RateSource = "idle" | "cache" | "api" | "error" | "loading";

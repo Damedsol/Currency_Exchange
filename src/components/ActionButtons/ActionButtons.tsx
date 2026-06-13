@@ -1,15 +1,15 @@
 import {
 	Button,
+	Dialog,
+	DialogActions,
+	DialogBody,
+	DialogContent,
+	DialogSurface,
+	DialogTitle,
+	DialogTrigger,
 	makeStyles,
 	shorthands,
 	tokens,
-	Dialog,
-	DialogTrigger,
-	DialogSurface,
-	DialogBody,
-	DialogTitle,
-	DialogContent,
-	DialogActions,
 } from "@fluentui/react-components";
 import { DeleteRegular, WarningRegular } from "@fluentui/react-icons";
 import React, { useState } from "react";

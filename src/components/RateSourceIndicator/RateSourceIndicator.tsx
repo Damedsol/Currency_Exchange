@@ -1,14 +1,14 @@
 import {
-	Text,
 	makeStyles,
-	shorthands,
-	tokens,
 	mergeClasses,
+	shorthands,
+	Text,
+	tokens,
 } from "@fluentui/react-components";
 import {
-	HistoryRegular,
-	GlobeRegular,
 	ErrorCircleRegular,
+	GlobeRegular,
+	HistoryRegular,
 } from "@fluentui/react-icons";
 import React from "react";
 

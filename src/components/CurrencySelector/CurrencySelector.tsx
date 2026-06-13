@@ -1,8 +1,6 @@
-import { Select, useId, makeStyles, Label } from "@fluentui/react-components";
-
-import data from "./currencySelectorData.json";
-
+import { Label, makeStyles, Select, useId } from "@fluentui/react-components";
 import type React from "react";
+import data from "./currencySelectorData.json";
 
 interface Currency {
 	symbol: string;

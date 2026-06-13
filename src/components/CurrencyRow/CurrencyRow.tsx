@@ -1,8 +1,8 @@
 import {
+	Button,
 	makeStyles,
 	shorthands,
 	tokens,
-	Button,
 } from "@fluentui/react-components";
 import { ArrowSwapRegular } from "@fluentui/react-icons";
 import React from "react";

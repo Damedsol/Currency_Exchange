@@ -1,24 +1,22 @@
 import {
-	makeStyles,
-	shorthands,
-	tokens,
-	Divider,
-	Text,
 	Button,
 	Dialog,
-	DialogTrigger,
-	DialogSurface,
-	DialogBody,
-	DialogTitle,
-	DialogContent,
 	DialogActions,
+	DialogBody,
+	DialogContent,
+	DialogSurface,
+	DialogTitle,
+	DialogTrigger,
+	Divider,
+	makeStyles,
+	shorthands,
+	Text,
+	tokens,
 } from "@fluentui/react-components";
 import { HistoryDismissRegular, WarningRegular } from "@fluentui/react-icons";
 import React, { useState } from "react";
-
-import { ConversionHistory } from "../History/ConversionHistory";
-
 import type { ConversionHistoryEntry } from "../../services/LocalStorage";
+import { ConversionHistory } from "../History/ConversionHistory";
 
 // Styles specific to the history panel, adapted from App.tsx
 const useStyles = makeStyles({
