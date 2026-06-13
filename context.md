@@ -108,3 +108,20 @@ This document dynamically records technical learnings, architectural decisions, 
     - Most neon-code visual adaptations (colors, shadows, border-radius, fonts) flow naturally from theme token overrides — minimal component-level CSS changes needed.
     - Fluent `Input` component supports `autoComplete` prop which maps to native `autocomplete` attribute.
   - **Branch / Associated Commit:** `feature/component-adaptations`
+
+- **2026-06-13: Hook Architecture Refactor — Prop Drilling Elimination**
+  - **Change Details:**
+    - Created `src/types/index.ts` with centralized `RateSource`, `ApiKeySaveStatus`, `AppMessage`, and `ConversionState` types.
+    - Extracted `useApiKey` hook: manages API key input, localStorage load/save, debounced validation (1s), blur timeout, toggle visibility. Exposes `clearApiKey()` for external reset.
+    - Extracted `useConversion` hook: manages currencies, amount, fetchRate with `onConversionComplete` callback, `repeatConversion`. Calls `useCallback` with proper dependency arrays.
+    - Extracted `useConversionHistory` hook: manages list CRUD, auto-save to localStorage, max 10 entries. Exposes `loadInitialHistory()` for SSR-safe hydration.
+    - Extracted `useAppMessage` hook: manages message state with auto-dismiss timeout (5s), cleanup on unmount.
+    - Created `ErrorBoundary` component with customizable fallback for lazy-loaded components.
+    - Refactored `App.tsx` from 477 lines to ~120 lines as a pure orchestrator connecting hooks to components.
+  - **QA Lessons:**
+    - `vi.mock` with factory functions requires `vi.hoisted()` for variable references that need to be hoisted above the mock call.
+    - API key test regex requires exactly 28 alphanumeric chars after `fca_live_` — must verify key length in test fixtures.
+    - `useCallback` with empty deps `[]` in `swapCurrencies` would capture stale closure values. Must list `fromCurrency`/`toCurrency` as dependencies.
+    - `React.StrictMode` double-renders in development cause `getByLabelText` to match multiple elements — use `getAllBy*` and index `[0]`.
+    - Fluent `Input` `autoComplete` prop maps to native `autocomplete` HTML attribute.
+  - **Branch / Associated Commit:** `feature/hook-architecture`
