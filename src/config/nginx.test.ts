@@ -23,10 +23,10 @@ describe("nginx.conf security headers", () => {
 		expect(nginxConfig).toMatch(/connect-src\s+[^;]*api\.freecurrencyapi\.com/);
 	});
 
-	it("applies security headers in all location blocks", () => {
-		const serverAddHeader =
-			nginxConfig.match(/add_header\s+Content-Security-Policy[^;]+always;/g) ||
-			[];
-		expect(serverAddHeader.length).toBeGreaterThanOrEqual(1);
+	it("applies security headers in SPA location block", () => {
+		const locationBlock = nginxConfig.match(
+			/location \/\s*\{[^}]*add_header\s+Content-Security-Policy/s,
+		);
+		expect(locationBlock).not.toBeNull();
 	});
 });
