@@ -38,3 +38,16 @@ This document dynamically records technical learnings, architectural decisions, 
     - Validated Docker Compose syntax with `docker compose config` without warnings.
     - Keep VPS-specific internal networks and configurations (`private_services`) 100% private and locally injected to guarantee the **security by obscurity** principle in public repositories.
   - **Branch / Associated Commit:** `refactor/docker-vps-adaptability`
+
+- **2026-06-13: Fluent + Neon-Code Refactor Plan and Dependency Catalog Update**
+  - **Change Details:**
+    - Created comprehensive 7+1 phase refactoring plan (`docs/plan-neon-code-fluent-tdd.md`, 1272 lines) merging Fluent UI v9 with Accessible Neon-Code design system under strict TDD and WCAG 2.2 AAA.
+    - Updated `pnpm-workspace.yaml` catalog with precise version ranges pinned to currently installed versions (not bleeding edge) to respect `minimumReleaseAge` constraint.
+    - Added 8 new devDependencies to `package.json`: vitest, @vitest/coverage-v8, @testing-library/react, @testing-library/jest-dom, @testing-library/user-event, jsdom, playwright, @playwright/test.
+    - Added 5 new scripts: `test`, `test:watch`, `test:coverage`, `test:e2e`, `test:e2e:ui`.
+    - Fixed 15 biome import organization warnings across all source files.
+  - **QA Lessons:**
+    - `biome format` has no `--check` flag in v2.x; use `biome check --linter-enabled=false` instead.
+    - `pnpm-workspace.yaml` `minimumReleaseAge: 7200` prevents installing packages published less than 2 hours ago. Catalog versions must resolve to mature versions.
+    - husky pre-commit hook triggers `lint-staged` → `oxlint` + `biome` → `tsc --noEmit`. No auto-install unless lint-staged detects unresolvable catalog entries.
+  - **Branch / Associated Commit:** `feature/dependency-update-plan`
