@@ -83,3 +83,19 @@ This document dynamically records technical learnings, architectural decisions, 
     - `makeStyles` hooks must be called inside a component's render tree — created `GlobalStylesSlot` pattern.
     - `useLayoutEffect` preferred over `useEffect` for DOM attribute mutations (`data-theme`) to avoid flash of wrong styles.
   - **Branch / Associated Commit:** `feature/neon-theme`
+
+- **2026-06-13: WCAG 2.2 AAA Accessibility Improvements**
+  - **Change Details:**
+    - Added skip-link to `index.html` with visible-on-focus CSS (`.skip-link` positioned off-screen, revealed on `:focus`).
+    - Added `role="region"` and `aria-label="Conversion History"` to ConversionHistory table wrapper.
+    - Added `scope="col"` to all `TableHeaderCell` elements in ConversionHistory.
+    - Increased CurrencyRow swap button from 32px to 44px `minWidth`/`minHeight` for WCAG target size requirement.
+    - Consolidated dual `aria-live="polite"` regions in ResultSection into a single parent container.
+    - Added `prefers-reduced-motion: reduce` media query in `main.css` disabling all animations and transitions.
+  - **QA Lessons:**
+    - `getComputedStyle` in jsdom returns `auto` for `width`/`height` on elements without explicit sizes. Use `minWidth`/`minHeight` instead.
+    - `getByLabelText` matches tooltip content as well as `aria-label`. Use `getByRole("button", { name })` for more precise selection.
+    - Fluent `TableHeaderCell` forwards unknown props to the DOM element — `scope="col"` passed directly works.
+    - `lang="en"` was already present in `index.html`, no change needed.
+    - Component tests require `// @vitest-environment jsdom` pragma at file top. React imports are unnecessary with `react-jsx` JSX transform.
+  - **Branch / Associated Commit:** `feature/accessibility-wcag`
