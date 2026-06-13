@@ -32,3 +32,9 @@ dist-ssr
 .env.*
 !.env.example
 
+# Test coverage and artifacts
+coverage/
+e2e/test-results/
+playwright-report/
+test-results/
+

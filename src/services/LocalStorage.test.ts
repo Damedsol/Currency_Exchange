@@ -1,14 +1,14 @@
-import { describe, expect, it, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
 	apiKeyRegex,
+	clearLocalStorage,
+	clearRatesCache,
+	loadConversionHistoryService,
+	loadRatesFromCache,
 	localStorageFetchService,
 	localStorageStoreService,
-	clearLocalStorage,
-	saveRatesToCache,
-	loadRatesFromCache,
-	clearRatesCache,
 	saveConversionHistoryService,
-	loadConversionHistoryService,
+	saveRatesToCache,
 } from "./LocalStorage";
 
 beforeEach(() => {
