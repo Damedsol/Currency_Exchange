@@ -16,6 +16,13 @@ interface GetCurrencyRateArgs {
 const API_URL = "https://api.freecurrencyapi.com/v1/latest";
 const BASE_CURRENCY = "USD"; // Using USD as the base for caching
 
+// In-memory cache to avoid repeated JSON.parse of localStorage
+const memoryCache: Map<
+	string,
+	{ rates: Record<string, number>; timestamp: number }
+> = new Map();
+const MEMORY_CACHE_TTL = 300_000; // 5 minutes
+
 export const getCurrencyRate = async ({
 	fromCurrency,
 	toCurrency,
@@ -26,7 +33,14 @@ export const getCurrencyRate = async ({
 		return { rate: null, source: "error" };
 	}
 
-	// 1. Try loading from cache
+	// 1. Try in-memory cache first
+	const cacheKey = `${fromCurrency}-${toCurrency}`;
+	const memoryEntry = memoryCache.get(cacheKey);
+	if (memoryEntry && Date.now() - memoryEntry.timestamp < MEMORY_CACHE_TTL) {
+		return { rate: memoryEntry.rates[toCurrency] ?? null, source: "cache" };
+	}
+
+	// 2. Try loading from localStorage cache
 	const cachedRates = loadRatesFromCache();
 
 	if (cachedRates) {
@@ -76,9 +90,13 @@ export const getCurrencyRate = async ({
 		// Add the base currency rate (which is 1)
 		rates[BASE_CURRENCY] = 1.0;
 
-		// Save the fresh rates to cache
+		// Save the fresh rates to cache (memory + localStorage)
 		saveRatesToCache(rates);
-		console.log("Rates saved to cache.");
+		memoryCache.set(fromCurrency + "-" + toCurrency, {
+			rates,
+			timestamp: Date.now(),
+		});
+		console.log("Rates saved to cache (memory + storage).");
 
 		// Calculate the requested rate from the fresh data
 		const rate = calculateRate(rates, fromCurrency, toCurrency);

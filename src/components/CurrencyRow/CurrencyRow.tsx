@@ -45,37 +45,37 @@ interface CurrencyRowProps {
 	onSwap: () => void;
 }
 
-export const CurrencyRow: React.FC<CurrencyRowProps> = ({
-	fromCurrency,
-	toCurrency,
-	onFromChange,
-	onToChange,
-	onSwap,
-}) => {
-	const styles = useStyles();
+export const CurrencyRow: React.FC<CurrencyRowProps> = React.memo(
+	({ fromCurrency, toCurrency, onFromChange, onToChange, onSwap }) => {
+		const styles = useStyles();
 
-	return (
-		<div className={styles.container}>
-			{/* From CurrencySelector (already includes label) */}
-			<CurrencySelector
-				value={fromCurrency}
-				onChange={onFromChange}
-				where={"from"}
-			/>
+		return (
+			<div className={styles.container}>
+				{/* From CurrencySelector (already includes label) */}
+				<CurrencySelector
+					value={fromCurrency}
+					onChange={onFromChange}
+					where={"from"}
+				/>
 
-			{/* Swap Button - Place between selectors */}
-			<Button
-				appearance="primary"
-				size="medium"
-				shape="circular"
-				className={styles.swapButton}
-				onClick={onSwap}
-				aria-label="Swap currencies"
-				icon={<ArrowSwapRegular />}
-			/>
+				{/* Swap Button - Place between selectors */}
+				<Button
+					appearance="primary"
+					size="medium"
+					shape="circular"
+					className={styles.swapButton}
+					onClick={onSwap}
+					aria-label="Swap currencies"
+					icon={<ArrowSwapRegular />}
+				/>
 
-			{/* To CurrencySelector (already includes label) */}
-			<CurrencySelector value={toCurrency} onChange={onToChange} where={"to"} />
-		</div>
-	);
-};
+				{/* To CurrencySelector (already includes label) */}
+				<CurrencySelector
+					value={toCurrency}
+					onChange={onToChange}
+					where={"to"}
+				/>
+			</div>
+		);
+	},
+);

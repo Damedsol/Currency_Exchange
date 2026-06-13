@@ -142,3 +142,18 @@ This document dynamically records technical learnings, architectural decisions, 
     - jsdom `localStorage` is shared across tests — `localStorage.clear()` in `beforeEach` prevents test pollution.
     - Freecurrencyapi test key requires exactly 40 alphanumeric chars after `fca_live_` prefix.
   - **Branch / Associated Commit:** `feature/tdd-test-suite`
+
+- **2026-06-13: Performance Optimizations**
+  - **Change Details:**
+    - Wrapped `CurrencySelector`, `CurrencyRow`, `ResultSection`, `RateSourceIndicator` in `React.memo` to prevent unnecessary re-renders when parent state changes but props haven't.
+    - Added `useDeferredValue` in `ConversionHistory` — defers high-priority history updates to avoid blocking the table render thread. Table shows 0.6 opacity during stale state.
+    - Added `useTransition` in `main.tsx` — wraps `toggleTheme` in `startTransition` for non-blocking theme switching.
+    - Implemented in-memory cache (`Map<string, {rates, timestamp}>`) in `FreeCurrency.ts` with 5-minute TTL to avoid repeated `JSON.parse` of localStorage on rate calculations.
+    - Added `React.lazy(() => import("./components/HistoryPanel/HistoryPanel"))` in `App.tsx` with `Suspense` and `ErrorBoundary` — separates `HistoryPanel` into its own chunk (`6.41 kB / 2.07 kB gzip`).
+    - Added font preload links (`<link rel="preload" as="font">`) for Figtree and IBM Plex Mono in `index.html`.
+    - Removed unused `React` import from `ConversionHistory.test.tsx` and `CurrencyRow.test.tsx`.
+  - **QA Lessons:**
+    - `React.memo` requires `React` as a value import (`import React from "react"`), not just a type import. Files using JSX-only with React 19's `react-jsx` transform don't need `React` — `React.memo` changes this.
+    - `React.lazy` creates a separate chunk automatically. Vite 8 splits the lazy component into its own output file.
+    - Bundle size is tracked: `react-dom` remains the largest chunk (126.63 kB gzip); Fluent UI is 10.96 kB gzip. Total gzip target <200 kB.
+  - **Branch / Associated Commit:** `feature/performance-optimizations`

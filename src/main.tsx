@@ -1,5 +1,5 @@
 import { FluentProvider } from "@fluentui/react-components";
-import React, { useLayoutEffect, useState } from "react";
+import React, { useLayoutEffect, useState, useTransition } from "react";
 import ReactDOM from "react-dom/client";
 
 import App from "./App.tsx";
@@ -40,10 +40,14 @@ function AppContainer(): React.JSX.Element {
 		return () => mq.removeEventListener("change", handler);
 	}, []);
 
+	const [, startTransition] = useTransition();
+
 	const toggleTheme = () => {
-		const next = isDarkMode ? neonLightTheme : neonDarkTheme;
-		setTheme(next);
-		setIsDarkMode(!isDarkMode);
+		startTransition(() => {
+			const next = isDarkMode ? neonLightTheme : neonDarkTheme;
+			setTheme(next);
+			setIsDarkMode(!isDarkMode);
+		});
 	};
 
 	return (
