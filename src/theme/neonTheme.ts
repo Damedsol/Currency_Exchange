@@ -31,7 +31,7 @@ const fontFamilyMonospace =
 
 const shadowReset = "none";
 
-const darkOverrides: Partial<Theme> = {
+const baseOverrides: Partial<Theme> = {
 	fontFamilyBase,
 	fontFamilyMonospace,
 	fontFamilyNumeric: fontFamilyMonospace,
@@ -43,6 +43,10 @@ const darkOverrides: Partial<Theme> = {
 	shadow64: shadowReset,
 	borderRadiusLarge: "4px",
 	borderRadiusXLarge: "4px",
+};
+
+const darkOverrides: Partial<Theme> = {
+	...baseOverrides,
 	fontWeightSemibold: 500,
 	colorBrandForeground1: "#b9f27c",
 	colorBrandBackground: "#1a2e1a",
@@ -58,17 +62,7 @@ const darkOverrides: Partial<Theme> = {
 };
 
 const lightOverrides: Partial<Theme> = {
-	fontFamilyBase,
-	fontFamilyMonospace,
-	fontFamilyNumeric: fontFamilyMonospace,
-	shadow2: shadowReset,
-	shadow4: shadowReset,
-	shadow8: shadowReset,
-	shadow16: shadowReset,
-	shadow28: shadowReset,
-	shadow64: shadowReset,
-	borderRadiusLarge: "4px",
-	borderRadiusXLarge: "4px",
+	...baseOverrides,
 	colorBrandForeground1: "#1b4332",
 	colorBrandBackground: "#d4eed4",
 	colorBrandBackgroundHover: "#c0e6c0",
