@@ -69,6 +69,27 @@ describe("neonDarkTheme", () => {
 		const stroke = neonDarkTheme.colorCompoundBrandStroke;
 		expect(stroke).toBe("#b9f27c");
 	});
+
+	it("has dark-specific compoundBrandStroke (not same as light)", () => {
+		expect(neonDarkTheme.colorCompoundBrandStroke).not.toBe(
+			neonLightTheme.colorCompoundBrandStroke,
+		);
+	});
+
+	it("has dark-specific brandStroke1 (not same as light)", () => {
+		expect(neonDarkTheme.colorBrandStroke1).not.toBe(
+			neonLightTheme.colorBrandStroke1,
+		);
+	});
+
+	it("has brandForeground1 in dark mode", () => {
+		expect(neonDarkTheme.colorBrandForeground1).toBe("#b9f27c");
+	});
+
+	it("has brandBackground in both modes", () => {
+		expect(neonDarkTheme.colorBrandBackground).toBeDefined();
+		expect(neonLightTheme.colorBrandBackground).toBeDefined();
+	});
 });
 
 describe("neonLightTheme", () => {
@@ -87,6 +108,18 @@ describe("neonLightTheme", () => {
 		expect(Number(neonLightTheme.fontWeightSemibold)).toBeGreaterThanOrEqual(
 			600,
 		);
+	});
+
+	it("has light-specific compoundBrandStroke for contrast", () => {
+		expect(neonLightTheme.colorCompoundBrandStroke).toBe("#2d6a4f");
+	});
+
+	it("has light-specific brandStroke1 for contrast", () => {
+		expect(neonLightTheme.colorBrandStroke1).toBe("#2d6a4f");
+	});
+
+	it("has light-specific brandForeground1", () => {
+		expect(neonLightTheme.colorBrandForeground1).toBe("#1b4332");
 	});
 });
 
