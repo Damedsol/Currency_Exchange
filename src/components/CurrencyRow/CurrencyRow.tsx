@@ -18,17 +18,20 @@ const useStyles = makeStyles({
 		...shorthands.gap(tokens.spacingVerticalS), // Keep small vertical gap
 	},
 	swapButton: {
-		// Align the button to the right end instead of center
 		alignSelf: "flex-end",
 		backgroundColor: tokens.colorBrandBackground,
 		color: tokens.colorNeutralForegroundOnBrand,
 		minWidth: "44px",
 		minHeight: "44px",
+		fontWeight: tokens.fontWeightMedium,
 		":hover": {
-			backgroundColor: tokens.colorBrandBackgroundHover,
+			backgroundColor: tokens.colorNeutralBackground1,
+			color: tokens.colorCompoundBrandStroke,
+			...shorthands.borderColor(tokens.colorCompoundBrandStroke),
 		},
 		":active": {
 			backgroundColor: tokens.colorBrandBackgroundPressed,
+			transform: "scale(0.98)",
 		},
 		":focus-visible": {
 			outlineColor: tokens.colorBrandStroke1,

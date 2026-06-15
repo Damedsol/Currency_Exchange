@@ -44,6 +44,9 @@ const useStyles = makeStyles({
 		alignItems: "center",
 		justifyContent: "center",
 		...shorthands.gap(tokens.spacingHorizontalXS),
+		fontWeight: tokens.fontWeightMedium,
+		textTransform: "uppercase",
+		minHeight: "44px",
 	},
 	dismissButton: {
 		// Copied from AppMessageBar for consistency if needed, or rely on default
@@ -52,11 +55,16 @@ const useStyles = makeStyles({
 		backgroundColor: tokens.colorPaletteRedBackground1,
 		color: tokens.colorNeutralForegroundOnBrand,
 		textTransform: "uppercase",
+		fontWeight: tokens.fontWeightMedium,
+		minHeight: "44px",
 		":hover": {
-			backgroundColor: tokens.colorPaletteRedBackground2,
+			backgroundColor: tokens.colorNeutralBackground1,
+			color: tokens.colorPaletteRedForeground1,
+			...shorthands.borderColor(tokens.colorPaletteRedBorder1),
 		},
 		":active": {
 			backgroundColor: tokens.colorPaletteRedBackground2,
+			transform: "scale(0.98)",
 		},
 	},
 	dialogSurface: {

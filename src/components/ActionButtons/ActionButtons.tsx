@@ -29,6 +29,7 @@ const useStyles = makeStyles({
 		...shorthands.borderRadius(tokens.borderRadiusMedium),
 		fontWeight: tokens.fontWeightMedium,
 		textTransform: "uppercase",
+		minHeight: "44px",
 		...shorthands.border(
 			tokens.strokeWidthThin,
 			"solid",
@@ -46,6 +47,7 @@ const useStyles = makeStyles({
 		":active": {
 			backgroundColor: tokens.colorNeutralBackground1Pressed,
 			color: tokens.colorPaletteRedForeground1,
+			transform: "scale(0.98)",
 		},
 		":focus-visible": {
 			outlineColor: tokens.colorPaletteRedBorder1,

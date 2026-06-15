@@ -27,3 +27,13 @@ export const useGlobalStyles = makeStyles({
 		},
 	},
 });
+
+export const useTooltipStyles = makeStyles({
+	tooltip: {
+		backgroundColor: tokens.colorNeutralBackground3,
+		border: `1px solid ${tokens.colorBrandStroke1}`,
+		color: tokens.colorNeutralForeground1,
+		fontFamily: tokens.fontFamilyBase,
+		fontSize: tokens.fontSizeBase200,
+	},
+});

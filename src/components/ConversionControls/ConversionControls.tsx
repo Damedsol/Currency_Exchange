@@ -55,7 +55,9 @@ const useStyles = makeStyles({
 		textTransform: "uppercase",
 		minHeight: "44px",
 		":hover": {
-			backgroundColor: tokens.colorBrandBackgroundHover,
+			backgroundColor: tokens.colorNeutralBackground1,
+			color: tokens.colorCompoundBrandStroke,
+			...shorthands.borderColor(tokens.colorCompoundBrandStroke),
 		},
 		":active": {
 			backgroundColor: tokens.colorBrandBackgroundPressed,
