@@ -96,7 +96,11 @@ export const ResultSection = React.memo(
 		};
 
 		return (
-			<div className={styles.container} aria-live="polite" aria-atomic="true">
+			<div
+				className={styles.container}
+				aria-live={rateSource === "error" ? "assertive" : "polite"}
+				aria-atomic="true"
+			>
 				<div className={styles.resultRow}>
 					<Text size={200}>Result</Text>
 					<Text size={600} weight="semibold" className={styles.resultAmount}>

@@ -29,4 +29,10 @@ describe("CurrencyRow accessibility", () => {
 		expect(minWidth).toBeGreaterThanOrEqual(44);
 		expect(minHeight).toBeGreaterThanOrEqual(44);
 	});
+
+	it("has aria-live region for swap announcement", () => {
+		render(<CurrencyRow {...defaultProps} />);
+		const liveRegion = screen.getByRole("status");
+		expect(liveRegion).toBeDefined();
+	});
 });

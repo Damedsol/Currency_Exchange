@@ -130,6 +130,7 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({ onClearAll }) => {
 							<Button
 								appearance="subtle"
 								onClick={() => setIsDialogOpen(false)}
+								autoFocus
 							>
 								Cancelar
 							</Button>

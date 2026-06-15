@@ -32,4 +32,16 @@ describe("AppHeader component", () => {
 		const inputs = screen.getAllByLabelText("API Key Header Input");
 		expect(inputs[0]!.getAttribute("autocomplete")).toBe("new-password");
 	});
+
+	it("API key toggle has aria-expanded attribute", () => {
+		render(<AppHeader {...defaultProps} isApiKeyHeaderInputVisible={true} />);
+		const toggle = screen.getByLabelText("Hide API Key Input");
+		expect(toggle.getAttribute("aria-expanded")).toBe("true");
+	});
+
+	it("API key toggle aria-expanded false when input hidden", () => {
+		render(<AppHeader {...defaultProps} isApiKeyHeaderInputVisible={false} />);
+		const toggle = screen.getByLabelText("Show API Key Input");
+		expect(toggle.getAttribute("aria-expanded")).toBe("false");
+	});
 });

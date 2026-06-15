@@ -200,6 +200,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
 							? "Hide API Key Input"
 							: "Show API Key Input"
 					}
+					aria-expanded={isApiKeyHeaderInputVisible}
 				/>
 			</Tooltip>
 			<ThemeSwitcher isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
