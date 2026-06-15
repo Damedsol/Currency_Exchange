@@ -53,6 +53,7 @@ const useStyles = makeStyles({
 		paddingLeft: tokens.spacingHorizontalXL,
 		paddingRight: tokens.spacingHorizontalXL,
 		backgroundColor: tokens.colorNeutralBackground2,
+		border: "var(--card-border)",
 	},
 	mainContent: {
 		display: "flex",

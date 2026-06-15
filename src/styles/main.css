@@ -11,13 +11,13 @@ body {
 }
 
 :root {
-	--card-border: 1px solid #2a3d2a;
-	--card-border-subtle: 1px solid #1e2e1e;
+	--card-border: 1px solid rgba(185, 242, 124, 0.12);
+	--card-border-subtle: 1px solid rgba(185, 242, 124, 0.06);
 }
 
 [data-theme="light"] {
-	--card-border: 1px solid #c8d8c8;
-	--card-border-subtle: 1px solid #dce8dc;
+	--card-border: 1px solid rgba(45, 106, 79, 0.12);
+	--card-border-subtle: 1px solid rgba(45, 106, 79, 0.06);
 }
 
 #app-container {
@@ -34,7 +34,7 @@ body {
 	top: -100%;
 	left: 8px;
 	padding: 8px 16px;
-	color: #1b2d1b;
+	color: #1a1f26;
 	z-index: 9999;
 }
 
