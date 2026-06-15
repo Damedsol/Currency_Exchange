@@ -31,7 +31,7 @@ const fontFamilyMonospace =
 
 const shadowReset = "none";
 
-const darkOverrides: Partial<Theme> = {
+const baseOverrides: Partial<Theme> = {
 	fontFamilyBase,
 	fontFamilyMonospace,
 	fontFamilyNumeric: fontFamilyMonospace,
@@ -43,10 +43,18 @@ const darkOverrides: Partial<Theme> = {
 	shadow64: shadowReset,
 	borderRadiusLarge: "4px",
 	borderRadiusXLarge: "4px",
+};
+
+const darkOverrides: Partial<Theme> = {
+	...baseOverrides,
 	fontWeightSemibold: 500,
+	colorBrandForeground1: "#b9f27c",
+	colorBrandBackground: "#1a2e1a",
+	colorBrandBackgroundHover: "#23402a",
+	colorBrandBackgroundPressed: "#0f1a0f",
 	colorCompoundBrandStroke: "#b9f27c",
 	colorBrandStroke1: "#b9f27c",
-	colorBrandStroke2: "#a6df6a",
+	colorBrandStroke2: "#8ecb50",
 	colorNeutralBackground1: "#0f1a0f",
 	colorNeutralBackground2: "#141f14",
 	colorNeutralBackground3: "#1a251a",
@@ -54,20 +62,14 @@ const darkOverrides: Partial<Theme> = {
 };
 
 const lightOverrides: Partial<Theme> = {
-	fontFamilyBase,
-	fontFamilyMonospace,
-	fontFamilyNumeric: fontFamilyMonospace,
-	shadow2: shadowReset,
-	shadow4: shadowReset,
-	shadow8: shadowReset,
-	shadow16: shadowReset,
-	shadow28: shadowReset,
-	shadow64: shadowReset,
-	borderRadiusLarge: "4px",
-	borderRadiusXLarge: "4px",
-	colorCompoundBrandStroke: "#b9f27c",
-	colorBrandStroke1: "#b9f27c",
-	colorBrandStroke2: "#a6df6a",
+	...baseOverrides,
+	colorBrandForeground1: "#1b4332",
+	colorBrandBackground: "#d4eed4",
+	colorBrandBackgroundHover: "#c0e6c0",
+	colorBrandBackgroundPressed: "#a8d8a8",
+	colorCompoundBrandStroke: "#1b4332",
+	colorBrandStroke1: "#1b4332",
+	colorBrandStroke2: "#5ea320",
 	colorNeutralBackground1: "#f2f9f2",
 	colorNeutralBackground2: "#eaf5ea",
 	colorNeutralBackground3: "#e0f0e0",
