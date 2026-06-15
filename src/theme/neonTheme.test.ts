@@ -90,6 +90,14 @@ describe("neonDarkTheme", () => {
 		expect(neonDarkTheme.colorBrandBackground).toBeDefined();
 		expect(neonLightTheme.colorBrandBackground).toBeDefined();
 	});
+
+	it("has brandBackgroundHover darker than base in dark mode", () => {
+		expect(neonDarkTheme.colorBrandBackgroundHover).toBeDefined();
+	});
+
+	it("has brandBackgroundPressed in dark mode", () => {
+		expect(neonDarkTheme.colorBrandBackgroundPressed).toBeDefined();
+	});
 });
 
 describe("neonLightTheme", () => {
