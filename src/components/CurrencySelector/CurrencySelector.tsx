@@ -1,4 +1,10 @@
-import { Label, makeStyles, Select, useId } from "@fluentui/react-components";
+import {
+	Label,
+	makeStyles,
+	Select,
+	tokens,
+	useId,
+} from "@fluentui/react-components";
 import React from "react";
 import data from "./currencySelectorData.json";
 
@@ -12,6 +18,8 @@ const useStyles = makeStyles({
 	select: {
 		width: "100%",
 		maxWidth: "100%",
+		minHeight: "44px",
+		fontFamily: tokens.fontFamilyMonospace,
 	},
 	root: {
 		display: "flex",

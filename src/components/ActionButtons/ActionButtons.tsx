@@ -27,7 +27,8 @@ const useStyles = makeStyles({
 		color: tokens.colorPaletteRedForeground1,
 		...shorthands.padding(tokens.spacingVerticalS, tokens.spacingHorizontalL),
 		...shorthands.borderRadius(tokens.borderRadiusMedium),
-		fontWeight: tokens.fontWeightSemibold,
+		fontWeight: tokens.fontWeightMedium,
+		textTransform: "uppercase",
 		...shorthands.border(
 			tokens.strokeWidthThin,
 			"solid",
@@ -62,12 +63,16 @@ const useStyles = makeStyles({
 	confirmButton: {
 		backgroundColor: tokens.colorPaletteRedBackground1,
 		color: tokens.colorNeutralForegroundOnBrand,
+		textTransform: "uppercase",
 		":hover": {
 			backgroundColor: tokens.colorPaletteRedBackground2,
 		},
 		":active": {
 			backgroundColor: tokens.colorPaletteRedBorderActive,
 		},
+	},
+	dialogSurface: {
+		...shorthands.border("2px", "solid", tokens.colorBrandStroke1),
 	},
 });
 
@@ -107,7 +112,7 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({ onClearAll }) => {
 						Clear all data
 					</Button>
 				</DialogTrigger>
-				<DialogSurface>
+				<DialogSurface className={styles.dialogSurface}>
 					<DialogBody>
 						<DialogTitle className={styles.dialogTitle}>
 							<WarningRegular

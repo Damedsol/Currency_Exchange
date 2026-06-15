@@ -51,12 +51,20 @@ const useStyles = makeStyles({
 	destructiveActionButton: {
 		backgroundColor: tokens.colorPaletteRedBackground1,
 		color: tokens.colorNeutralForegroundOnBrand,
+		textTransform: "uppercase",
 		":hover": {
 			backgroundColor: tokens.colorPaletteRedBackground2,
 		},
 		":active": {
 			backgroundColor: tokens.colorPaletteRedBackground2,
 		},
+	},
+	dialogSurface: {
+		...shorthands.border("2px", "solid", tokens.colorBrandStroke1),
+	},
+	divider: {
+		marginTop: "1.5rem",
+		marginBottom: "1.5rem",
 	},
 });
 
@@ -111,7 +119,7 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
 								Clear History
 							</Button>
 						</DialogTrigger>
-						<DialogSurface>
+						<DialogSurface className={styles.dialogSurface}>
 							<DialogBody>
 								<DialogTitle>
 									<WarningRegular
@@ -148,7 +156,7 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
 						</DialogSurface>
 					</Dialog>
 				</div>
-				<Divider />
+				<Divider className={styles.divider} />
 				<ConversionHistory history={history} onRepeat={onRepeatConversion} />
 			</div>
 		</aside>

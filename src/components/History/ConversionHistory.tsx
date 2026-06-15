@@ -53,9 +53,11 @@ const useStyles = makeStyles({
 	},
 	numericCell: {
 		textAlign: "right",
+		fontFamily: tokens.fontFamilyMonospace,
 	},
 	rateCell: {
 		textAlign: "right",
+		fontFamily: tokens.fontFamilyMonospace,
 	},
 	tableWrapper: {
 		opacity: 0,
@@ -69,7 +71,7 @@ const useStyles = makeStyles({
 			backgroundColor: tokens.colorNeutralBackground1Hover,
 		},
 		"&:nth-child(odd)": {
-			backgroundColor: tokens.colorNeutralBackground1Selected,
+			backgroundColor: tokens.colorNeutralBackground4,
 		},
 	},
 	timestampCell: {
@@ -84,9 +86,12 @@ const useStyles = makeStyles({
 	headerCell: {
 		textAlign: "center",
 		fontWeight: "600",
+		backgroundColor: tokens.colorBrandBackground,
+		color: tokens.colorNeutralForegroundOnBrand,
 	},
 	amountCell: {
 		textAlign: "right",
+		fontFamily: tokens.fontFamilyMonospace,
 	},
 });
 

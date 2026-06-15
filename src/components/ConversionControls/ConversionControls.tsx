@@ -36,6 +36,7 @@ const useStyles = makeStyles({
 			transitionDuration: tokens.durationNormal,
 			transitionTimingFunction: tokens.curveEasyEase,
 			outlineStyle: "none",
+			minHeight: "44px",
 		},
 		":focus-within": {
 			"& input": {
@@ -50,16 +51,20 @@ const useStyles = makeStyles({
 		backgroundColor: tokens.colorBrandBackground,
 		color: tokens.colorNeutralForegroundOnBrand,
 		...shorthands.padding(tokens.spacingVerticalS, tokens.spacingHorizontalL),
-		fontWeight: tokens.fontWeightSemibold,
+		fontWeight: tokens.fontWeightMedium,
+		textTransform: "uppercase",
+		minHeight: "44px",
 		":hover": {
 			backgroundColor: tokens.colorBrandBackgroundHover,
 		},
 		":active": {
 			backgroundColor: tokens.colorBrandBackgroundPressed,
+			transform: "scale(0.98)",
 		},
 		":disabled": {
 			backgroundColor: tokens.colorNeutralBackgroundDisabled,
 			color: tokens.colorNeutralForegroundDisabled,
+			opacity: 0.4,
 		},
 	},
 	visuallyHidden: {
@@ -70,6 +75,10 @@ const useStyles = makeStyles({
 		position: "absolute",
 		whiteSpace: "nowrap",
 		width: "1px",
+	},
+	divider: {
+		marginTop: "1.5rem",
+		marginBottom: "1.5rem",
 	},
 });
 
@@ -161,7 +170,7 @@ export const ConversionControls: React.FC<ConversionControlsProps> = ({
 				{rateSource === "loading" ? "Calculating..." : "Calculate"}
 			</Button>
 
-			<Divider />
+			<Divider className={styles.divider} />
 
 			<div className={styles.controlsSection}>
 				<ActionButtons
