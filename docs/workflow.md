@@ -1,21 +1,32 @@
 # Workflow de Implementación
 
-Este documento captura el flujo de trabajo automatizado utilizado durante la refactorización de **currencyExchange** para fusionar **Fluent UI v9** con **Accessible Neon-Code** bajo **TDD estricto**.
+Este documento captura el flujo de trabajo utilizado durante la refactorización de **currencyExchange** para fusionar **Fluent UI v9** con **Accessible Neon-Code** bajo **TDD estricto**.
 
 ## Estructura de Ramas
 
-Se utilizó **Git Flow** local con 8 ramas `feature/`, sin número de FASE:
+Se utilizó **Git Flow** local con las siguientes ramas `feature/`:
 
-| Rama | Contenido |
+| Rama | Cambios principales |
 |---|---|
-| `feature/dependency-update-plan` | Catalog de dependencias + scripts + checklist |
-| `feature/security-infrastructure` | CSP, HSTS, nginx, .dockerignore, Dockerfile |
-| `feature/neon-theme` | BrandVariants, tokens, fonts, globalStyles |
-| `feature/accessibility-wcag` | WCAG 2.2 AAA: skip-link, aria, target size, reduced-motion |
-| `feature/component-adaptations` | Ajustes visuales neon-code en componentes |
-| `feature/hook-architecture` | 5 hooks, ErrorBoundary, refactor App.tsx |
-| `feature/tdd-test-suite` | Vitest config, mocks, setup, 65 tests |
-| `feature/performance-optimizations` | memo, lazy, useDeferredValue, useTransition, preload |
+| `dependency-update-plan` | Catalog de dependencias + scripts + checklist |
+| `security-infrastructure` | CSP, HSTS, nginx, .dockerignore, Dockerfile NODE_VERSION |
+| `neon-theme` | BrandVariants, 58 token overrides, fonts, globalStyles, main.tsx |
+| `accessibility-wcag` | WCAG 2.2 AAA: skip-link, aria, target size 44px, reduced-motion |
+| `component-adaptations` | Ajustes visuales neon-code en componentes existentes |
+| `hook-architecture` | 5 hooks (useApiKey, useConversion, useConversionHistory, useAppMessage), ErrorBoundary, refactor App.tsx 477→162 líneas |
+| `tdd-test-suite` | Vitest config, mocks (matchMedia, BroadcastChannel), 65+ tests |
+| `performance-optimizations` | React.memo (4), React.lazy (HistoryPanel), useDeferredValue, useTransition, font preload |
+| `color-brand-dual` | Brand tokens dual mode (dark/light), WCAG AAA contrast |
+| `color-surface-system` | Cool-toned neutrals, 4-level foreground hierarchy, brand strokes |
+| `color-status-semantics` | Status colors (success/danger/warning), palette red/yellow |
+| `color-card-wiring` | CSS custom properties → App.tsx Card border |
+| `neon-component-styling` | 14 neon-code rules en buttons, input, select, table, dialog, divider |
+| `neon-a11y-gaps` | aria-valuemin, aria-describedby, text prefixes, role=alert, skip-link fix, tooltips |
+| `cleanup-legacy` | Eliminación de 4 componentes muertos (ApiKeySection, Buttons legacy) |
+| `missing-tests` | 10 nuevos archivos de test (hooks, componentes, App shell) |
+| `neon-style-fixes` | Button hover invert, secondary buttons standard, tooltip styles |
+| `neon-security-persist` | API key en header HTTP, EmptyState, tipos centralizados, persistencia tema |
+| `neon-mvp-polish` | EmptyState conectado, fetch timeout 10s, E2E smoke test, CSP hardened, HEALTHCHECK |
 
 ## Reglas de Hierro
 
@@ -134,4 +145,4 @@ Si algo falla, arreglar con **nuevos commits** (nunca `amend` ni `rebase`).
 
 ---
 
-*Workflow validado durante la refactorización currencyExchange — 8 ramas, 46 commits, 65 tests, 0 errores.*
+*Workflow validado durante la refactorización currencyExchange — 20+ ramas, 77 commits, 165 tests, 0 errores.*
