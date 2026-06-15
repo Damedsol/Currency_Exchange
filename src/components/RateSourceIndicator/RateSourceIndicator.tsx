@@ -17,6 +17,7 @@ const useStyles = makeStyles({
 	text: {
 		display: "inline-flex",
 		alignItems: "center",
+		fontFamily: tokens.fontFamilyBase,
 		...shorthands.gap(tokens.spacingHorizontalXXS),
 	},
 	help: {
