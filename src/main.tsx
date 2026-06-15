@@ -8,9 +8,19 @@ import "./styles/main.css";
 import { useGlobalStyles } from "./styles/globalStyles";
 
 function resolveSystemTheme(): typeof neonDarkTheme {
+	const stored = localStorage.getItem("themePreference");
+	if (stored === "dark") return neonDarkTheme;
+	if (stored === "light") return neonLightTheme;
 	return window.matchMedia("(prefers-color-scheme: dark)").matches
 		? neonDarkTheme
 		: neonLightTheme;
+}
+
+function resolveIsDarkMode(): boolean {
+	const stored = localStorage.getItem("themePreference");
+	if (stored === "dark") return true;
+	if (stored === "light") return false;
+	return window.matchMedia("(prefers-color-scheme: dark)").matches;
 }
 
 function GlobalStylesSlot(): null {
@@ -20,7 +30,7 @@ function GlobalStylesSlot(): null {
 
 function AppContainer(): React.JSX.Element {
 	const [theme, setTheme] = useState(resolveSystemTheme);
-	const [isDarkMode, setIsDarkMode] = useState(() => theme === neonDarkTheme);
+	const [isDarkMode, setIsDarkMode] = useState(resolveIsDarkMode);
 
 	useLayoutEffect(() => {
 		document.documentElement.setAttribute(
@@ -32,9 +42,11 @@ function AppContainer(): React.JSX.Element {
 	useLayoutEffect(() => {
 		const mq = window.matchMedia("(prefers-color-scheme: dark)");
 		const handler = (e: MediaQueryListEvent) => {
-			const next = e.matches ? neonDarkTheme : neonLightTheme;
-			setTheme(next);
-			setIsDarkMode(e.matches);
+			if (!localStorage.getItem("themePreference")) {
+				const next = e.matches ? neonDarkTheme : neonLightTheme;
+				setTheme(next);
+				setIsDarkMode(e.matches);
+			}
 		};
 		mq.addEventListener("change", handler);
 		return () => mq.removeEventListener("change", handler);
@@ -47,6 +59,7 @@ function AppContainer(): React.JSX.Element {
 			const next = isDarkMode ? neonLightTheme : neonDarkTheme;
 			setTheme(next);
 			setIsDarkMode(!isDarkMode);
+			localStorage.setItem("themePreference", isDarkMode ? "light" : "dark");
 		});
 	};
 

@@ -2,7 +2,7 @@
 
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import type { ConversionHistoryEntry } from "../../services/LocalStorage";
+import type { ConversionHistoryEntry } from "../../types";
 import { ConversionHistory } from "./ConversionHistory";
 
 const mockEntry: ConversionHistoryEntry = {

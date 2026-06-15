@@ -59,9 +59,11 @@ export const getCurrencyRate = async ({
 	// 2. Fetch from API if cache is invalid or calculation failed
 	console.log("Fetching fresh rates from API.");
 	try {
-		// Fetch all currencies based on USD
-		const params = `apikey=${apiKey}&base_currency=${BASE_CURRENCY}`;
-		const response = await fetch(`${API_URL}?${params}`);
+		// Fetch all currencies based on USD (API key in header via Kong)
+		const params = `base_currency=${BASE_CURRENCY}`;
+		const response = await fetch(`${API_URL}?${params}`, {
+			headers: { apikey: apiKey },
+		});
 
 		if (!response.ok) {
 			// Handle API errors (like rate limits, invalid key)

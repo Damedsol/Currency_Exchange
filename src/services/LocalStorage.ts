@@ -1,3 +1,5 @@
+import type { ConversionHistoryEntry } from "../types";
+
 /**
  * Fetches the API key from localStorage.
  * @returns {string | null} The API key if found, otherwise null.
@@ -148,16 +150,6 @@ export function clearRatesCache(): void {
 }
 
 // --- Conversion History Service Functions ---
-
-// Define the structure for a history entry
-export interface ConversionHistoryEntry {
-	fromCurrency: string;
-	toCurrency: string;
-	amount: number;
-	rate: number;
-	result: number;
-	timestamp: number; // Store timestamp for potential sorting or display
-}
 
 const HISTORY_STORAGE_KEY = "conversionHistory";
 const MAX_HISTORY_LENGTH = 10; // Keep the last 10 conversions

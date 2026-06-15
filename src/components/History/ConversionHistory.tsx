@@ -15,7 +15,7 @@ import {
 import { ArrowRepeatAllRegular } from "@fluentui/react-icons";
 import { useDeferredValue, useEffect, useState } from "react";
 
-import type { ConversionHistoryEntry } from "../../services/LocalStorage";
+import type { ConversionHistoryEntry } from "../../types";
 
 interface ConversionHistoryProps {
 	history: ConversionHistoryEntry[];

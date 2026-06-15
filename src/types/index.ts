@@ -24,4 +24,13 @@ export interface ConversionState {
 	rateSource: RateSource;
 }
 
+export interface ConversionHistoryEntry {
+	fromCurrency: string;
+	toCurrency: string;
+	amount: number;
+	rate: number;
+	result: number;
+	timestamp: number;
+}
+
 export type { MessageBarIntent };

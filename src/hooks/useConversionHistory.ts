@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 
-import type { ConversionHistoryEntry } from "../services/LocalStorage";
+import type { ConversionHistoryEntry } from "../types";
 import {
 	loadConversionHistoryService,
 	saveConversionHistoryService,

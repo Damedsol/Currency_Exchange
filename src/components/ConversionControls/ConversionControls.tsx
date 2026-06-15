@@ -9,7 +9,7 @@ import {
 } from "@fluentui/react-components";
 import { MoneyCalculatorFilled } from "@fluentui/react-icons";
 import React from "react";
-import type { ConversionHistoryEntry } from "../../services/LocalStorage";
+import type { ConversionHistoryEntry } from "../../types";
 import { ActionButtons } from "../ActionButtons/ActionButtons";
 import { CurrencyRow } from "../CurrencyRow/CurrencyRow";
 import { ResultSection } from "../ResultSection/ResultSection";
