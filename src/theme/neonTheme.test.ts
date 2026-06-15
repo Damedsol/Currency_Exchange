@@ -2,6 +2,35 @@ import type { Theme } from "@fluentui/react-components";
 import { describe, expect, it } from "vitest";
 import { neonDarkTheme, neonLightTheme } from "./neonTheme";
 
+function hexToRgb(hex: string): [number, number, number] {
+	const s = hex.replace("#", "");
+	return [
+		Number.parseInt(s.slice(0, 2), 16),
+		Number.parseInt(s.slice(2, 4), 16),
+		Number.parseInt(s.slice(4, 6), 16),
+	];
+}
+
+function srgbChannel(c: number): number {
+	const v = c / 255;
+	return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
+}
+
+function relativeLuminance(hex: string): number {
+	const [r, g, b] = hexToRgb(hex);
+	return (
+		0.2126 * srgbChannel(r) + 0.7152 * srgbChannel(g) + 0.0722 * srgbChannel(b)
+	);
+}
+
+function getContrastRatio(fg: string, bg: string): number {
+	const l1 = relativeLuminance(fg);
+	const l2 = relativeLuminance(bg);
+	const lighter = Math.max(l1, l2);
+	const darker = Math.min(l1, l2);
+	return (lighter + 0.05) / (darker + 0.05);
+}
+
 describe("neonDarkTheme", () => {
 	it("is a Fluent Theme", () => {
 		expect(neonDarkTheme).toBeDefined();
@@ -98,6 +127,20 @@ describe("neonDarkTheme", () => {
 	it("has brandBackgroundPressed in dark mode", () => {
 		expect(neonDarkTheme.colorBrandBackgroundPressed).toBeDefined();
 	});
+
+	it("compoundBrandStroke has sufficient contrast on dark bg", () => {
+		const bg = neonDarkTheme.colorNeutralBackground1 ?? "#0f1a0f";
+		const fg = neonDarkTheme.colorCompoundBrandStroke ?? "#b9f27c";
+		const ratio = getContrastRatio(fg, bg);
+		expect(ratio).toBeGreaterThan(7);
+	});
+
+	it("compoundBrandStroke has sufficient contrast on light bg", () => {
+		const bg = neonLightTheme.colorNeutralBackground1 ?? "#f2f9f2";
+		const fg = neonLightTheme.colorCompoundBrandStroke ?? "#2d6a4f";
+		const ratio = getContrastRatio(fg, bg);
+		expect(ratio).toBeGreaterThan(7);
+	});
 });
 
 describe("neonLightTheme", () => {
@@ -119,11 +162,11 @@ describe("neonLightTheme", () => {
 	});
 
 	it("has light-specific compoundBrandStroke for contrast", () => {
-		expect(neonLightTheme.colorCompoundBrandStroke).toBe("#2d6a4f");
+		expect(neonLightTheme.colorCompoundBrandStroke).toBe("#1b4332");
 	});
 
 	it("has light-specific brandStroke1 for contrast", () => {
-		expect(neonLightTheme.colorBrandStroke1).toBe("#2d6a4f");
+		expect(neonLightTheme.colorBrandStroke1).toBe("#1b4332");
 	});
 
 	it("has light-specific brandForeground1", () => {
