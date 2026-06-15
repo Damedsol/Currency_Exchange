@@ -113,7 +113,7 @@ function App({ toggleTheme, isDarkMode }: AppProps): React.JSX.Element {
 
 	return (
 		<div className={styles.appContainer}>
-			<Card className={styles.root}>
+			<Card className={styles.root} aria-label="Currency converter application">
 				<AppHeader
 					isDarkMode={isDarkMode}
 					toggleTheme={toggleTheme}
@@ -131,7 +131,7 @@ function App({ toggleTheme, isDarkMode }: AppProps): React.JSX.Element {
 					dismissMessage={dismissMessage}
 				/>
 
-				<main className={styles.mainContent}>
+				<main id="main-content" className={styles.mainContent}>
 					<ConversionControls
 						fromCurrency={conversion.fromCurrency}
 						toCurrency={conversion.toCurrency}

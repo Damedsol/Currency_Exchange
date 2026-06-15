@@ -1,5 +1,4 @@
 import type { MessageBarIntent } from "@fluentui/react-components";
-import type React from "react";
 
 export type RateSource = "idle" | "cache" | "api" | "error" | "loading";
 
@@ -12,7 +11,7 @@ export type ApiKeySaveStatus =
 	| "error";
 
 export interface AppMessage {
-	text: React.ReactNode | null;
+	text: string;
 	intent: MessageBarIntent;
 	visible: boolean;
 }

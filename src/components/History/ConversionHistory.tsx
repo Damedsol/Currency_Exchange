@@ -171,13 +171,13 @@ export const ConversionHistory = ({
 	}, []);
 
 	return (
-		<div role="region" aria-label="Conversion History">
+		<div role="region" aria-label="Conversion History" tabIndex={0}>
 			<div
 				className={`${styles.tableWrapper} ${isVisible ? styles.tableWrapperVisible : ""}`}
 			>
 				<Table
 					className={styles.tableLayoutFixed}
-					aria-label="Conversion History Table"
+					aria-label="Conversion history table"
 					size="medium"
 					style={{ opacity: isStale ? 0.6 : 1 }}
 				>
@@ -230,7 +230,7 @@ export const ConversionHistory = ({
 									<TableCell className={styles.amountCell}>
 										<Tooltip
 											content={formatNumber(entry.amount, 3, 3)}
-											relationship="label"
+											relationship="description"
 										>
 											<TableCellLayout truncate>
 												{formatNumber(entry.amount, 3, 3)}
@@ -238,14 +238,20 @@ export const ConversionHistory = ({
 										</Tooltip>
 									</TableCell>
 									<TableCell className={styles.currencyCell}>
-										<Tooltip content={entry.fromCurrency} relationship="label">
+										<Tooltip
+											content={entry.fromCurrency}
+											relationship="description"
+										>
 											<TableCellLayout truncate>
 												{entry.fromCurrency}
 											</TableCellLayout>
 										</Tooltip>
 									</TableCell>
 									<TableCell className={styles.currencyCell}>
-										<Tooltip content={entry.toCurrency} relationship="label">
+										<Tooltip
+											content={entry.toCurrency}
+											relationship="description"
+										>
 											<TableCellLayout truncate>
 												{entry.toCurrency}
 											</TableCellLayout>
@@ -254,7 +260,7 @@ export const ConversionHistory = ({
 									<TableCell className={styles.numericCell}>
 										<Tooltip
 											content={formatNumber(entry.result, 3, 3)}
-											relationship="label"
+											relationship="description"
 										>
 											<TableCellLayout truncate>
 												{formatNumber(entry.result, 3, 3)}
@@ -264,7 +270,7 @@ export const ConversionHistory = ({
 									<TableCell className={styles.rateCell}>
 										<Tooltip
 											content={formatNumber(entry.rate, 3, 3)}
-											relationship="label"
+											relationship="description"
 										>
 											<TableCellLayout truncate>
 												{formatNumber(entry.rate, 3, 3)}
@@ -274,7 +280,7 @@ export const ConversionHistory = ({
 									<TableCell className={styles.timestampCell}>
 										<Tooltip
 											content={formatTimestamp(entry.timestamp)}
-											relationship="label"
+											relationship="description"
 										>
 											<TableCellLayout truncate>
 												{formatShortDate(entry.timestamp)}
@@ -284,7 +290,7 @@ export const ConversionHistory = ({
 									<TableCell className={styles.actionCell}>
 										<Tooltip
 											content="Repeat this conversion"
-											relationship="label"
+											relationship="description"
 										>
 											<Button
 												appearance="subtle"

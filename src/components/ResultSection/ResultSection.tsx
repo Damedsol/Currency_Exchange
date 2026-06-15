@@ -116,7 +116,7 @@ export const ResultSection = React.memo(
 						</Text>
 						<RateSourceIndicator rateSource={rateSource} />
 					</div>
-					<Tooltip content="Refresh rates from API" relationship="label">
+					<Tooltip content="Refresh rates from API" relationship="description">
 						<Button
 							appearance="subtle"
 							icon={<ArrowClockwiseRegular />}

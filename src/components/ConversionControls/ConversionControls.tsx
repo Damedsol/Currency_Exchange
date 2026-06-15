@@ -148,6 +148,9 @@ export const ConversionControls: React.FC<ConversionControlsProps> = ({
 						onChange={handleAmountChange}
 						appearance="outline"
 						size="large"
+						aria-valuemin={0}
+						aria-valuenow={amount}
+						aria-label="Amount in source currency"
 					/>
 				</Field>
 				<ResultSection

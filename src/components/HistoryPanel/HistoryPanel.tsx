@@ -119,11 +119,14 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
 								Clear History
 							</Button>
 						</DialogTrigger>
-						<DialogSurface className={styles.dialogSurface}>
+						<DialogSurface
+							className={styles.dialogSurface}
+							aria-describedby="history-clear-description"
+						>
 							<DialogBody>
 								<DialogTitle>
 									<WarningRegular
-										aria-hidden="true" // Hide decorative icon
+										aria-hidden="true"
 										style={{
 											color: tokens.colorPaletteYellowForeground1,
 											fontSize: tokens.fontSizeBase500,
@@ -132,7 +135,7 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
 									/>
 									Confirmar eliminación del historial
 								</DialogTitle>
-								<DialogContent>
+								<DialogContent id="history-clear-description">
 									¿Estás seguro de que deseas eliminar todo el historial de
 									conversiones? Esta acción no se puede deshacer.
 								</DialogContent>

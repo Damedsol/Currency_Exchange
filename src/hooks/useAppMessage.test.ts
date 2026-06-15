@@ -16,7 +16,7 @@ describe("useAppMessage", () => {
 	it("initializes with hidden message", () => {
 		const { result } = renderHook(() => useAppMessage());
 		expect(result.current.appMessage.visible).toBe(false);
-		expect(result.current.appMessage.text).toBeNull();
+		expect(result.current.appMessage.text).toBe("");
 	});
 
 	it("shows a message with given text and intent", () => {

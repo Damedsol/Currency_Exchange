@@ -46,7 +46,7 @@ describe("HistoryPanel", () => {
 
 	it("renders conversion entries in the table", () => {
 		render(<HistoryPanel {...defaultProps} />);
-		expect(screen.getByText("EUR")).toBeDefined();
-		expect(screen.getByText("USD")).toBeDefined();
+		expect(screen.getAllByText("EUR").length).toBeGreaterThanOrEqual(1);
+		expect(screen.getAllByText("USD").length).toBeGreaterThanOrEqual(1);
 	});
 });

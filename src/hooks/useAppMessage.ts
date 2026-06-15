@@ -1,4 +1,3 @@
-import type React from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { AppMessage, MessageBarIntent } from "../types";
 
@@ -7,7 +6,7 @@ const MESSAGE_TIMEOUT_DURATION = 5000;
 export interface UseAppMessageReturn {
 	appMessage: AppMessage;
 	showAppMessage: (
-		text: React.ReactNode,
+		text: string,
 		intent: MessageBarIntent,
 		duration?: number,
 	) => void;
@@ -16,7 +15,7 @@ export interface UseAppMessageReturn {
 
 export function useAppMessage(): UseAppMessageReturn {
 	const [appMessage, setAppMessage] = useState<AppMessage>({
-		text: null,
+		text: "",
 		intent: "info",
 		visible: false,
 	});
@@ -37,7 +36,7 @@ export function useAppMessage(): UseAppMessageReturn {
 
 	const showAppMessage = useCallback(
 		(
-			text: React.ReactNode,
+			text: string,
 			intent: MessageBarIntent,
 			duration: number = MESSAGE_TIMEOUT_DURATION,
 		) => {

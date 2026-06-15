@@ -112,7 +112,10 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({ onClearAll }) => {
 						Clear all data
 					</Button>
 				</DialogTrigger>
-				<DialogSurface className={styles.dialogSurface}>
+				<DialogSurface
+					className={styles.dialogSurface}
+					aria-describedby="clear-all-description"
+				>
 					<DialogBody>
 						<DialogTitle className={styles.dialogTitle}>
 							<WarningRegular
@@ -121,7 +124,7 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({ onClearAll }) => {
 							/>
 							Confirmar eliminación
 						</DialogTitle>
-						<DialogContent>
+						<DialogContent id="clear-all-description">
 							¿Estás seguro de que deseas eliminar todos los datos almacenados?
 							Esta acción eliminará tu clave API y todo el historial de
 							conversiones. Esta acción no se puede deshacer.

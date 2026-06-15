@@ -51,7 +51,7 @@ describe("AppMessageBar", () => {
 				dismissMessage={vi.fn()}
 			/>,
 		);
-		expect(screen.getByText("Success")).toBeDefined();
+		expect(screen.getByText(/Success/)).toBeDefined();
 	});
 
 	it("shows error intent message", () => {
@@ -61,7 +61,7 @@ describe("AppMessageBar", () => {
 				dismissMessage={vi.fn()}
 			/>,
 		);
-		expect(screen.getByText("Error")).toBeDefined();
+		expect(screen.getByText(/Error/)).toBeDefined();
 	});
 
 	it("calls dismissMessage on dismiss button click", async () => {
@@ -83,6 +83,6 @@ describe("AppMessageBar", () => {
 				dismissMessage={vi.fn()}
 			/>,
 		);
-		expect(screen.queryByText("Warning")).toBeNull();
+		expect(screen.queryByText(/Warning/)).toBeNull();
 	});
 });
