@@ -192,6 +192,33 @@ describe("neonDarkTheme", () => {
 		expect(neonDarkTheme.colorNeutralStroke2).toBeDefined();
 		expect(neonDarkTheme.colorNeutralStrokeAccessible).toBeDefined();
 	});
+
+	it("has success (rate-up) foreground in dark mode", () => {
+		const s = neonDarkTheme.colorStatusSuccessForeground1;
+		expect(s).toBeDefined();
+		expect(s).not.toMatch(/^#(115ea3|0078d4|2899f5)/i);
+	});
+
+	it("has danger (rate-down) foreground in dark mode", () => {
+		expect(neonDarkTheme.colorStatusDangerForeground1).toBe("#ff96a7");
+	});
+
+	it("has warning (stale data) foreground in dark mode", () => {
+		expect(neonDarkTheme.colorStatusWarningForeground1).toBe("#ffc777");
+	});
+
+	it("has palette red tokens for destructive actions", () => {
+		expect(neonDarkTheme.colorPaletteRedForeground1).toBe("#ff96a7");
+		expect(neonDarkTheme.colorPaletteRedBackground1).toBeDefined();
+		expect(neonDarkTheme.colorPaletteRedBackground2).toBeDefined();
+		expect(neonDarkTheme.colorPaletteRedBackground3).toBeDefined();
+		expect(neonDarkTheme.colorPaletteRedBorder1).toBeDefined();
+		expect(neonDarkTheme.colorPaletteRedBorderActive).toBeDefined();
+	});
+
+	it("has palette yellow foreground for warnings", () => {
+		expect(neonDarkTheme.colorPaletteYellowForeground1).toBe("#ffc777");
+	});
 });
 
 describe("neonLightTheme", () => {
@@ -248,6 +275,24 @@ describe("neonLightTheme", () => {
 
 	it("has light foreground on brand", () => {
 		expect(neonLightTheme.colorNeutralForegroundOnBrand).toBe("#ffffff");
+	});
+
+	it("has success foreground in light mode", () => {
+		expect(neonLightTheme.colorStatusSuccessForeground1).toBe("#2d6a4f");
+	});
+
+	it("has danger foreground in light mode", () => {
+		expect(neonLightTheme.colorStatusDangerForeground1).toBe("#c1121f");
+	});
+
+	it("has warning foreground in light mode", () => {
+		expect(neonLightTheme.colorStatusWarningForeground1).toBe("#7c5e00");
+	});
+
+	it("has palette red tokens in light mode", () => {
+		expect(neonLightTheme.colorPaletteRedForeground1).toBe("#c1121f");
+		expect(neonLightTheme.colorPaletteRedBackground1).toBeDefined();
+		expect(neonLightTheme.colorPaletteRedBorder1).toBeDefined();
 	});
 });
 
