@@ -10,3 +10,6 @@ dist
 Dockerfile
 docker-compose.yml
 *.log
+coverage
+e2e/test-results
+playwright-report
