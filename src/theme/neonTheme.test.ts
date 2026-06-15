@@ -38,10 +38,33 @@ describe("neonDarkTheme", () => {
 		expect(neonDarkTheme).toHaveProperty("colorNeutralBackground1");
 	});
 
-	it("has green-ish neutral backgrounds", () => {
+	it("has neutral-cool backgrounds for data readability", () => {
 		const bg1 = neonDarkTheme.colorNeutralBackground1;
 		expect(bg1).toBeDefined();
 		expect(typeof bg1).toBe("string");
+	});
+
+	it("background levels progress correctly (bg1-bg3)", () => {
+		const bg1 = neonDarkTheme.colorNeutralBackground1;
+		const bg2 = neonDarkTheme.colorNeutralBackground2;
+		const bg3 = neonDarkTheme.colorNeutralBackground3;
+		expect(relativeLuminance(bg1)).toBeLessThan(relativeLuminance(bg2));
+		expect(relativeLuminance(bg2)).toBeLessThan(relativeLuminance(bg3));
+	});
+
+	it("neutral backgrounds are cool-toned, not green-tinted", () => {
+		const bg1 = neonDarkTheme.colorNeutralBackground1;
+		expect(bg1?.toLowerCase()).not.toMatch(
+			/^(#?)(0f1a0f|141f14|1a251a|1e2e1e)$/,
+		);
+		expect(bg1?.toLowerCase()).not.toContain("1a0f");
+	});
+
+	it("has background hover/pressed/selected tokens", () => {
+		expect(neonDarkTheme.colorNeutralBackground1Hover).toBeDefined();
+		expect(neonDarkTheme.colorNeutralBackground1Pressed).toBeDefined();
+		expect(neonDarkTheme.colorNeutralBackground1Selected).toBeDefined();
+		expect(neonDarkTheme.colorNeutralBackground2Hover).toBeDefined();
 	});
 
 	it("uses Figtree as base font family", () => {
@@ -141,6 +164,34 @@ describe("neonDarkTheme", () => {
 		const ratio = getContrastRatio(fg, bg);
 		expect(ratio).toBeGreaterThan(7);
 	});
+
+	it("has foreground text hierarchy (fg1 brightest)", () => {
+		const fg1 = neonDarkTheme.colorNeutralForeground1;
+		const fg2 = neonDarkTheme.colorNeutralForeground2;
+		const fg3 = neonDarkTheme.colorNeutralForeground3;
+		const fg4 = neonDarkTheme.colorNeutralForeground4;
+		expect(relativeLuminance(fg1)).toBeGreaterThan(relativeLuminance(fg2));
+		expect(relativeLuminance(fg2)).toBeGreaterThan(relativeLuminance(fg3));
+		if (fg4)
+			expect(relativeLuminance(fg3)).toBeGreaterThan(relativeLuminance(fg4));
+	});
+
+	it("foreground1 is near-white in dark mode", () => {
+		const fg1 = neonDarkTheme.colorNeutralForeground1;
+		if (!fg1) return;
+		const m = fg1.match(/#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})/i);
+		expect(m).not.toBeNull();
+		if (!m) return;
+		expect(Number.parseInt(m[1]!, 16)).toBeGreaterThanOrEqual(220);
+		expect(Number.parseInt(m[2]!, 16)).toBeGreaterThanOrEqual(220);
+		expect(Number.parseInt(m[3]!, 16)).toBeGreaterThanOrEqual(220);
+	});
+
+	it("has neutral strokes with brand-consistent alpha", () => {
+		expect(neonDarkTheme.colorNeutralStroke1).toBeDefined();
+		expect(neonDarkTheme.colorNeutralStroke2).toBeDefined();
+		expect(neonDarkTheme.colorNeutralStrokeAccessible).toBeDefined();
+	});
 });
 
 describe("neonLightTheme", () => {
@@ -171,6 +222,32 @@ describe("neonLightTheme", () => {
 
 	it("has light-specific brandForeground1", () => {
 		expect(neonLightTheme.colorBrandForeground1).toBe("#1b4332");
+	});
+
+	it("has foreground hierarchy (fg1 darkest in light)", () => {
+		const fg1 = neonLightTheme.colorNeutralForeground1;
+		const fg2 = neonLightTheme.colorNeutralForeground2;
+		const fg3 = neonLightTheme.colorNeutralForeground3;
+		const fg4 = neonLightTheme.colorNeutralForeground4;
+		expect(relativeLuminance(fg1)).toBeLessThan(relativeLuminance(fg2));
+		expect(relativeLuminance(fg2)).toBeLessThan(relativeLuminance(fg3));
+		if (fg4)
+			expect(relativeLuminance(fg3)).toBeLessThan(relativeLuminance(fg4));
+	});
+
+	it("foreground1 is near-black in light mode", () => {
+		const fg1 = neonLightTheme.colorNeutralForeground1;
+		if (!fg1) return;
+		const m = fg1.match(/#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})/i);
+		expect(m).not.toBeNull();
+		if (!m) return;
+		expect(Number.parseInt(m[1]!, 16)).toBeLessThanOrEqual(40);
+		expect(Number.parseInt(m[2]!, 16)).toBeLessThanOrEqual(40);
+		expect(Number.parseInt(m[3]!, 16)).toBeLessThanOrEqual(40);
+	});
+
+	it("has light foreground on brand", () => {
+		expect(neonLightTheme.colorNeutralForegroundOnBrand).toBe("#ffffff");
 	});
 });
 
