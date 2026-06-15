@@ -5,7 +5,7 @@ import {
 	tokens,
 } from "@fluentui/react-components";
 import { ArrowSwapRegular } from "@fluentui/react-icons";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import { CurrencySelector } from "../CurrencySelector/CurrencySelector";
 
@@ -34,6 +34,15 @@ const useStyles = makeStyles({
 			outlineColor: tokens.colorBrandStroke1,
 		},
 	},
+	visuallyHidden: {
+		clip: "rect(0 0 0 0)",
+		clipPath: "inset(50%)",
+		height: "1px",
+		overflow: "hidden",
+		position: "absolute",
+		whiteSpace: "nowrap",
+		width: "1px",
+	},
 });
 
 // Required props
@@ -48,6 +57,18 @@ interface CurrencyRowProps {
 export const CurrencyRow: React.FC<CurrencyRowProps> = React.memo(
 	({ fromCurrency, toCurrency, onFromChange, onToChange, onSwap }) => {
 		const styles = useStyles();
+		const [swapMessage, setSwapMessage] = useState("");
+
+		const handleSwap = () => {
+			onSwap();
+			setSwapMessage(`Swapped currencies: ${fromCurrency} ↔ ${toCurrency}`);
+		};
+
+		useEffect(() => {
+			if (!swapMessage) return;
+			const timer = setTimeout(() => setSwapMessage(""), 3000);
+			return () => clearTimeout(timer);
+		}, [swapMessage]);
 
 		return (
 			<div className={styles.container}>
@@ -64,7 +85,7 @@ export const CurrencyRow: React.FC<CurrencyRowProps> = React.memo(
 					size="medium"
 					shape="circular"
 					className={styles.swapButton}
-					onClick={onSwap}
+					onClick={handleSwap}
 					aria-label="Swap currencies"
 					icon={<ArrowSwapRegular />}
 				/>
@@ -75,6 +96,10 @@ export const CurrencyRow: React.FC<CurrencyRowProps> = React.memo(
 					onChange={onToChange}
 					where={"to"}
 				/>
+
+				<div role="status" aria-live="polite" className={styles.visuallyHidden}>
+					{swapMessage}
+				</div>
 			</div>
 		);
 	},

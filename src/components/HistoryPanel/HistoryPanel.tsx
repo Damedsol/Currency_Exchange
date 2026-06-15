@@ -140,6 +140,7 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
 									<Button
 										appearance="subtle"
 										onClick={() => setIsHistoryClearDialogOpen(false)}
+										autoFocus
 										className={styles.dismissButton}
 									>
 										Cancelar
@@ -156,7 +157,11 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
 						</DialogSurface>
 					</Dialog>
 				</div>
-				<Divider className={styles.divider} />
+				<Divider
+					className={styles.divider}
+					role="separator"
+					aria-orientation="horizontal"
+				/>
 				<ConversionHistory history={history} onRepeat={onRepeatConversion} />
 			</div>
 		</aside>

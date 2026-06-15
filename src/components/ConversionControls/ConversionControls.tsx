@@ -170,7 +170,11 @@ export const ConversionControls: React.FC<ConversionControlsProps> = ({
 				{rateSource === "loading" ? "Calculating..." : "Calculate"}
 			</Button>
 
-			<Divider className={styles.divider} />
+			<Divider
+				className={styles.divider}
+				role="separator"
+				aria-orientation="horizontal"
+			/>
 
 			<div className={styles.controlsSection}>
 				<ActionButtons
