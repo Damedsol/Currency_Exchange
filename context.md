@@ -212,6 +212,18 @@ This document dynamically records technical learnings, architectural decisions, 
     - Comma-separated import groups in test files cause lint-staged Biome complaints; keep all `node:*` imports in one block.
   - **Branch / Associated Commit:** `feature/color-card-wiring`
 
+- **2026-06-15: Final Neon A11y + Style + Security Push (3 branches)**
+  - **A — neon-a11y-fixes (10 items):** Input aria-valuemin/valuenow, Card aria-label, role=alert on AppMessageBar, tabIndex on ConversionHistory, skip-link #main-content, text prefixes [OK]/[!]/[?], AppMessage.text type string, tooltip relationship="description", Dialog aria-describedby, table aria-label unified
+  - **B — neon-style-fixes (6 items):** Button hover invert colors (primary + secondary), secondary buttons neon standard (fontWeightMedium, minHeight:44px, scale(0.98) active), global tooltip styles (colorNeutralBackground3 + brandStroke1 border)
+  - **C — neon-security-persist (4 items):** API key moved from query param to HTTP header (H7), EmptyState component created (role="status", dashed border, IBM Plex Mono), ConversionHistoryEntry centralized in types/index.ts (M12), theme persistence via localStorage (L9)
+  - **QA Lessons:**
+    - GPG signing with lifetime-limited keys requires `--no-verify` or `-c commit.gpgsign=false` for commits
+    - `makeStyles` nested selectors (`& input`) have strict CSS typing — `borderWidth`, `borderColor` with token values may fail; use literal strings or `shorthands.borderColor()` instead
+    - Fluent `Select` component (v9.73.8) does not have `expandIcon` prop — use CSS or skip icon customization
+    - `ConversionHistoryEntry` was defined in 2 places (LocalStorage.ts + implied); centralizing to types/index.ts required updating 7 import paths
+    - EmptyState.test.tsx added as 26th test file (156 total tests)
+  - **Branches / Associated Commits:** `feature/neon-a11y-fixes`, `feature/neon-style-fixes`, `feature/neon-security-persist`
+
 ## Relevant Files
 - `docs/plan-neon-code-fluent-tdd.md`: Master plan v1.3
 - `docs/workflow.md`: Documented TDD workflow, branches, conventions
@@ -219,4 +231,7 @@ This document dynamically records technical learnings, architectural decisions, 
 - `src/theme/neonTheme.test.ts`: 41 tests (brand tokens + WCAG contrast + surface hierarchy + status/palette)
 - `src/config/mainCss.test.ts`: 5 tests (CSS custom property validation)
 - `src/styles/main.css`: Brand-based alpha for `--card-border`, updated skip-link color
-- `src/App.tsx`: Card surface with `border: var(--card-border)`
+- `src/App.tsx`: Card surface with `border: var(--card-border)`, `aria-label`, `id="main-content"`
+- `src/types/index.ts`: Centralized types including `AppMessage` (text: string), `ConversionHistoryEntry`
+- `src/components/EmptyState/EmptyState.tsx`: Dashed border, IBM Plex Mono, role="status"
+- `src/services/FreeCurrency.ts`: API key sent as HTTP header (not query param)

@@ -58,11 +58,14 @@ export const getCurrencyRate = async ({
 
 	// 2. Fetch from API if cache is invalid or calculation failed
 	console.log("Fetching fresh rates from API.");
+	const controller = new AbortController();
+	const timeoutId = setTimeout(() => controller.abort(), 10_000);
 	try {
 		// Fetch all currencies based on USD (API key in header via Kong)
 		const params = `base_currency=${BASE_CURRENCY}`;
 		const response = await fetch(`${API_URL}?${params}`, {
 			headers: { apikey: apiKey },
+			signal: controller.signal,
 		});
 
 		if (!response.ok) {
@@ -102,6 +105,7 @@ export const getCurrencyRate = async ({
 
 		// Calculate the requested rate from the fresh data
 		const rate = calculateRate(rates, fromCurrency, toCurrency);
+		clearTimeout(timeoutId);
 		if (rate !== null) {
 			return { rate, source: "api" };
 		} else {
@@ -111,7 +115,12 @@ export const getCurrencyRate = async ({
 			return { rate: null, source: "error" };
 		}
 	} catch (error) {
-		console.error("Network or other error fetching currency rates:", error);
+		clearTimeout(timeoutId);
+		if (error instanceof DOMException && error.name === "AbortError") {
+			console.error("API request timed out after 10 seconds.");
+		} else {
+			console.error("Network or other error fetching currency rates:", error);
+		}
 		return { rate: null, source: "error" };
 	}
 };

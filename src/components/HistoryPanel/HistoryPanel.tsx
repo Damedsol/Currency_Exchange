@@ -17,6 +17,7 @@ import { HistoryDismissRegular, WarningRegular } from "@fluentui/react-icons";
 import React, { useState } from "react";
 import type { ConversionHistoryEntry } from "../../types";
 import { ConversionHistory } from "../History/ConversionHistory";
+import { EmptyState } from "../EmptyState/EmptyState";
 
 // Styles specific to the history panel, adapted from App.tsx
 const useStyles = makeStyles({
@@ -173,7 +174,11 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
 					role="separator"
 					aria-orientation="horizontal"
 				/>
-				<ConversionHistory history={history} onRepeat={onRepeatConversion} />
+				{history.length === 0 ? (
+					<EmptyState message="No conversion history yet." />
+				) : (
+					<ConversionHistory history={history} onRepeat={onRepeatConversion} />
+				)}
 			</div>
 		</aside>
 	);
