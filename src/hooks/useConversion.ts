@@ -5,8 +5,7 @@ import {
 	type CurrencyRateResult,
 	getCurrencyRate,
 } from "../services/FreeCurrency";
-import type { ConversionHistoryEntry } from "../types";
-import type { RateSource } from "../types";
+import type { ConversionHistoryEntry, RateSource } from "../types";
 
 export interface UseConversionParams {
 	storedApiKey: string | null;

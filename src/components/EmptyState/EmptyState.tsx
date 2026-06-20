@@ -13,7 +13,10 @@ const useStyles = makeStyles({
 		alignItems: "center",
 		justifyContent: "center",
 		...shorthands.gap(tokens.spacingVerticalL),
-		...shorthands.padding(tokens.spacingVerticalXXL, tokens.spacingHorizontalXL),
+		...shorthands.padding(
+			tokens.spacingVerticalXXL,
+			tokens.spacingHorizontalXL,
+		),
 		...shorthands.border("2px", "dashed", tokens.colorNeutralStrokeAccessible),
 		...shorthands.borderRadius(tokens.borderRadiusMedium),
 		textAlign: "center",

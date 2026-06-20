@@ -12,6 +12,7 @@ beforeAll(() => {
 	}
 	vi.stubGlobal("ResizeObserver", ResizeObserverMock);
 });
+
 import { AppMessageBar } from "./AppMessageBar";
 
 describe("AppMessageBar", () => {

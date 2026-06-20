@@ -13,7 +13,9 @@ describe("EmptyState", () => {
 
 	it("renders action button when actionLabel and onAction provided", () => {
 		const onAction = vi.fn();
-		render(<EmptyState message="Empty" actionLabel="Retry" onAction={onAction} />);
+		render(
+			<EmptyState message="Empty" actionLabel="Retry" onAction={onAction} />,
+		);
 		expect(screen.getByText("Retry")).toBeDefined();
 	});
 

@@ -1,9 +1,9 @@
 // @vitest-environment jsdom
 
+import { FluentProvider } from "@fluentui/react-components";
 import { render } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import App from "./App";
-import { FluentProvider } from "@fluentui/react-components";
 import { neonDarkTheme } from "./theme/neonTheme";
 
 describe("App", () => {

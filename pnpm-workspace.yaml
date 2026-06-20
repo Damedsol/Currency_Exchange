@@ -20,7 +20,7 @@ registries:
 minimumReleaseAge: 7200
 catalog:
   "@biomejs/biome": "^2.4.0"
-  "@fluentui/react-components": "^9.73.0"
+  "@fluentui/react-components": "^9.74.0"
   "@fluentui/react-icons": "^2.0.328"
   react: "^19.2.0"
   react-dom: "^19.2.0"
@@ -37,7 +37,7 @@ catalog:
   ls-lint: "^2.3.0"
   oxlint: "^1.66.0"
   typescript: "^6.0.0"
-  vite: "^8.0.14"
+  vite: "^8.0.16"
   vitest: "^4.1.0"
   "@vitest/coverage-v8": "^4.1.0"
   "@testing-library/react": "^16.3.0"
@@ -55,3 +55,4 @@ catalog:
   "brace-expansion": "1.1.13"
   "minimatch": "3.1.5"
   "fast-uri": "3.1.2"
+  "@fluentui/react-motion": "9.15.0"

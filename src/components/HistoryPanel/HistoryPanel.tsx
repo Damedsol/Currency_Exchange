@@ -16,8 +16,8 @@ import {
 import { HistoryDismissRegular, WarningRegular } from "@fluentui/react-icons";
 import React, { useState } from "react";
 import type { ConversionHistoryEntry } from "../../types";
-import { ConversionHistory } from "../History/ConversionHistory";
 import { EmptyState } from "../EmptyState/EmptyState";
+import { ConversionHistory } from "../History/ConversionHistory";
 
 // Styles specific to the history panel, adapted from App.tsx
 const useStyles = makeStyles({
