@@ -41,4 +41,19 @@ describe("ErrorBoundary", () => {
 		expect(screen.getByText("Custom Fallback")).toBeDefined();
 		vi.restoreAllMocks();
 	});
+
+	it("shows default message when thrown value is not an Error", () => {
+		vi.spyOn(console, "error").mockImplementation(() => {});
+		const ThrowString = () => {
+			throw "string error"; // eslint-disable-line no-throw-literal
+		};
+		render(
+			<ErrorBoundary>
+				<ThrowString />
+			</ErrorBoundary>,
+		);
+		expect(screen.getByText("Something went wrong")).toBeDefined();
+		expect(screen.getByText("An unexpected error occurred")).toBeDefined();
+		vi.restoreAllMocks();
+	});
 });

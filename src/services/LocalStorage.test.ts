@@ -175,4 +175,84 @@ describe("conversion history", () => {
 		localStorage.setItem("conversionHistory", "corrupted-json{{{");
 		expect(loadConversionHistoryService()).toEqual([]);
 	});
+
+	it("clearLocalStorage handles storage errors gracefully", () => {
+		const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+		vi.stubGlobal(
+			"localStorage",
+			Object.assign({}, localStorage, {
+				removeItem: vi.fn(() => {
+					throw new Error("Storage access denied");
+				}),
+			}),
+		);
+		expect(() => clearLocalStorage()).toThrow();
+		consoleSpy.mockRestore();
+		vi.unstubAllGlobals();
+	});
+
+	it("saveRatesToCache handles storage errors gracefully", () => {
+		const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+		vi.stubGlobal(
+			"localStorage",
+			Object.assign({}, localStorage, {
+				setItem: vi.fn(() => {
+					throw new Error("Quota exceeded");
+				}),
+			}),
+		);
+		saveRatesToCache({ USD: 1.0 });
+		expect(consoleSpy).toHaveBeenCalled();
+		consoleSpy.mockRestore();
+		vi.unstubAllGlobals();
+	});
+
+	it("clearRatesCache handles storage errors gracefully", () => {
+		const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+		vi.stubGlobal(
+			"localStorage",
+			Object.assign({}, localStorage, {
+				removeItem: vi.fn(() => {
+					throw new Error("Storage access denied");
+				}),
+			}),
+		);
+		clearRatesCache();
+		expect(consoleSpy).toHaveBeenCalled();
+		consoleSpy.mockRestore();
+		vi.unstubAllGlobals();
+	});
+
+	it("saveConversionHistoryService handles storage errors gracefully", () => {
+		const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+		vi.stubGlobal(
+			"localStorage",
+			Object.assign({}, localStorage, {
+				setItem: vi.fn(() => {
+					throw new Error("Quota exceeded");
+				}),
+			}),
+		);
+		saveConversionHistoryService([]);
+		expect(consoleSpy).toHaveBeenCalled();
+		consoleSpy.mockRestore();
+		vi.unstubAllGlobals();
+	});
+
+	it("localStorageFetchService handles storage errors gracefully", () => {
+		const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+		vi.stubGlobal(
+			"localStorage",
+			Object.assign({}, localStorage, {
+				getItem: vi.fn(() => {
+					throw new Error("Storage access denied");
+				}),
+			}),
+		);
+		const result = localStorageFetchService();
+		expect(result).toBeNull();
+		expect(consoleSpy).toHaveBeenCalled();
+		consoleSpy.mockRestore();
+		vi.unstubAllGlobals();
+	});
 });

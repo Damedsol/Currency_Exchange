@@ -34,4 +34,13 @@ describe("CurrencySelector", () => {
 		const select = screen.getByRole("combobox") as HTMLSelectElement;
 		expect(select.value).toBe("EUR");
 	});
+
+	it("onChange fires when selection changes", async () => {
+		const userEvent = (await import("@testing-library/user-event")).default;
+		const onChange = vi.fn();
+		render(<CurrencySelector {...defaultProps} onChange={onChange} />);
+		const select = screen.getByRole("combobox");
+		await userEvent.selectOptions(select, "GBP");
+		expect(onChange).toHaveBeenCalledWith("GBP");
+	});
 });

@@ -40,4 +40,20 @@ describe("ActionButtons", () => {
 		const confirmButtons = screen.getAllByText("Eliminar datos");
 		expect(confirmButtons.length).toBeGreaterThanOrEqual(1);
 	});
+
+	it("Cancel button closes dialog without clearing", async () => {
+		const onClearAll = vi.fn();
+		render(<ActionButtons {...defaultProps} onClearAll={onClearAll} />);
+		await userEvent.click(screen.getByText("Clear all data"));
+		await userEvent.click(screen.getByText("Cancelar"));
+		expect(onClearAll).not.toHaveBeenCalled();
+	});
+
+	it("confirm delete calls onClearAll", async () => {
+		const onClearAll = vi.fn();
+		render(<ActionButtons {...defaultProps} onClearAll={onClearAll} />);
+		await userEvent.click(screen.getByText("Clear all data"));
+		await userEvent.click(screen.getByText("Eliminar datos"));
+		expect(onClearAll).toHaveBeenCalledTimes(1);
+	});
 });

@@ -35,4 +35,21 @@ describe("CurrencyRow accessibility", () => {
 		const liveRegion = screen.getByRole("status");
 		expect(liveRegion).toBeDefined();
 	});
+
+	it("swap button calls onSwap and shows message", async () => {
+		const userEvent = (await import("@testing-library/user-event")).default;
+		const onSwap = vi.fn();
+		render(
+			<CurrencyRow
+				{...defaultProps}
+				onSwap={onSwap}
+				fromCurrency="USD"
+				toCurrency="EUR"
+			/>,
+		);
+		await userEvent.click(screen.getByLabelText("Swap currencies"));
+		expect(onSwap).toHaveBeenCalledTimes(1);
+		expect(screen.getByText(/Swapped currencies/)).toBeDefined();
+		expect(screen.getByText(/USD.*EUR/)).toBeDefined();
+	});
 });

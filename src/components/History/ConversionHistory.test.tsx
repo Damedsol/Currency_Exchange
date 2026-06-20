@@ -52,4 +52,24 @@ describe("ConversionHistory", () => {
 		const region = screen.getByRole("region");
 		expect(region.getAttribute("aria-label")).toBeTruthy();
 	});
+
+	it('shows "Invalid date" for null timestamp', () => {
+		const entry = { ...mockEntry, timestamp: null as unknown as number };
+		render(<ConversionHistory history={[entry]} onRepeat={() => {}} />);
+		const invalidDates = screen.getAllByText("Invalid date");
+		expect(invalidDates.length).toBeGreaterThan(0);
+	});
+
+	it("clicking repeat button calls onRepeat with entry", async () => {
+		const userEvent = (await import("@testing-library/user-event")).default;
+		const onRepeat = vi.fn();
+		render(<ConversionHistory history={[mockEntry]} onRepeat={onRepeat} />);
+		await userEvent.click(screen.getByRole("button", { name: /repeat/i }));
+		expect(onRepeat).toHaveBeenCalledWith(mockEntry);
+	});
+
+	it("renders history with empty entries gracefully", () => {
+		render(<ConversionHistory history={[]} onRepeat={() => {}} />);
+		expect(screen.getByRole("table")).toBeDefined();
+	});
 });

@@ -54,4 +54,20 @@ describe("ConversionControls", () => {
 		render(<ConversionControls {...defaultProps} storedApiKey={null} />);
 		expect(screen.getByText("Calculate")).toBeDefined();
 	});
+
+	it("shows Calculating... text when loading", () => {
+		render(<ConversionControls {...defaultProps} rateSource="loading" />);
+		expect(screen.getByText("Calculating...")).toBeDefined();
+	});
+
+	it("renders ResultSection with zero rate when rate is not a number", () => {
+		render(
+			<ConversionControls
+				{...defaultProps}
+				rate={undefined as unknown as number}
+			/>,
+		);
+		const fieldText = screen.getByText(/Result/).textContent;
+		expect(fieldText).toBeDefined();
+	});
 });

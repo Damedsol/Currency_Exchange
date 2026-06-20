@@ -185,4 +185,39 @@ describe("useApiKey", () => {
 		expect(result.current.apiKeySaveStatus).toBe("idle");
 		expect(result.current.isApiKeyValid).toBe(true);
 	});
+
+	it("blur hides input after timeout", async () => {
+		mockFetchService.mockReturnValue(null);
+		const { result } = renderHook(() => useApiKey());
+		act(() => {
+			result.current.toggleApiKeyHeaderInput();
+		});
+		expect(result.current.isApiKeyHeaderInputVisible).toBe(true);
+		act(() => {
+			result.current.handleApiKeyInputBlur();
+		});
+		await waitFor(
+			() => {
+				expect(result.current.isApiKeyHeaderInputVisible).toBe(false);
+			},
+			{ timeout: 1000 },
+		);
+	});
+
+	it("handles whitespace-only key as empty during validation", async () => {
+		mockFetchService.mockReturnValue(null);
+		const { result } = renderHook(() => useApiKey());
+		act(() => {
+			result.current.handleApiKeyChange({
+				target: { value: "   " },
+			} as React.ChangeEvent<HTMLInputElement>);
+		});
+		expect(result.current.apiKeySaveStatus).toBe("validating");
+		await waitFor(
+			() => {
+				expect(result.current.apiKeySaveStatus).toBe("idle");
+			},
+			{ timeout: 2000 },
+		);
+	});
 });

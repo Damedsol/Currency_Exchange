@@ -192,4 +192,84 @@ describe("FreeCurrency service", () => {
 		expect(result.rate).toBeNull();
 		expect(result.source).toBe("error");
 	});
+
+	it("falls through to API when cache exists but cannot calculate pair", async () => {
+		// Set up localStorage cache with missing currency pair
+		const missingPairCache = { EUR: 0.85, GBP: 0.73 };
+		localStorage.setItem(
+			"currencyRatesCache",
+			JSON.stringify({
+				timestamp: Date.now(),
+				rates: missingPairCache,
+			}),
+		);
+		mockFetchOnce(mockRates);
+		const result = await getCurrencyRate({
+			fromCurrency: "EUR",
+			toCurrency: "JPY",
+			apiKey: validApiKey,
+		});
+		expect(result.source).toBe("api");
+		expect(result.rate).toBeCloseTo(mockRates.JPY / mockRates.EUR, 2);
+	});
+
+	it("triggers abort timeout callback after 10 seconds", {
+		timeout: 20000,
+	}, async () => {
+		vi.useFakeTimers();
+		const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+		let abortSignal: AbortSignal | null = null;
+		vi.stubGlobal(
+			"fetch",
+			vi.fn((_url: string, opts?: RequestInit) => {
+				abortSignal = opts?.signal ?? null;
+				// Create a promise that rejects when the signal is aborted
+				return new Promise((_resolve, reject) => {
+					if (abortSignal) {
+						abortSignal.addEventListener("abort", () => {
+							reject(new DOMException("Aborted", "AbortError"));
+						});
+					}
+				});
+			}),
+		);
+		const promise = getCurrencyRate({
+			fromCurrency: "USD",
+			toCurrency: "EUR",
+			apiKey: validApiKey,
+		});
+		// Advance past the 10 second timeout to trigger the abort
+		await vi.advanceTimersByTimeAsync(10001);
+		const result = await promise;
+		expect(result.rate).toBeNull();
+		expect(result.source).toBe("error");
+		expect(consoleSpy).toHaveBeenCalledWith(
+			"API request timed out after 10 seconds.",
+		);
+		consoleSpy.mockRestore();
+		vi.useRealTimers();
+	});
+
+	it("logs quota message on 429 status", async () => {
+		const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+		vi.stubGlobal(
+			"fetch",
+			vi.fn().mockResolvedValue({
+				ok: false,
+				status: 429,
+				json: () => Promise.resolve({ message: "Quota exceeded" }),
+			}),
+		);
+		const result = await getCurrencyRate({
+			fromCurrency: "USD",
+			toCurrency: "EUR",
+			apiKey: validApiKey,
+		});
+		expect(result.rate).toBeNull();
+		expect(result.source).toBe("error");
+		expect(consoleSpy).toHaveBeenCalledWith(
+			"API quota exceeded. Try again later.",
+		);
+		consoleSpy.mockRestore();
+	});
 });
