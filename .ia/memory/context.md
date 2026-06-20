@@ -41,7 +41,7 @@
   - Commit: `test(coverage): reach 95% coverage thresholds across all metrics`
 
 - **2026-06-20: Divider styling + cleanup**
-  - Detalle: Customización de Divider con `borderBottom: tokens.colorNeutralStroke2` + `tokens.strokeWidthThin` en ConversionControls y HistoryPanel. Limpieza de `docs/workflow.md` (stale) y `public/assets/` (vacío). Actualización de `docs/TODO.md` a estado completado.
+  - Detalle: Customización de Divider con `borderBottom: tokens.colorNeutralStroke2` + `tokens.strokeWidthThin` en ConversionControls y HistoryPanel. Limpieza de `docs/workflow.md` (stale), `docs/TODO.md` (completado) y `public/assets/` (vacío). Actualización de `README.md` con versiones correctas. Actualización de `context.md` raíz (referencias a docs eliminados).
   - QA: 244 tests, 27 files, 0 errores. Gate completo.
   - Commit: `chore(docs): finalize remaining TODO items, clean up stale docs`
 

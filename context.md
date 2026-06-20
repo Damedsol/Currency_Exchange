@@ -52,7 +52,7 @@ This document dynamically records technical learnings, architectural decisions, 
 
 - **2026-06-13: Fluent + Neon-Code Refactor Plan and Dependency Catalog Update**
   - **Change Details:**
-    - Created comprehensive 7+1 phase refactoring plan (`docs/plan-neon-code-fluent-tdd.md`, 1272 lines) merging Fluent UI v9 with Accessible Neon-Code design system under strict TDD and WCAG 2.2 AAA.
+     - Created comprehensive 7+1 phase refactoring plan merging Fluent UI v9 with Accessible Neon-Code design system under strict TDD and WCAG 2.2 AAA.
     - Updated `pnpm-workspace.yaml` catalog with precise version ranges pinned to currently installed versions (not bleeding edge) to respect `minimumReleaseAge` constraint.
     - Added 8 new devDependencies to `package.json`: vitest, @vitest/coverage-v8, @testing-library/react, @testing-library/jest-dom, @testing-library/user-event, jsdom, playwright, @playwright/test.
     - Added 5 new scripts: `test`, `test:watch`, `test:coverage`, `test:e2e`, `test:e2e:ui`.
@@ -236,8 +236,8 @@ This document dynamically records technical learnings, architectural decisions, 
   - **Branches / Associated Commits:** `feature/neon-a11y-fixes`, `feature/neon-style-fixes`, `feature/neon-security-persist`
 
 ## Relevant Files
-- `docs/plan-neon-code-fluent-tdd.md`: Master plan v1.3
-- `docs/workflow.md`: Documented TDD workflow, branches, conventions
+- `docs/TODO.md`: State of pending items (all completed)
+- `docs/docker-usage.md`: Docker deployment guide
 - `src/theme/neonTheme.ts`: BrandVariants + baseOverrides + dark/light + status + palette overrides (58 tokens total)
 - `src/theme/neonTheme.test.ts`: 41 tests (brand tokens + WCAG contrast + surface hierarchy + status/palette)
 - `src/config/mainCss.test.ts`: 5 tests (CSS custom property validation)
