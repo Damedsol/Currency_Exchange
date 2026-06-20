@@ -1,17 +1,16 @@
 // @vitest-environment jsdom
 
-import { FluentProvider } from "@fluentui/react-components";
 import { render } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import App from "./App";
-import { neonDarkTheme } from "./theme/neonTheme";
+import { ThemeProvider } from "./hooks/useTheme";
 
 describe("App", () => {
-	const renderApp = (isDarkMode = true) =>
+	const renderApp = () =>
 		render(
-			<FluentProvider theme={neonDarkTheme}>
-				<App toggleTheme={vi.fn()} isDarkMode={isDarkMode} />
-			</FluentProvider>,
+			<ThemeProvider>
+				<App />
+			</ThemeProvider>,
 		);
 
 	it("renders without crashing", () => {
@@ -30,7 +29,7 @@ describe("App", () => {
 	});
 
 	it("has AppHeader with themed content", () => {
-		const { container } = renderApp(false);
+		const { container } = renderApp();
 		expect(container.textContent).toContain("Active");
 	});
 });
