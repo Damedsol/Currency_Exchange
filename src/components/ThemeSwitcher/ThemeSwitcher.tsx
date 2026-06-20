@@ -18,6 +18,16 @@ const useStyles = makeStyles({
 		justifyContent: "flex-end", // Keep right alignment
 		...shorthands.gap(tokens.spacingHorizontalS),
 	},
+	switchRoot: {
+		// Target the internal track element for ON state
+		"& input:checked + span": {
+			backgroundColor: tokens.colorBrandBackground,
+		},
+		// Target the internal track element for OFF state
+		"& input + span": {
+			backgroundColor: tokens.colorNeutralBackground4,
+		},
+	},
 });
 
 // Define the props the component needs
@@ -40,6 +50,7 @@ export const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({
 			</Label>
 			<Switch
 				id={switchId}
+				className={styles.switchRoot}
 				checked={isDarkMode}
 				onChange={toggleTheme}
 				role="switch"
