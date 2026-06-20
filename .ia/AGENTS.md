@@ -1,42 +1,42 @@
-# 🤖 Agente Local: currencyExchange (.ia/)
+# 🤖 Local Agent: currencyExchange (.ia/)
 
-## 📜 REGLA DE COEXISTENCIA (Gobernanza)
-Este archivo es complementario al `AGENTS.md` raíz. No lo duplica, no lo reemplaza y no interactúa físicamente con él.
-- **Obligatorio:** Lee y asimila el `AGENTS.md` raíz como norma técnica maestra (perfil, stack, tooling, guardrails).
-- **Local:** Este archivo `.ia/AGENTS.md` extiende el workflow con políticas de persistencia de memoria local, buffer strategy y optimización de tokens.
-- **Prohibido:** Escribir, modificar, sobrescribir o borrar el `AGENTS.md` raíz desde este agente.
+## 📜 COEXISTENCE RULE (Governance)
+This file is complementary to the root `AGENTS.md`. It does not duplicate, replace, or physically interact with it.
+- **Mandatory:** Read and assimilate the root `AGENTS.md` as the master technical standard (profile, stack, tooling, guardrails).
+- **Local:** This `.ia/AGENTS.md` extends the workflow with local memory persistence policies, buffer strategy, and token optimization.
+- **Forbidden:** Write, modify, overwrite, or delete the root `AGENTS.md` from this agent.
 
-## 🧠 Gestión del Conocimiento (memory/context.md)
+## 🧠 Knowledge Management (memory/context.md)
 
-1. **Lectura Obligatoria:** Leer `.ia/memory/context.md` al inicio de cada sesión para entender el estado actual, errores previos y decisiones técnicas.
-2. **Actualización Continua:** Actualizar `.ia/memory/context.md` tras changes significativos, resolución de errores críticos o al finalizar la jornada.
+1. **Mandatory Reading:** Read `.ia/memory/context.md` at the start of each session to understand the current state, previous errors, and technical decisions.
+2. **Continuous Updates:** Update `.ia/memory/context.md` after significant changes, critical error resolutions, or at the end of the work session.
 
-### 🔄 Retroalimentación Dinámica
-Analiza proactivamente la sección "Historial de Cambios Relevantes" en `.ia/memory/context.md`. Si identificas patrones de error repetidos o soluciones de arquitectura críticas estabilizadas, sugiere propuestas estructuradas al desarrollador para actualizar `.ia/AGENTS.md` y hacer evolucionar el workflow local.
+### 🔄 Dynamic Feedback
+Proactively analyze the "Relevant Change History" section in `.ia/memory/context.md`. If you identify repeated error patterns or stabilized critical architecture solutions, suggest structured proposals to the developer to update `.ia/AGENTS.md` and evolve the local workflow.
 
-## 🛡️ Safety Gates (Puertas de Seguridad)
-- **Autorización humana explícita** requerida antes de:
-  - Modificar variables de entorno (`.env`, `.env.*`).
-  - Ejecutar migraciones de base de datos.
-  - Instalar dependencias (`pnpm add`/`pnpm rm`).
-- **Límite de reintentos:** Máximo 3 reintentos automáticos para cualquier acción fallida del sistema. Agotados, abortar y notificar al usuario.
+## 🛡️ Safety Gates
+- **Explicit human authorization** required before:
+  - Modifying environment variables (`.env`, `.env.*`).
+  - Running database migrations.
+  - Installing dependencies (`pnpm add`/`pnpm rm`).
+- **Retry limit:** Maximum 3 automatic retries for any failed system action. Once exhausted, abort and notify the user.
 
-## 💾 Sincronización de Memorias (Buffer Strategy)
-- **Búfer Temporal:** Acumula en memoria interna los cambios de múltiples archivos durante la sesión. Escribe `.ia/memory/context.md` una sola vez al finalizar el trabajo, evitando escrituras redundantes.
-- **Memoria Global:** Usa `.ia/memory/context.md` como única fuente de verdad para decisiones de negocio, reglas globales e histórico macro.
-- **Memorias de Módulos (Opcional):** Crear `.ia/memory/[modulo]_context.md` exclusivamente para lógica técnica ultra-específica de módulos aislados y críticos.
+## 💾 Memory Synchronization (Buffer Strategy)
+- **Temporary Buffer:** Accumulate changes from multiple files in internal memory during the session. Write `.ia/memory/context.md` once at the end of the work, avoiding redundant writes.
+- **Global Memory:** Use `.ia/memory/context.md` as the single source of truth for business decisions, global rules, and macro history.
+- **Module Memories (Optional):** Create `.ia/memory/[module]_context.md` exclusively for ultra-specific technical logic of isolated and critical modules.
 
-## 📏 Criterios de Auditoría e Higiene de Tokens
-- **Límite de `.ia/AGENTS.md`:** Si supera 150 líneas, detener la adición de guías directas y extraer documentación técnica extensa a archivos independientes en `.ia/docs/`.
-- **Algoritmo de Compresión de Memoria** (si cualquier `context.md` supera 200 líneas):
-  1. Conservar intactos solo los últimos 3 registros de cambios recientes con fechas y aprendizajes.
-  2. Consolidar registros antiguos en un párrafo de "Historial Consolidado de Aprendizajes".
-  3. Eliminar detalle granular antiguo para liberar contexto del LLM.
+## 📏 Audit Criteria and Token Hygiene
+- **`.ia/AGENTS.md` line limit:** If it exceeds 150 lines, stop adding direct guidelines and extract extensive technical documentation to independent files in `.ia/docs/`.
+- **Memory Compression Algorithm** (if any `context.md` exceeds 200 lines):
+  1. Keep only the last 3 recent change records with dates and learnings intact.
+  2. Consolidate old records into a single "Consolidated Learning History" paragraph.
+  3. Remove old granular detail to free LLM context.
 
-## 🧩 Estándares Técnicos (heredados de AGENTS.md raíz)
+## 🧩 Technical Standards (inherited from root AGENTS.md)
 - **Core Linter:** Oxlint (no ESLint).
 - **Formatter:** Biome (no Prettier).
 - **File Linter:** ls-lint.
 - **Runtime:** Node >= 24, pnpm >= 11.
-- **Lenguaje de respuesta:** ESPAÑOL, siempre conciso y directo.
-- **Calidad:** Autorevisión lógica de sintaxis, tipos e imports antes de proponer cambios. No ejecutar `tsc` o linters automáticamente a menos que el usuario lo solicite.
+- **Response language:** ENGLISH, always concise and direct.
+- **Quality:** Self-review logic, types, and imports before proposing changes. Do not run `tsc` or linters automatically unless requested by the user.
