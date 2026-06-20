@@ -21,7 +21,12 @@
 - **Single‑source agentic config:** `AGENTS.md` raíz como norma maestra, complementada localmente por `.ia/AGENTS.md`.
 
 ## Historial de Cambios Relevantes
+- **2026-06-20: Reestructuración agentic — skills unificadas en skills/**
+  - Detalle: Migración de skills `fluent-ui-react` (229 líneas) y `modern-linting` (204 líneas) desde `.agents/skills/` y `.gemini/skills/` a `skills/` (directorio raíz). Eliminación de `.agents/` y `.gemini/` (866 líneas duplicadas). Registro formal de skills en `.ia/project_manifest.yml` (sección `skills_registry`). Corrección de `commands.test` y limpieza de `.ls-lint.yml` (`.gemini` → `skills` en ignore). Creación de `skills/README.md`.
+  - QA: `npx ls-lint` sin errores. Diferencia de SKILL.md confirmada idéntica entre fuentes y destino.
+  - Commit: `refactor(agent): consolidate skills into skills/, remove .agents and .gemini`
+
 - **2026-06-20: Inicialización del sistema de agente local (.ia/)**
   - Detalle: Creación de la estructura `.ia/` con `project_manifest.yml`, `AGENTS.md` local y `memory/context.md` como memoria persistente del agente. Integración con el `AGENTS.md` raíz mediante regla de coexistencia.
   - QA: Verificación de que `.ia/AGENTS.md` no supera 150 líneas. Coexistencia validada: no se modificó el `AGENTS.md` raíz.
-  - Commit: Pendiente
+  - Commit: `chore(agent): add local agent configuration (.ia/)`

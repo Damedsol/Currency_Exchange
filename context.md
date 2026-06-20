@@ -15,7 +15,7 @@ This document dynamically records technical learnings, architectural decisions, 
 
 - **Exclusivity of Rust-based Linters/Formatters:** ESLint and Prettier were completely removed from the project. Reinstalling them is strictly forbidden.
 - **Local Agentic Configuration:** Adopted the "Agentic Standard" via `/AGENTS.md` (single root master file, less than 150 lines) and the `context.md` memory system.
-- **Local Technical Skills:** Separating local knowledge into `.gemini/` (CLI) and `.agents/` (Antigravity IDE), with documented skills of over 400 lines for `modern-linting` and `fluent-ui-react`.
+- **Local Technical Skills:** Skills documented in `skills/` (root directory) and formally registered in `.ia/project_manifest.yml` → `skills_registry`. Active skills: `modern-linting` (204 lines) and `fluent-ui-react` (229 lines).
 
 ## 📈 Relevant Change History
 
@@ -26,6 +26,17 @@ This document dynamically records technical learnings, architectural decisions, 
     - Updated the strategic memory file `context.md` in the root.
   - **QA Lessons:** Verified that `AGENTS.md` and `context.md` do not violate line limits (<150 and <200 lines respectively).
   - **Branch / Associated Commit:** `feature/agentic-system`
+
+- **2026-06-20: Agentic Restructuring — Skills Unified into skills/, .agents/ and .gemini/ Removed**
+  - **Change Details:**
+    - Migrated `fluent-ui-react` and `modern-linting` skills from `.agents/skills/` and `.gemini/skills/` to `skills/` (root directory).
+    - Removed 866 lines of duplication across 2 agent-specific directories.
+    - Added `skills_registry` section to `.ia/project_manifest.yml` as the canonical skill registry.
+    - Updated `.ls-lint.yml`: replaced `.gemini` with `skills` in ignore list.
+    - Created `skills/README.md` with skill index and cross-reference.
+    - Fixed `commands.test` field in manifest (was empty string).
+  - **QA Lessons:** `npx ls-lint` verified without errors. Diff confirmed no content loss in SKILL.md files.
+  - **Branch / Associated Commit:** `develop` (commit `refactor(agent): consolidate skills into skills/, remove .agents and .gemini`)
 
 - **2026-05-31: Unified Docker Refactoring and Security Hardening**
   - **Change Details:**

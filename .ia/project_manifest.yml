@@ -1,6 +1,6 @@
 # Proyecto: currencyExchange
 # Generado automáticamente por el Initializer subagent
-# Última actualización: 2026-06-20
+# Última actualización: 2026-06-20 (reestructuración agentic)
 
 stack_tecnologico:
   - React 19.2.0
@@ -22,14 +22,13 @@ carpetas_relevantes:
   - src/styles/ # Estilos globales (main.css)
   - docs/ # Documentación del proyecto
   - assets/ # Recursos estáticos
+  - skills/ # Skills documentadas para agentes (fluent-ui-react, modern-linting)
   - .husky/ # Hooks de git
 
 carpetas_omitidas:
   - node_modules
   - dist
   - .git
-  - .gemini
-  - .agents
   - .husky
 
 entrypoints:
@@ -39,7 +38,10 @@ entrypoints:
 commands:
   dev: pnpm dev
   build: pnpm build
-  test: "" # No hay suite de pruebas configurada
+  test: pnpm vitest run
+  test:watch: pnpm vitest
+  test:coverage: pnpm vitest run --coverage
+  test:e2e: pnpm playwright test
 
 env_keys:
   - NODE_ENV
@@ -57,3 +59,24 @@ services:
   - Nginx
 
 politicas: "Uso obligatorio de .ia/AGENTS.md"
+
+skills_registry:
+  ubicacion: skills/
+  skills:
+    - nombre: fluent-ui-react
+      ruta: skills/fluent-ui-react/SKILL.md
+      lineas: 229
+      descripcion: >
+        Patrones de implementación para React 19 y Fluent UI React Components v9.
+        Cubre FluentProvider, makeStyles (Griffel), BrandVariants, mergeClasses
+        y reglas prohibitivas (no Tailwind, no inline styles, no Fluent v8).
+      estado: activo
+
+    - nombre: modern-linting
+      ruta: skills/modern-linting/SKILL.md
+      lineas: 204
+      descripcion: >
+        Guía de uso de Oxlint (linter), Biome (formatter) y ls-lint (file naming)
+        como toolchain exclusiva del proyecto. Prohíbe ESLint y Prettier.
+        Incluye comandos, configuraciones y lecciones de edge cases.
+      estado: activo
