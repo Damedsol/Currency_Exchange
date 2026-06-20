@@ -10,21 +10,27 @@ const mainPath = resolve(srcDir, "main.tsx");
 const mainContent = readFileSync(mainPath, "utf-8");
 
 describe("main.tsx theme integration", () => {
-	it("imports neonDarkTheme and neonLightTheme", () => {
+	it("imports ThemeProvider from hooks/useTheme", () => {
 		expect(mainContent).toMatch(
-			/import.*neonDarkTheme.*from\s+["'].*\/theme\/neonTheme["']/,
-		);
-		expect(mainContent).toMatch(
-			/import.*neonLightTheme.*from\s+["'].*\/theme\/neonTheme["']/,
+			/import.*ThemeProvider.*from\s+["'].*\.\/hooks\/useTheme["']/,
 		);
 	});
 
-	it("uses prefers-color-scheme for initial theme", () => {
-		expect(mainContent).toMatch(/prefers-color-scheme/);
+	it("imports styles/main.css for global styles", () => {
+		expect(mainContent).toMatch(/import\s+["'].*\.\/styles\/main\.css["']/);
 	});
 
 	it("no longer imports webDarkTheme or webLightTheme", () => {
 		expect(mainContent).not.toMatch(/webDarkTheme/);
 		expect(mainContent).not.toMatch(/webLightTheme/);
+	});
+
+	it("renders App inside ThemeProvider and StrictMode", () => {
+		expect(mainContent).toMatch(/ThemeProvider/);
+		expect(mainContent).toMatch(/StrictMode/);
+	});
+
+	it("uses ReactDOM.createRoot to mount the app", () => {
+		expect(mainContent).toMatch(/createRoot/);
 	});
 });

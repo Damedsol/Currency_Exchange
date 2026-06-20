@@ -25,6 +25,8 @@ import {
 	useConversionHistory,
 } from "./hooks/useConversionHistory";
 import { clearLocalStorage, clearRatesCache } from "./services/LocalStorage";
+import { useTheme } from "./hooks/useTheme";
+import { useGlobalStyles } from "./styles/globalStyles";
 
 const breakpoints = {
 	small: 320,
@@ -66,14 +68,11 @@ const useStyles = makeStyles({
 	},
 });
 
-interface AppProps {
-	toggleTheme: () => void;
-	isDarkMode: boolean;
-}
-
-function App({ toggleTheme, isDarkMode }: AppProps): React.JSX.Element {
+function App(): React.JSX.Element {
 	const styles = useStyles();
+	useGlobalStyles();
 
+	const { isDarkMode, toggleTheme } = useTheme();
 	const { appMessage, showAppMessage, dismissMessage } = useAppMessage();
 	const apiKey = useApiKey();
 	const initHistory = useMemo(() => loadInitialHistory(), []);
