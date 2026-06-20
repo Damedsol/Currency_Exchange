@@ -45,6 +45,11 @@
   - QA: 244 tests, 27 files, 0 errores. Gate completo.
   - Commit: `chore(docs): finalize remaining TODO items, clean up stale docs`
 
+- **2026-06-20: Auditoría de seguridad — 3 vulnerabilidades corregidas**
+  - Detalle: Escaneo SCA vía subagente `audit` detectó 8 CVEs en dependencias transitivas. Corregido js-yaml override (4.1.1→4.1.2, CVE-2025-27789 DoS en merge keys). Undici 7.27.2→x no se pudo actualizar por breaking change en jsdom 29.1.1 (wrap-handler.js eliminado en undici 8.x). Dockerfile: node 22-alpine→24-alpine (bug que impedía build por engineStrict). Reporte detallado en `.ia/docs/security_report.md`.
+  - QA: 244 tests, 27 files, 0 errores. Gate completo: lint 0 err, build OK.
+  - Commit: `fix(security): update js-yaml override to >=4.1.2, bump Dockerfile to node 24-alpine`
+
 - **2026-06-20: Inicialización del sistema de agente local (.ia/)**
   - Detalle: Creación de la estructura `.ia/` con `project_manifest.yml`, `AGENTS.md` local y `memory/context.md` como memoria persistente del agente. Integración con el `AGENTS.md` raíz mediante regla de coexistencia.
   - QA: Verificación de que `.ia/AGENTS.md` no supera 150 líneas. Coexistencia validada: no se modificó el `AGENTS.md` raíz.
