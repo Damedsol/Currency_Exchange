@@ -74,6 +74,8 @@ const useStyles = makeStyles({
 	divider: {
 		marginTop: "1.5rem",
 		marginBottom: "1.5rem",
+		borderBottomColor: tokens.colorNeutralStroke2,
+		borderBottomWidth: tokens.strokeWidthThin,
 	},
 });
 

@@ -35,6 +35,16 @@
   - QA: `npx ls-lint` sin errores. Diferencia de SKILL.md confirmada idéntica entre fuentes y destino.
   - Commit: `refactor(agent): consolidate skills into skills/, remove .agents and .gemini`
 
+- **2026-06-20: Cobertura 95% alcanzada — 244 tests, todos thresholds superados**
+  - Detalle: Cobertura elevada de 87%→98% (lines), 81%→96% (branches), 89%→98% (functions). Tests añadidos en AppHeader (4→10), ActionButtons (4→6), HistoryPanel (5→9), CurrencyRow (3→4), CurrencySelector (4→6), ConversionControls (5→8), ErrorBoundary (2→4), ConversionHistory (2→8), useApiKey (8→10), useConversion (12→18), useTheme (5→9), FreeCurrency (12→15), LocalStorage (22→28), App (2→9). Se eliminó `main.test.ts` (flaky con `vi.mock` + ESM). Cobertura App.tsx (0%→ª60%+). Branches de dead code (`fromRate === 0` en `calculateRate`, `??` en ErrorBoundary) identificados como inalcanzables.
+  - QA: 244 tests, 27 files, 0 errores. Gate completo: oxlint 0 errores, Biome 0 errores, tsc 0 errores, vitest 244/244, Vite build exitoso.
+  - Commit: `test(coverage): reach 95% coverage thresholds across all metrics`
+
+- **2026-06-20: Divider styling + cleanup**
+  - Detalle: Customización de Divider con `borderBottom: tokens.colorNeutralStroke2` + `tokens.strokeWidthThin` en ConversionControls y HistoryPanel. Limpieza de `docs/workflow.md` (stale) y `public/assets/` (vacío). Actualización de `docs/TODO.md` a estado completado.
+  - QA: 244 tests, 27 files, 0 errores. Gate completo.
+  - Commit: `chore(docs): finalize remaining TODO items, clean up stale docs`
+
 - **2026-06-20: Inicialización del sistema de agente local (.ia/)**
   - Detalle: Creación de la estructura `.ia/` con `project_manifest.yml`, `AGENTS.md` local y `memory/context.md` como memoria persistente del agente. Integración con el `AGENTS.md` raíz mediante regla de coexistencia.
   - QA: Verificación de que `.ia/AGENTS.md` no supera 150 líneas. Coexistencia validada: no se modificó el `AGENTS.md` raíz.
