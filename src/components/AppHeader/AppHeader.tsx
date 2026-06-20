@@ -113,6 +113,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
 				return (
 					<Tooltip content="Saving API Key..." relationship="label">
 						<ArrowClockwiseRegular
+							aria-hidden={true}
 							className={styles.apiKeySavingIcon}
 							style={iconStyle}
 						/>
@@ -122,6 +123,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
 				return (
 					<Tooltip content="API Key Saved" relationship="label">
 						<CheckmarkCircleRegular
+							aria-hidden={true}
 							className={styles.apiKeySavedIcon}
 							style={iconStyle}
 						/>
@@ -131,6 +133,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
 				return (
 					<Tooltip content="Invalid API Key Format" relationship="label">
 						<WarningRegular
+							aria-hidden={true}
 							className={styles.apiKeyInvalidIcon}
 							style={iconStyle}
 						/>
@@ -140,6 +143,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
 				return (
 					<Tooltip content="Error Saving API Key" relationship="label">
 						<ErrorCircleRegular
+							aria-hidden={true}
 							className={styles.apiKeyErrorIcon}
 							style={iconStyle}
 						/>
