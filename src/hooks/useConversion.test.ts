@@ -91,4 +91,75 @@ describe("useConversion", () => {
 		expect(result.current.rate).toBe(0);
 		expect(result.current.rateSource).toBe("error");
 	});
+
+	it("fetchRate error calls showError callback", async () => {
+		getCurrencyRate.mockRejectedValueOnce(new Error("Network failure"));
+		const showError = vi.fn();
+		const { result } = renderHook(() =>
+			useConversion({ ...defaultParams, showError }),
+		);
+		await act(async () => result.current.fetchRate());
+		expect(showError).toHaveBeenCalled();
+	});
+
+	it("onConversionComplete is called with correct entry on success", async () => {
+		getCurrencyRate.mockResolvedValueOnce({
+			source: "api",
+			rate: 1.15,
+		});
+		const onComplete = vi.fn();
+		const { result } = renderHook(() =>
+			useConversion({ ...defaultParams, onConversionComplete: onComplete }),
+		);
+		act(() =>
+			result.current.handleAmountChange({
+				target: { value: "200" },
+			} as React.ChangeEvent<HTMLInputElement>),
+		);
+		await act(async () => result.current.fetchRate());
+		expect(result.current.rate).toBe(1.15);
+		expect(onComplete).toHaveBeenCalledWith(
+			expect.objectContaining({
+				fromCurrency: "EUR",
+				toCurrency: "USD",
+				amount: 200,
+				rate: 1.15,
+				result: expect.closeTo(230, 2),
+				timestamp: expect.any(Number),
+			}),
+		);
+	});
+
+	it("swapCurrencies clears previous error state", () => {
+		const { result } = renderHook(() => useConversion(defaultParams));
+		// Simulate error state
+		act(() => {
+			result.current.handleFromCurrency("GBP");
+		});
+		act(() => result.current.swapCurrencies());
+		expect(result.current.fromCurrency).toBe("USD");
+		expect(result.current.toCurrency).toBe("GBP");
+		expect(result.current.rate).toBe(0);
+		expect(result.current.rateSource).toBe("idle");
+	});
+
+	it("transitions through loading state during fetch", async () => {
+		// Use a deferred promise to observe loading state
+		let resolvePromise!: (value: unknown) => void;
+		const deferredPromise = new Promise((resolve) => {
+			resolvePromise = resolve;
+		});
+		getCurrencyRate.mockReturnValueOnce(deferredPromise);
+		const { result } = renderHook(() => useConversion(defaultParams));
+		let fetchPromise: Promise<void>;
+		act(() => {
+			fetchPromise = result.current.fetchRate();
+		});
+		expect(result.current.rateSource).toBe("loading");
+		await act(async () => {
+			resolvePromise({ source: "api", rate: 1.2 });
+			await fetchPromise!;
+		});
+		expect(result.current.rateSource).toBe("api");
+	});
 });
