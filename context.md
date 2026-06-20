@@ -236,7 +236,6 @@ This document dynamically records technical learnings, architectural decisions, 
   - **Branches / Associated Commits:** `feature/neon-a11y-fixes`, `feature/neon-style-fixes`, `feature/neon-security-persist`
 
 ## Relevant Files
-- `docs/TODO.md`: State of pending items (all completed)
 - `docs/docker-usage.md`: Docker deployment guide
 - `src/theme/neonTheme.ts`: BrandVariants + baseOverrides + dark/light + status + palette overrides (58 tokens total)
 - `src/theme/neonTheme.test.ts`: 41 tests (brand tokens + WCAG contrast + surface hierarchy + status/palette)
