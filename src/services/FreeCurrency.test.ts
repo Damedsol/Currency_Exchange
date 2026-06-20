@@ -143,4 +143,53 @@ describe("FreeCurrency service", () => {
 		expect(capture.headers.apikey).toBe(validApiKey);
 		expect(capture.url).not.toContain("apikey");
 	});
+
+	it("returns error when API returns invalid data structure", async () => {
+		vi.stubGlobal(
+			"fetch",
+			vi.fn().mockResolvedValue({
+				ok: true,
+				json: () => Promise.resolve({ notData: "invalid" }),
+			}),
+		);
+		const result = await getCurrencyRate({
+			fromCurrency: "AAA",
+			toCurrency: "BBB",
+			apiKey: validApiKey,
+		});
+		expect(result.rate).toBeNull();
+		expect(result.source).toBe("error");
+	});
+
+	it("returns error when fromCurrency rate is zero", async () => {
+		vi.stubGlobal(
+			"fetch",
+			vi.fn().mockResolvedValue({
+				ok: true,
+				json: () => Promise.resolve({ data: { ZZZ: 0, USD: 1.0 } }),
+			}),
+		);
+		const result = await getCurrencyRate({
+			fromCurrency: "ZZZ",
+			toCurrency: "USD",
+			apiKey: validApiKey,
+		});
+		expect(result.rate).toBeNull();
+		expect(result.source).toBe("error");
+	});
+
+	it("returns error on AbortError (timeout)", async () => {
+		const abortError = new DOMException(
+			"The operation was aborted",
+			"AbortError",
+		);
+		vi.stubGlobal("fetch", vi.fn().mockRejectedValue(abortError));
+		const result = await getCurrencyRate({
+			fromCurrency: "CCC",
+			toCurrency: "DDD",
+			apiKey: validApiKey,
+		});
+		expect(result.rate).toBeNull();
+		expect(result.source).toBe("error");
+	});
 });
