@@ -1,0 +1,59 @@
+# Proyecto: currencyExchange
+# Generado automáticamente por el Initializer subagent
+# Última actualización: 2026-06-20
+
+stack_tecnologico:
+  - React 19.2.0
+  - TypeScript 5.9.3
+  - Vite 7.1.11
+  - Fluent UI React Components v9.72.3
+  - PNPM 11.2.2
+  - Oxlint (linter Rust, sin ESLint)
+  - Biome (formatter Rust, sin Prettier)
+  - ls-lint (consistencia de nombres)
+  - Husky + lint-staged + commitlint (git hooks)
+  - Docker + Docker Compose (multi-stage)
+  - Nginx Alpine (producción)
+
+carpetas_relevantes:
+  - src/ # Código fuente principal
+  - src/components/ # Componentes React (13 subdirectorios)
+  - src/services/ # Lógica de negocio (FreeCurrency.ts, LocalStorage.ts)
+  - src/styles/ # Estilos globales (main.css)
+  - docs/ # Documentación del proyecto
+  - assets/ # Recursos estáticos
+  - .husky/ # Hooks de git
+
+carpetas_omitidas:
+  - node_modules
+  - dist
+  - .git
+  - .gemini
+  - .agents
+  - .husky
+
+entrypoints:
+  - index.html # HTML raíz con favicons y punto de montaje
+  - src/main.tsx # Entrada principal de la aplicación React
+
+commands:
+  dev: pnpm dev
+  build: pnpm build
+  test: "" # No hay suite de pruebas configurada
+
+env_keys:
+  - NODE_ENV
+  - VITE_API_URL
+  - VITE_DEBUG
+  - VITE_HMR
+  - CHOKIDAR_USEPOLLING
+  - WATCHPACK_POLLING
+  - FAST_REFRESH
+  - VITE_LOG_LEVEL
+
+services:
+  - Docker
+  - Docker Compose
+  - Nginx
+
+politicas: "Uso obligatorio de .ia/AGENTS.md"
