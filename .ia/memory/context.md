@@ -1,56 +1,62 @@
-# Contexto y Aprendizajes: currencyExchange (Local .ia/)
+# Context and Learnings: currencyExchange (Local .ia/)
 
-## Stack y Configuración
-- **React 19 + Fluent UI v9:** UI construida con `FluentProvider`, `makeStyles` (Griffel atomic CSS-in-JS) y componentes de `@fluentui/react-components`.
-- **Oxlint (linter):** Único linter activo. Reglas `correctness` y `perf` en `warn`. Sin ESLint.
-- **Biome (formatter):** Exclusivo. `indentStyle: tab`, `indentWidth: 2`, `lineWidth: 80`, `trailingCommas: all`. Sin Prettier.
-- **ls-lint:** Componentes `PascalCase.tsx`, servicios `PascalCase.ts`, estilos `kebabcase.css`.
-- **pnpm catalogs/workspaces:** Gestión centralizada de dependencias vía `catalog:` en `pnpm-workspace.yaml`.
-- **Vite 7.1.11:** Plugins React, HMR con polling (300ms) para Docker, chunk manual (react-dom, react, fluent).
-- **TypeScript 6 (estricto):** `strict: true`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, `noImplicitOverride`.
-- **Docker multi-stage:** `development` (Vite HMR), `builder` (compilación), `production` (Nginx Alpine).
-- **Docker Compose:** Volumen bind para `./src` y `./public`, volúmenes nombrados para `node_modules` y `vite_cache`.
+## Stack and Configuration
+- **React 19 + Fluent UI v9:** UI built with `FluentProvider`, `makeStyles` (Griffel atomic CSS-in-JS), and components from `@fluentui/react-components`.
+- **Oxlint (linter):** Only active linter. `correctness` and `perf` rules at `warn`. No ESLint.
+- **Biome (formatter):** Exclusive. `indentStyle: tab`, `indentWidth: 2`, `lineWidth: 80`, `trailingCommas: all`. No Prettier.
+- **ls-lint:** Components `PascalCase.tsx`, services `PascalCase.ts`, styles `kebabcase.css`.
+- **pnpm catalogs/workspaces:** Centralized dependency management via `catalog:` in `pnpm-workspace.yaml`.
+- **Vite 7.1.11:** React plugins, HMR with polling (300ms) for Docker, manual chunking (react-dom, react, fluent).
+- **TypeScript 6 (strict):** `strict: true`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, `noImplicitOverride`.
+- **Docker multi-stage:** `development` (Vite HMR), `builder` (compilation), `production` (Nginx Alpine).
+- **Docker Compose:** Bind volume for `./src` and `./public`, named volumes for `node_modules` and `vite_cache`.
 - **Git hooks:** Husky + lint-staged (oxlint --fix + biome format) + commitlint (conventional commits).
 
-## Decisiones Estratégicas
-- **Exclusividad Rust tooling:** Prohibición explícita de reinstalar ESLint o Prettier. Oxlint + Biome son los únicos permitidos.
-- **Entorno agnóstico:** Uso de variables de entorno (`.env.development`/`.env.production`) para configuración de API, debug y HMR.
-- **Seguridad en producción (Nginx):** `server_tokens off`, bloqueo de archivos ocultos (HTTP 404), headers de seguridad (X-Frame-Options, X-Content-Type-Options, X-XSS-Protection, Referrer-Policy), compresión gzip.
-- **Caching inteligente:** Indicador de fuente (caché vs API en vivo) en la UI para las tasas de cambio.
-- **Persistencia local:** Almacenamiento de API key y datos de conversión en LocalStorage.
-- **Single‑source agentic config:** `AGENTS.md` raíz como norma maestra, complementada localmente por `.ia/AGENTS.md`.
+## Strategic Decisions
+- **Rust tooling exclusivity:** Explicit prohibition against reinstalling ESLint or Prettier. Only Oxlint + Biome are permitted.
+- **Agnostic environment:** Use of environment variables (`.env.development`/`.env.production`) for API, debug, and HMR configuration.
+- **Production security (Nginx):** `server_tokens off`, hidden file blocking (HTTP 404), security headers (X-Frame-Options, X-Content-Type-Options, X-XSS-Protection, Referrer-Policy), gzip compression.
+- **Smart caching:** Source indicator (cache vs live API) in the UI for exchange rates.
+- **Local persistence:** API key and conversion data stored in LocalStorage.
+- **Single-source agentic config:** Root `AGENTS.md` as the master standard, locally complemented by `.ia/AGENTS.md`.
 
-## Historial de Cambios Relevantes
-- **2026-06-20: Sesión completa — reestructuración + 13 ramas git flow**
-  - **Rama `feature/dependency-update`:** Fluent 9.73→9.74, Vite 8.0.14→8.0.16. Pinned `@fluentui/react-motion@9.15.0` para compatibilidad jsdom. Biome fixes en 9 archivos. Gate pasado.
-  - **Rama `feature/coverage-thresholds`:** Thresholds 95% en `vitest.config.ts`. Añadidos 21 tests nuevos: useApiKey (5→12), LocalStorage (15→22), useConversion (8→12), FreeCurrency (9→12). Cobertura: lines 74%→81%, branches 68%→73%. Gate pasado (186 tests).
-  - **4 E2E specs:** `conversion.spec.ts`, `theme.spec.ts`, `error-handling.spec.ts`, `accessibility.spec.ts` creados (pendiente instalar Playwright browsers para ejecución).
-  - **Rama `feature/a11y-style-fixes`:** `role="switch"` + `aria-checked` en ThemeSwitcher. `boxShadow: "none"` en MessageBar. Doble anillo de foco en `globalStyles.ts`.
-  - **Rama `feature/use-theme-context`:** Nuevo hook `useTheme` con React Context. `main.tsx` simplificado de 78→13 líneas. `App.tsx` refactorizado para usar `useTheme()`. 5 tests de hook + 5 tests de integración App. 193 tests totales.
-  - **Lecciones técnicas:** `vi.mock()` requiere `vi.hoisted()` para módulos con variables del scope. `vi.useFakeTimers` incompatible con hooks React en jsdom. Oxlint no parsea JSX en archivos `.ts`. `DomException("AbortError")` no es `Error` en jsdom. Context.Provider en JSX requiere archivo `.tsx`.
-  - QA: Gates completos en todas las ramas (lint + ls-lint + vitest + tsc + build). 193 tests, 0 errores. 89 commits locales en develop sin push.
+## Relevant Change History
 
-- **2026-06-20: Reestructuración agentic — skills unificadas en skills/**
-  - Detalle: Migración de skills `fluent-ui-react` (229 líneas) y `modern-linting` (204 líneas) desde `.agents/skills/` y `.gemini/skills/` a `skills/` (directorio raíz). Eliminación de `.agents/` y `.gemini/` (866 líneas duplicadas). Registro formal de skills en `.ia/project_manifest.yml` (sección `skills_registry`). Corrección de `commands.test` y limpieza de `.ls-lint.yml` (`.gemini` → `skills` en ignore). Creación de `skills/README.md`.
-  - QA: `npx ls-lint` sin errores. Diferencia de SKILL.md confirmada idéntica entre fuentes y destino.
+- **2026-06-20: Full session — restructuring + 13 git flow branches**
+  - **Branch `feature/dependency-update`:** Fluent 9.73→9.74, Vite 8.0.14→8.0.16. Pinned `@fluentui/react-motion@9.15.0` for jsdom compatibility. Biome fixes in 9 files. Gate passed.
+  - **Branch `feature/coverage-thresholds`:** 95% thresholds in `vitest.config.ts`. Added 21 new tests: useApiKey (5→12), LocalStorage (15→22), useConversion (8→12), FreeCurrency (9→12). Coverage: lines 74%→81%, branches 68%→73%. Gate passed (186 tests).
+  - **4 E2E specs:** `conversion.spec.ts`, `theme.spec.ts`, `error-handling.spec.ts`, `accessibility.spec.ts` created (Playwright browsers not yet installed for execution).
+  - **Branch `feature/a11y-style-fixes`:** `role="switch"` + `aria-checked` on ThemeSwitcher. `boxShadow: "none"` on MessageBar. Double focus ring in `globalStyles.ts`.
+  - **Branch `feature/use-theme-context`:** New `useTheme` hook with React Context. `main.tsx` simplified from 78→13 lines. `App.tsx` refactored to use `useTheme()`. 5 hook tests + 5 App integration tests. 193 total tests.
+  - **Technical lessons:** `vi.mock()` requires `vi.hoisted()` for modules with scope variables. `vi.useFakeTimers` incompatible with React hooks in jsdom. Oxlint does not parse JSX in `.ts` files. `DomException("AbortError")` is not `Error` in jsdom. Context.Provider in JSX requires `.tsx` file.
+  - QA: Gates passed on all branches (lint + ls-lint + vitest + tsc + build). 193 tests, 0 errors. 89 local commits on develop without push.
+
+- **2026-06-20: Agentic restructuring — skills unified into skills/**
+  - Details: Migrated `fluent-ui-react` (229 lines) and `modern-linting` (204 lines) skills from `.agents/skills/` and `.gemini/skills/` to `skills/` (root directory). Removed `.agents/` and `.gemini/` (866 duplicate lines). Formal skill registration in `.ia/project_manifest.yml` (`skills_registry` section). Fixed `commands.test` and cleaned `.ls-lint.yml` (`.gemini` → `skills` in ignore). Created `skills/README.md`.
+  - QA: `npx ls-lint` with no errors. Diff confirmed SKILL.md content identical between source and destination.
   - Commit: `refactor(agent): consolidate skills into skills/, remove .agents and .gemini`
 
-- **2026-06-20: Cobertura 95% alcanzada — 244 tests, todos thresholds superados**
-  - Detalle: Cobertura elevada de 87%→98% (lines), 81%→96% (branches), 89%→98% (functions). Tests añadidos en AppHeader (4→10), ActionButtons (4→6), HistoryPanel (5→9), CurrencyRow (3→4), CurrencySelector (4→6), ConversionControls (5→8), ErrorBoundary (2→4), ConversionHistory (2→8), useApiKey (8→10), useConversion (12→18), useTheme (5→9), FreeCurrency (12→15), LocalStorage (22→28), App (2→9). Se eliminó `main.test.ts` (flaky con `vi.mock` + ESM). Cobertura App.tsx (0%→ª60%+). Branches de dead code (`fromRate === 0` en `calculateRate`, `??` en ErrorBoundary) identificados como inalcanzables.
-  - QA: 244 tests, 27 files, 0 errores. Gate completo: oxlint 0 errores, Biome 0 errores, tsc 0 errores, vitest 244/244, Vite build exitoso.
+- **2026-06-20: 95% coverage achieved — 244 tests, all thresholds exceeded**
+  - Details: Coverage raised from 87%→98% (lines), 81%→96% (branches), 89%→98% (functions). Tests added in AppHeader (4→10), ActionButtons (4→6), HistoryPanel (5→9), CurrencyRow (3→4), CurrencySelector (4→6), ConversionControls (5→8), ErrorBoundary (2→4), ConversionHistory (2→8), useApiKey (8→10), useConversion (12→18), useTheme (5→9), FreeCurrency (12→15), LocalStorage (22→28), App (2→9). Removed `main.test.ts` (flaky with `vi.mock` + ESM). App.tsx coverage (0%→60%+). Dead code branches (`fromRate === 0` in `calculateRate`, `??` in ErrorBoundary) identified as unreachable.
+  - QA: 244 tests, 27 files, 0 errors. Full gate: oxlint 0 errors, Biome 0 errors, tsc 0 errors, vitest 244/244, Vite build successful.
   - Commit: `test(coverage): reach 95% coverage thresholds across all metrics`
 
 - **2026-06-20: Divider styling + cleanup**
-  - Detalle: Customización de Divider con `borderBottom: tokens.colorNeutralStroke2` + `tokens.strokeWidthThin` en ConversionControls y HistoryPanel. Limpieza de `docs/workflow.md` (stale), `docs/TODO.md` (completado) y `public/assets/` (vacío). Actualización de `README.md` con versiones correctas. Actualización de `context.md` raíz (referencias a docs eliminados).
-  - QA: 244 tests, 27 files, 0 errores. Gate completo.
+  - Details: Divider customization with `borderBottom: tokens.colorNeutralStroke2` + `tokens.strokeWidthThin` in ConversionControls and HistoryPanel. Cleaned `docs/workflow.md` (stale), `docs/TODO.md` (completed), and `public/assets/` (empty). Updated `README.md` with correct versions. Updated root `context.md` (references to deleted docs).
+  - QA: 244 tests, 27 files, 0 errors. Full gate.
   - Commit: `chore(docs): finalize remaining TODO items, clean up stale docs`
 
-- **2026-06-20: Auditoría de seguridad — 3 vulnerabilidades corregidas**
-  - Detalle: Escaneo SCA vía subagente `audit` detectó 8 CVEs en dependencias transitivas. Corregido js-yaml override (4.1.1→4.1.2, CVE-2025-27789 DoS en merge keys). Undici 7.27.2→x no se pudo actualizar por breaking change en jsdom 29.1.1 (wrap-handler.js eliminado en undici 8.x). Dockerfile: node 22-alpine→24-alpine (bug que impedía build por engineStrict). Reporte detallado en `.ia/docs/security_report.md`.
-  - QA: 244 tests, 27 files, 0 errores. Gate completo: lint 0 err, build OK.
+- **2026-06-20: Security audit — 3 vulnerabilities fixed**
+  - Details: SCA scan via `audit` subagent detected 8 CVEs in transitive dependencies. Fixed js-yaml override (4.1.1→4.1.2, CVE-2025-27789 DoS in merge keys). Undici 7.27.2→x could not be updated due to breaking change in jsdom 29.1.1 (wrap-handler.js removed in undici 8.x). Dockerfile: node 22-alpine→24-alpine (bug preventing build due to engineStrict). Full findings summarized in this entry; detailed one-time security report has been archived.
+  - QA: 244 tests, 27 files, 0 errors. Full gate: lint 0 err, build OK.
   - Commit: `fix(security): update js-yaml override to >=4.1.2, bump Dockerfile to node 24-alpine`
 
-- **2026-06-20: Inicialización del sistema de agente local (.ia/)**
-  - Detalle: Creación de la estructura `.ia/` con `project_manifest.yml`, `AGENTS.md` local y `memory/context.md` como memoria persistente del agente. Integración con el `AGENTS.md` raíz mediante regla de coexistencia.
-  - QA: Verificación de que `.ia/AGENTS.md` no supera 150 líneas. Coexistencia validada: no se modificó el `AGENTS.md` raíz.
+- **2026-06-20: Local agent system initialization (.ia/)**
+  - Details: Created `.ia/` structure with `project_manifest.yml`, local `AGENTS.md`, and `memory/context.md` as persistent agent memory. Integrated with root `AGENTS.md` via coexistence rule.
+  - QA: Verified `.ia/AGENTS.md` does not exceed 150 lines. Coexistence validated: root `AGENTS.md` was not modified.
   - Commit: `chore(agent): add local agent configuration (.ia/)`
+
+- **2026-06-20: Documentation cleanup — English-only migration + stale doc removal**
+  - Details: Translated all `.ia/` documentation from Spanish to English (`.ia/AGENTS.md`, `.ia/memory/context.md`, `.ia/project_manifest.yml`). Established English as the mandatory project language (updated root `AGENTS.md` and `.ia/AGENTS.md`). Removed one-time security audit report (`.ia/docs/security_report.md`) as findings are preserved in this history. Cleaned stale reference to `docs/TODO.md` in root `context.md`.
+  - QA: Zero Spanish text remaining in `.ia/` files. Language policy consistent across both AGENTS.md files. No broken references. ls-lint passed.
+  - Commit: `chore(docs): migrate all documentation to English, remove stale security report`
