@@ -84,4 +84,105 @@ describe("useApiKey", () => {
 		});
 		expect(result.current.apiKeySaveStatus).toBe("idle");
 	});
+
+	it("sets status to invalid when format is wrong after debounce", async () => {
+		mockFetchService.mockReturnValue(null);
+		const { result } = renderHook(() => useApiKey());
+		act(() => {
+			result.current.handleApiKeyChange({
+				target: { value: "invalid-key-format" },
+			} as React.ChangeEvent<HTMLInputElement>);
+		});
+		expect(result.current.apiKeySaveStatus).toBe("validating");
+		await waitFor(
+			() => {
+				expect(result.current.apiKeySaveStatus).toBe("invalid");
+			},
+			{ timeout: 2000 },
+		);
+		expect(result.current.isApiKeyValid).toBe(false);
+	});
+
+	it("saves valid key after debounce and clears rates cache", async () => {
+		mockFetchService.mockReturnValue(null);
+		mockStoreService.mockResolvedValue(undefined);
+		const validKey = "fca_live_abcdefghijklmnopqrstuvwxyz12";
+		const { result } = renderHook(() => useApiKey());
+		act(() => {
+			result.current.handleApiKeyChange({
+				target: { value: validKey },
+			} as React.ChangeEvent<HTMLInputElement>);
+		});
+		await waitFor(
+			() => {
+				expect(mockStoreService).toHaveBeenCalledWith(validKey);
+			},
+			{ timeout: 2000 },
+		);
+		expect(mockClearRatesCache).toHaveBeenCalled();
+		expect(result.current.apiKeySaveStatus).toBe("saved");
+		expect(result.current.storedApiKey).toBe(validKey);
+	});
+
+	it("sets status to error when localStorage store fails", async () => {
+		mockFetchService.mockReturnValue(null);
+		mockStoreService.mockRejectedValue(new Error("Storage full"));
+		const validKey = "fca_live_abcdefghijklmnopqrstuvwxyz12";
+		const { result } = renderHook(() => useApiKey());
+		act(() => {
+			result.current.handleApiKeyChange({
+				target: { value: validKey },
+			} as React.ChangeEvent<HTMLInputElement>);
+		});
+		await waitFor(
+			() => {
+				expect(result.current.apiKeySaveStatus).toBe("error");
+			},
+			{ timeout: 2000 },
+		);
+		expect(result.current.storedApiKey).toBeNull();
+	});
+
+	it("trims whitespace from key before validation", async () => {
+		mockFetchService.mockReturnValue(null);
+		mockStoreService.mockResolvedValue(undefined);
+		const validKey = "fca_live_abcdefghijklmnopqrstuvwxyz12";
+		const { result } = renderHook(() => useApiKey());
+		act(() => {
+			result.current.handleApiKeyChange({
+				target: { value: `  ${validKey}  ` },
+			} as React.ChangeEvent<HTMLInputElement>);
+		});
+		await waitFor(
+			() => {
+				expect(mockStoreService).toHaveBeenCalledWith(validKey);
+			},
+			{ timeout: 2000 },
+		);
+	});
+
+	it("cleans up timeouts on unmount", () => {
+		mockFetchService.mockReturnValue(null);
+		const { unmount } = renderHook(() => useApiKey());
+		expect(() => unmount()).not.toThrow();
+	});
+
+	it("does not load invalid stored key on init", () => {
+		mockFetchService.mockReturnValue("invalid_format_key");
+		const { result } = renderHook(() => useApiKey());
+		expect(result.current.storedApiKey).toBeNull();
+		expect(result.current.apiKeyInput).toBe("");
+	});
+
+	it("clears API key correctly", () => {
+		mockFetchService.mockReturnValue(null);
+		const { result } = renderHook(() => useApiKey());
+		act(() => {
+			result.current.clearApiKey();
+		});
+		expect(result.current.apiKeyInput).toBe("");
+		expect(result.current.storedApiKey).toBeNull();
+		expect(result.current.apiKeySaveStatus).toBe("idle");
+		expect(result.current.isApiKeyValid).toBe(true);
+	});
 });

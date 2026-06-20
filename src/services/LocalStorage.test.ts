@@ -70,6 +70,14 @@ describe("clearLocalStorage", () => {
 		expect(localStorage.getItem("apiKey")).toBeNull();
 		expect(localStorage.getItem("currencyRatesCache")).toBeNull();
 	});
+
+	it("does not remove unrelated localStorage keys", () => {
+		localStorage.setItem("apiKey", "test");
+		localStorage.setItem("currencyRatesCache", "{}");
+		localStorage.setItem("unrelatedKey", "shouldPersist");
+		clearLocalStorage();
+		expect(localStorage.getItem("unrelatedKey")).toBe("shouldPersist");
+	});
 });
 
 describe("rates cache", () => {
@@ -87,6 +95,41 @@ describe("rates cache", () => {
 	it("clears rates cache", () => {
 		saveRatesToCache({ USD: 1.0 });
 		clearRatesCache();
+		expect(loadRatesFromCache()).toBeNull();
+	});
+
+	it("saves rates with a timestamp", () => {
+		const rates = { USD: 1.0 };
+		saveRatesToCache(rates);
+		const stored = localStorage.getItem("currencyRatesCache");
+		expect(stored).not.toBeNull();
+		const parsed = JSON.parse(stored as string);
+		expect(parsed).toHaveProperty("timestamp");
+		expect(typeof parsed.timestamp).toBe("number");
+		expect(parsed).toHaveProperty("rates");
+		expect(parsed.rates).toEqual(rates);
+	});
+
+	it("returns null for expired cache", () => {
+		// Manually set an expired cache entry (25 hours old, exceeds 24h TTL)
+		const expired = {
+			timestamp: Date.now() - 25 * 60 * 60 * 1000,
+			rates: { USD: 1.0 },
+		};
+		localStorage.setItem("currencyRatesCache", JSON.stringify(expired));
+		expect(loadRatesFromCache()).toBeNull();
+	});
+
+	it("returns null for corrupted cache JSON", () => {
+		localStorage.setItem("currencyRatesCache", "not-valid-json");
+		expect(loadRatesFromCache()).toBeNull();
+	});
+
+	it("returns null for invalid cache structure", () => {
+		localStorage.setItem(
+			"currencyRatesCache",
+			JSON.stringify({ invalid: "structure" }),
+		);
 		expect(loadRatesFromCache()).toBeNull();
 	});
 });
@@ -121,5 +164,15 @@ describe("conversion history", () => {
 		saveConversionHistoryService(entries);
 		const loaded = loadConversionHistoryService();
 		expect(loaded).toHaveLength(10);
+	});
+
+	it("returns empty array when stored history is not an array", () => {
+		localStorage.setItem("conversionHistory", JSON.stringify({ not: "array" }));
+		expect(loadConversionHistoryService()).toEqual([]);
+	});
+
+	it("returns empty array when history JSON is corrupted", () => {
+		localStorage.setItem("conversionHistory", "corrupted-json{{{");
+		expect(loadConversionHistoryService()).toEqual([]);
 	});
 });
