@@ -14,7 +14,7 @@ const mockEntry: ConversionHistoryEntry = {
 	timestamp: Date.now(),
 };
 
-describe("ConversionHistory accessibility", () => {
+describe("ConversionHistory", () => {
 	it('has role="region" on the table wrapper', () => {
 		render(<ConversionHistory history={[mockEntry]} onRepeat={() => {}} />);
 		const region = screen.getByRole("region");
@@ -27,5 +27,29 @@ describe("ConversionHistory accessibility", () => {
 		for (const header of headers) {
 			expect(header.getAttribute("scope")).toBe("col");
 		}
+	});
+
+	it("renders history entries in table rows", () => {
+		render(<ConversionHistory history={[mockEntry]} onRepeat={() => {}} />);
+		const rows = screen.getAllByRole("row");
+		expect(rows.length).toBeGreaterThan(1);
+	});
+
+	it("has repeat button for each entry", () => {
+		render(<ConversionHistory history={[mockEntry]} onRepeat={() => {}} />);
+		const repeatBtn = screen.getByRole("button", { name: /repeat/i });
+		expect(repeatBtn).toBeDefined();
+	});
+
+	it("renders multiple columns with data", () => {
+		render(<ConversionHistory history={[mockEntry]} onRepeat={() => {}} />);
+		expect(screen.getAllByText("USD").length).toBeGreaterThanOrEqual(1);
+		expect(screen.getAllByText("EUR").length).toBeGreaterThanOrEqual(1);
+	});
+
+	it("renders table with aria-label on region", () => {
+		render(<ConversionHistory history={[mockEntry]} onRepeat={() => {}} />);
+		const region = screen.getByRole("region");
+		expect(region.getAttribute("aria-label")).toBeTruthy();
 	});
 });

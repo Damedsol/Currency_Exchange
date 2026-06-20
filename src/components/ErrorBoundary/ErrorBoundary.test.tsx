@@ -30,4 +30,15 @@ describe("ErrorBoundary", () => {
 		expect(screen.getByText("Test error")).toBeDefined();
 		vi.restoreAllMocks();
 	});
+
+	it("renders custom fallback when provided", () => {
+		vi.spyOn(console, "error").mockImplementation(() => {});
+		render(
+			<ErrorBoundary fallback={<div>Custom Fallback</div>}>
+				<Broken />
+			</ErrorBoundary>,
+		);
+		expect(screen.getByText("Custom Fallback")).toBeDefined();
+		vi.restoreAllMocks();
+	});
 });
