@@ -38,7 +38,13 @@ export const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({
 			<Label htmlFor={switchId} size="medium">
 				{isDarkMode ? "Dark Mode Active" : "Light Mode Active"}
 			</Label>
-			<Switch id={switchId} checked={isDarkMode} onChange={toggleTheme} />
+			<Switch
+				id={switchId}
+				checked={isDarkMode}
+				onChange={toggleTheme}
+				role="switch"
+				aria-checked={isDarkMode}
+			/>
 		</div>
 	);
 };

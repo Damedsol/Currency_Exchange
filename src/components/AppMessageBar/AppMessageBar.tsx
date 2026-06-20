@@ -19,6 +19,7 @@ const useStyles = makeStyles({
 		overflow: "hidden",
 		maxHeight: 0,
 		opacity: 0,
+		boxShadow: "none",
 	},
 	messageBarContainerVisible: {
 		maxHeight: "60px",

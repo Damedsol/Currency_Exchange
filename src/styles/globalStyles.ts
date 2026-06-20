@@ -3,9 +3,10 @@ import { makeStyles, tokens } from "@fluentui/react-components";
 export const useGlobalStyles = makeStyles({
 	focusRing: {
 		":focus-visible": {
-			outline: `2px solid ${tokens.colorCompoundBrandStroke}`,
+			outline: "2px solid transparent",
 			outlineOffset: "2px",
 			borderRadius: tokens.borderRadiusMedium,
+			boxShadow: `0 0 0 2px ${tokens.colorNeutralBackground1}, 0 0 0 4px ${tokens.colorCompoundBrandStroke}`,
 		},
 	},
 	textPrefixOk: {
