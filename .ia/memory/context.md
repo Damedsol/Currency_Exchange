@@ -21,6 +21,15 @@
 - **Single‑source agentic config:** `AGENTS.md` raíz como norma maestra, complementada localmente por `.ia/AGENTS.md`.
 
 ## Historial de Cambios Relevantes
+- **2026-06-20: Sesión completa — reestructuración + 13 ramas git flow**
+  - **Rama `feature/dependency-update`:** Fluent 9.73→9.74, Vite 8.0.14→8.0.16. Pinned `@fluentui/react-motion@9.15.0` para compatibilidad jsdom. Biome fixes en 9 archivos. Gate pasado.
+  - **Rama `feature/coverage-thresholds`:** Thresholds 95% en `vitest.config.ts`. Añadidos 21 tests nuevos: useApiKey (5→12), LocalStorage (15→22), useConversion (8→12), FreeCurrency (9→12). Cobertura: lines 74%→81%, branches 68%→73%. Gate pasado (186 tests).
+  - **4 E2E specs:** `conversion.spec.ts`, `theme.spec.ts`, `error-handling.spec.ts`, `accessibility.spec.ts` creados (pendiente instalar Playwright browsers para ejecución).
+  - **Rama `feature/a11y-style-fixes`:** `role="switch"` + `aria-checked` en ThemeSwitcher. `boxShadow: "none"` en MessageBar. Doble anillo de foco en `globalStyles.ts`.
+  - **Rama `feature/use-theme-context`:** Nuevo hook `useTheme` con React Context. `main.tsx` simplificado de 78→13 líneas. `App.tsx` refactorizado para usar `useTheme()`. 5 tests de hook + 5 tests de integración App. 193 tests totales.
+  - **Lecciones técnicas:** `vi.mock()` requiere `vi.hoisted()` para módulos con variables del scope. `vi.useFakeTimers` incompatible con hooks React en jsdom. Oxlint no parsea JSX en archivos `.ts`. `DomException("AbortError")` no es `Error` en jsdom. Context.Provider en JSX requiere archivo `.tsx`.
+  - QA: Gates completos en todas las ramas (lint + ls-lint + vitest + tsc + build). 193 tests, 0 errores. 89 commits locales en develop sin push.
+
 - **2026-06-20: Reestructuración agentic — skills unificadas en skills/**
   - Detalle: Migración de skills `fluent-ui-react` (229 líneas) y `modern-linting` (204 líneas) desde `.agents/skills/` y `.gemini/skills/` a `skills/` (directorio raíz). Eliminación de `.agents/` y `.gemini/` (866 líneas duplicadas). Registro formal de skills en `.ia/project_manifest.yml` (sección `skills_registry`). Corrección de `commands.test` y limpieza de `.ls-lint.yml` (`.gemini` → `skills` en ignore). Creación de `skills/README.md`.
   - QA: `npx ls-lint` sin errores. Diferencia de SKILL.md confirmada idéntica entre fuentes y destino.
