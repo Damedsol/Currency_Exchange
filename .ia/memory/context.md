@@ -60,3 +60,25 @@
   - Details: Translated all `.ia/` documentation from Spanish to English (`.ia/AGENTS.md`, `.ia/memory/context.md`, `.ia/project_manifest.yml`). Established English as the mandatory project language (updated root `AGENTS.md` and `.ia/AGENTS.md`). Removed one-time security audit report (`.ia/docs/security_report.md`) as findings are preserved in this history. Cleaned stale reference to `docs/TODO.md` in root `context.md`.
   - QA: Zero Spanish text remaining in `.ia/` files. Language policy consistent across both AGENTS.md files. No broken references. ls-lint passed.
   - Commit: `chore(docs): migrate all documentation to English, remove stale security report`
+
+- **2026-06-21: FreeCurrency API endpoints expansion — dynamic currencies + formatting**
+  - **Details:** Replaced reliance on static `currencySelectorData.json` with dynamic data from `/v1/currencies` and `/v1/latest` endpoints. New features:
+    - Added `CurrencyMetadata` type with `decimal_digits`, `symbol_native`, `name_plural`, `rounding`.
+    - Extracted `fetchLatestRates()` from `getCurrencyRate()` for reuse (DRY refactor).
+    - Added `fetchCurrencies()` for metadata from `/v1/currencies`.
+    - Added currencies cache in `LocalStorage` (7-day TTL) with `saveCurrenciesToCache()` / `loadCurrenciesFromCache()`.
+    - Added `useCurrencies` hook managing currency metadata lifecycle (cache → API only, no static fallback).
+    - Added "Update currencies" button in `ConversionControls` when API key is present — fetches both metadata and rates simultaneously.
+    - `ResultSection` now uses `decimal_digits` from currency metadata for proper formatting (JPY=0, USD=2, BHD=3).
+    - `CurrencySelector` uses only the `currencies` prop — no hardcoded JSON fallback.
+    - Static `currencySelectorData.json` deleted entirely. Selectors show disabled `---` placeholder with hint text when empty.
+    - Layout stability: `flexShrink: 0` on `ConversionControls.leftColumn` prevents width shift based on HistoryPanel content.
+    - `HistoryPanel.rightColumn` changed to `flex: "1 1 70%"` for consistent fill behavior.
+  - **Key lessons:**
+    - `exactOptionalPropertyTypes` requires `T | undefined` instead of `?: T` when passing explicit `undefined`.
+    - `vi.fn()` in vitest accepts 1 type parameter (function signature), not 2.
+    - `noUncheckedIndexedAccess` requires `object!["key"]!` for Record access in strict mode.
+  - **Files modified:** `types/index.ts`, `services/FreeCurrency.ts` (+203, -168), `services/LocalStorage.ts` (+88), `App.tsx`, `ConversionControls.tsx` (+update button, +flexShrink), `CurrencyRow.tsx`, `CurrencySelector.tsx`, `ResultSection.tsx` (+decimal_digits formatting), `HistoryPanel.tsx`, and their test files.
+  - **Files created:** `hooks/useCurrencies.ts`, `hooks/useCurrencies.test.ts`.
+  - **Files deleted:** `src/components/CurrencySelector/currencySelectorData.json`.
+  - **QA:** 284/284 unit tests (28 files), 24/24 E2E tests. Full gate: oxlint 0 err, ls-lint 0 err, tsc 0 err, vitest 284/284, Vite build 544ms.
