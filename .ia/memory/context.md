@@ -81,4 +81,19 @@
   - **Files modified:** `types/index.ts`, `services/FreeCurrency.ts` (+203, -168), `services/LocalStorage.ts` (+88), `App.tsx`, `ConversionControls.tsx` (+update button, +flexShrink), `CurrencyRow.tsx`, `CurrencySelector.tsx`, `ResultSection.tsx` (+decimal_digits formatting), `HistoryPanel.tsx`, and their test files.
   - **Files created:** `hooks/useCurrencies.ts`, `hooks/useCurrencies.test.ts`.
   - **Files deleted:** `src/components/CurrencySelector/currencySelectorData.json`.
-  - **QA:** 284/284 unit tests (28 files), 24/24 E2E tests. Full gate: oxlint 0 err, ls-lint 0 err, tsc 0 err, vitest 284/284, Vite build 544ms.
+  - **QA:** 286/286 unit tests (28 files), 24/24 E2E tests. Full gate: oxlint 0 err, ls-lint 0 err, tsc 0 err, vitest 286/286, Vite build 544ms.
+  - **2026-06-21 hotfix:** Strengthened ResultSection tests to actually validate decimal digits (JPY=0, BHD=3, default=2) using locale-aware comparison instead of flaky substring match.
+  - **2026-06-21 fix: History table decimal formatting — currency metadata threaded to ConversionHistory.**
+    - **4 atomic commits:**
+      1. `feat(ResultSection): export formatCurrencyAmount for shared use` — added `export` to the formatting utility.
+      2. `fix(history): replace hardcoded formatNumber with currency-aware decimal formatting` — created `formatHistoryValue` using `decimal_digits`, reordered table columns (Amount→Result→From→To→Rate), added 7 tests (JPY=0, BHD=3, undefined=2).
+      3. `feat: thread currencies prop from App through HistoryPanel to ConversionHistory` — wired `currencies` in the component chain for production data flow.
+      4. `docs(context): update memory with latest fix and QA metrics` — this entry.
+    - **Key technical details:**
+      - `formatHistoryValue(num, currencyCode, currencies)` replaces `formatNumber(num, 3, 3)`
+      - Amount column uses `entry.fromCurrency`, Result and Rate use `entry.toCurrency`
+      - Column order: Amount → Result → From → To → Rate → Timestamp → Action
+      - `useGrouping: false` preserved for compact table display
+      - Fallback to 2 decimals when metadata unavailable
+    - **Files modified:** `ResultSection.tsx` (+1), `ConversionHistory.tsx` (+99, -36), `ConversionHistory.test.tsx` (+156, -1), `HistoryPanel.tsx` (+6, -1), `HistoryPanel.test.tsx` (+1), `App.tsx` (+1), `context.md` (+memory update).
+    - **QA:** 293/293 unit tests (28 files). Full gate: oxlint 0 err, ls-lint 0 err, tsc 0 err, vitest 293/293, Vite build successful.
