@@ -7,6 +7,7 @@ import {
 import { ArrowSwapRegular } from "@fluentui/react-icons";
 import React, { useEffect, useState } from "react";
 
+import type { CurrencyMetadata } from "../../types";
 import { CurrencySelector } from "../CurrencySelector/CurrencySelector";
 
 // Styles for the row
@@ -55,10 +56,18 @@ interface CurrencyRowProps {
 	onFromChange: (value: string) => void;
 	onToChange: (value: string) => void;
 	onSwap: () => void;
+	currencies: Record<string, CurrencyMetadata> | undefined;
 }
 
 export const CurrencyRow: React.FC<CurrencyRowProps> = React.memo(
-	({ fromCurrency, toCurrency, onFromChange, onToChange, onSwap }) => {
+	({
+		fromCurrency,
+		toCurrency,
+		onFromChange,
+		onToChange,
+		onSwap,
+		currencies,
+	}) => {
 		const styles = useStyles();
 		const [swapMessage, setSwapMessage] = useState("");
 
@@ -80,6 +89,7 @@ export const CurrencyRow: React.FC<CurrencyRowProps> = React.memo(
 					value={fromCurrency}
 					onChange={onFromChange}
 					where={"from"}
+					currencies={currencies}
 				/>
 
 				{/* Swap Button - Place between selectors */}
@@ -98,6 +108,7 @@ export const CurrencyRow: React.FC<CurrencyRowProps> = React.memo(
 					value={toCurrency}
 					onChange={onToChange}
 					where={"to"}
+					currencies={currencies}
 				/>
 
 				<div role="status" aria-live="polite" className={styles.visuallyHidden}>

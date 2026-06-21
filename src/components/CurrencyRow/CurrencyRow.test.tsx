@@ -3,14 +3,16 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { CurrencyRow } from "./CurrencyRow";
+import type { CurrencyMetadata } from "../../types";
 
-describe("CurrencyRow accessibility", () => {
+describe("CurrencyRow", () => {
 	const defaultProps = {
 		fromCurrency: "USD",
 		toCurrency: "EUR",
 		onFromChange: () => {},
 		onToChange: () => {},
 		onSwap: () => {},
+		currencies: undefined as Record<string, CurrencyMetadata> | undefined,
 	};
 
 	it('has aria-label="Swap currencies" on swap button', () => {

@@ -9,6 +9,7 @@ import {
 import { ArrowClockwiseRegular } from "@fluentui/react-icons";
 import React from "react";
 
+import type { CurrencyMetadata } from "../../types";
 import { RateSourceIndicator } from "../RateSourceIndicator/RateSourceIndicator";
 
 // Define rate source type
@@ -21,6 +22,7 @@ interface ResultSectionProps {
 	fromCurrency: string;
 	toCurrency: string;
 	onRefreshRates: () => void;
+	currencies: Record<string, CurrencyMetadata> | undefined;
 }
 
 // Define styles
@@ -58,19 +60,25 @@ const useStyles = makeStyles({
 	},
 });
 
-const formatNumber = (
+/**
+ * Formats a number using decimal_digits from currency metadata or a fallback.
+ * Falls back to 2 decimal places when metadata is unavailable.
+ */
+const formatCurrencyAmount = (
 	num: number,
-	minDecimals = 2,
-	maxDecimals = 3,
+	currencyCode: string,
+	currencies?: Record<string, CurrencyMetadata>,
 ): string => {
-	// Return "--" for 0 or NaN
 	if (num === 0 || isNaN(num)) {
 		return "--";
 	}
 
+	const meta = currencies?.[currencyCode];
+	const digits = meta?.decimal_digits ?? 2;
+
 	return num.toLocaleString(undefined, {
-		minimumFractionDigits: minDecimals,
-		maximumFractionDigits: maxDecimals,
+		minimumFractionDigits: digits,
+		maximumFractionDigits: digits,
 	});
 };
 
@@ -82,6 +90,7 @@ export const ResultSection = React.memo(
 		fromCurrency,
 		toCurrency,
 		onRefreshRates,
+		currencies,
 	}: ResultSectionProps): React.JSX.Element => {
 		const styles = useStyles();
 
@@ -91,8 +100,8 @@ export const ResultSection = React.memo(
 			if (rate === 0 || amount === 0) {
 				return "--";
 			}
-			// Calculate and format
-			return formatNumber(amount * rate);
+			// Calculate and format using toCurrency's decimal digits
+			return formatCurrencyAmount(amount * rate, toCurrency, currencies);
 		};
 
 		return (
@@ -112,7 +121,8 @@ export const ResultSection = React.memo(
 					<div className={styles.rateValue}>
 						<Text size={200}>Rate: </Text>
 						<Text size={200} weight="medium">
-							1 {fromCurrency} = {formatNumber(rate)} {toCurrency}
+							1 {fromCurrency} ={" "}
+							{formatCurrencyAmount(rate, toCurrency, currencies)} {toCurrency}
 						</Text>
 						<RateSourceIndicator rateSource={rateSource} />
 					</div>
