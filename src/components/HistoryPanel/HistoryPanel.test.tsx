@@ -18,6 +18,7 @@ describe("HistoryPanel", () => {
 		],
 		onRepeatConversion: vi.fn(),
 		clearConversionHistory: vi.fn(),
+		currencies: undefined,
 	};
 
 	it("renders Conversion History heading", () => {

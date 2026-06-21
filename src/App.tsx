@@ -167,6 +167,7 @@ function App(): React.JSX.Element {
 								history={history.conversionHistory}
 								onRepeatConversion={conversion.repeatConversion}
 								clearConversionHistory={history.clearConversionHistory}
+								currencies={currenciesManager.currencies}
 							/>
 						</Suspense>
 					</ErrorBoundary>

@@ -15,7 +15,7 @@ import {
 } from "@fluentui/react-components";
 import { HistoryDismissRegular, WarningRegular } from "@fluentui/react-icons";
 import React, { useState } from "react";
-import type { ConversionHistoryEntry } from "../../types";
+import type { ConversionHistoryEntry, CurrencyMetadata } from "../../types";
 import { EmptyState } from "../EmptyState/EmptyState";
 import { ConversionHistory } from "../History/ConversionHistory";
 
@@ -83,12 +83,14 @@ interface HistoryPanelProps {
 	history: ConversionHistoryEntry[];
 	onRepeatConversion: (entry: ConversionHistoryEntry) => void;
 	clearConversionHistory: () => void;
+	currencies: Record<string, CurrencyMetadata> | undefined;
 }
 
 export const HistoryPanel: React.FC<HistoryPanelProps> = ({
 	history,
 	onRepeatConversion,
 	clearConversionHistory,
+	currencies,
 }) => {
 	const styles = useStyles();
 	const [isHistoryClearDialogOpen, setIsHistoryClearDialogOpen] =
@@ -179,7 +181,11 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
 				{history.length === 0 ? (
 					<EmptyState message="No conversion history yet." />
 				) : (
-					<ConversionHistory history={history} onRepeat={onRepeatConversion} />
+					<ConversionHistory
+						history={history}
+						onRepeat={onRepeatConversion}
+						currencies={currencies}
+					/>
 				)}
 			</div>
 		</aside>
