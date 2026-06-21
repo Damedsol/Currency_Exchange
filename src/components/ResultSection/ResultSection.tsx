@@ -64,7 +64,7 @@ const useStyles = makeStyles({
  * Formats a number using decimal_digits from currency metadata or a fallback.
  * Falls back to 2 decimal places when metadata is unavailable.
  */
-const formatCurrencyAmount = (
+export const formatCurrencyAmount = (
 	num: number,
 	currencyCode: string,
 	currencies?: Record<string, CurrencyMetadata>,
