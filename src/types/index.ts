@@ -2,6 +2,16 @@ import type { MessageBarIntent } from "@fluentui/react-components";
 
 export type RateSource = "idle" | "cache" | "api" | "error" | "loading";
 
+export interface CurrencyMetadata {
+	symbol: string;
+	name: string;
+	code: string;
+	symbol_native: string;
+	decimal_digits: number;
+	name_plural: string;
+	rounding: number;
+}
+
 export type ApiKeySaveStatus =
 	| "idle"
 	| "validating"
