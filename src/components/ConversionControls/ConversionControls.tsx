@@ -5,11 +5,15 @@ import {
 	Input,
 	makeStyles,
 	shorthands,
+	Text,
 	tokens,
 } from "@fluentui/react-components";
-import { MoneyCalculatorFilled } from "@fluentui/react-icons";
+import {
+	ArrowClockwiseRegular,
+	MoneyCalculatorFilled,
+} from "@fluentui/react-icons";
 import React from "react";
-import type { ConversionHistoryEntry } from "../../types";
+import type { ConversionHistoryEntry, CurrencyMetadata } from "../../types";
 import { ActionButtons } from "../ActionButtons/ActionButtons";
 import { CurrencyRow } from "../CurrencyRow/CurrencyRow";
 import { ResultSection } from "../ResultSection/ResultSection";
@@ -22,7 +26,8 @@ const useStyles = makeStyles({
 	leftColumn: {
 		display: "flex",
 		flexDirection: "column",
-		flexBasis: "30%", // Adjust based on desired layout
+		flexBasis: "30%",
+		flexShrink: 0,
 		...shorthands.gap(tokens.spacingVerticalL),
 	},
 	controlsSection: {
@@ -84,6 +89,24 @@ const useStyles = makeStyles({
 		borderBottomColor: tokens.colorNeutralStroke2,
 		borderBottomWidth: tokens.strokeWidthThin,
 	},
+	currencyUpdateRow: {
+		display: "flex",
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "space-between",
+		...shorthands.gap(tokens.spacingHorizontalS),
+		marginTop: tokens.spacingVerticalXS,
+		paddingTop: tokens.spacingVerticalXS,
+	},
+	updateButton: {
+		minWidth: "unset",
+		minHeight: "unset",
+		fontSize: tokens.fontSizeBase200,
+	},
+	errorText: {
+		color: tokens.colorPaletteRedForeground1,
+		fontSize: tokens.fontSizeBase200,
+	},
 });
 
 interface ConversionControlsProps {
@@ -96,6 +119,11 @@ interface ConversionControlsProps {
 	isApiKeyValid: boolean;
 	apiKeyInput: string;
 	conversionHistory: ConversionHistoryEntry[]; // Needed for ActionButtons isHistoryEmpty prop
+	currencies: Record<string, CurrencyMetadata> | undefined;
+	isCurrenciesLoaded: boolean;
+	isUpdatingCurrencies: boolean;
+	currenciesUpdateError: string | null;
+	onUpdateCurrencies: () => void;
 	handleFromCurrency: (value: string) => void;
 	handleToCurrency: (value: string) => void;
 	swapCurrencies: () => void;
@@ -116,6 +144,11 @@ export const ConversionControls: React.FC<ConversionControlsProps> = ({
 	isApiKeyValid,
 	apiKeyInput,
 	conversionHistory,
+	currencies,
+	isCurrenciesLoaded,
+	isUpdatingCurrencies,
+	currenciesUpdateError,
+	onUpdateCurrencies,
 	handleFromCurrency,
 	handleToCurrency,
 	swapCurrencies,
@@ -144,7 +177,37 @@ export const ConversionControls: React.FC<ConversionControlsProps> = ({
 					onFromChange={handleFromCurrency}
 					onToChange={handleToCurrency}
 					onSwap={swapCurrencies}
+					currencies={currencies}
 				/>
+
+				{/* Currency Data Status Row — visible only when API key is present */}
+				{storedApiKey && (
+					<div className={styles.currencyUpdateRow}>
+						{isUpdatingCurrencies ? (
+							<Text size={200}>Updating currencies...</Text>
+						) : currenciesUpdateError ? (
+							<Text size={200} className={styles.errorText}>
+								{currenciesUpdateError}
+							</Text>
+						) : isCurrenciesLoaded ? (
+							<Text size={200}>Currency data loaded</Text>
+						) : (
+							<Text size={200}>Load currencies to select them</Text>
+						)}
+						<Button
+							appearance="subtle"
+							size="small"
+							icon={<ArrowClockwiseRegular />}
+							className={styles.updateButton}
+							onClick={onUpdateCurrencies}
+							disabled={isUpdatingCurrencies}
+							aria-label="Update currencies from API"
+						>
+							Update
+						</Button>
+					</div>
+				)}
+
 				<Field label="Amount" size="large" className={styles.amountField}>
 					<Input
 						type="number"
@@ -164,6 +227,7 @@ export const ConversionControls: React.FC<ConversionControlsProps> = ({
 					fromCurrency={fromCurrency}
 					toCurrency={toCurrency}
 					onRefreshRates={handleClearCacheAndFetch}
+					currencies={currencies}
 				/>
 			</div>
 

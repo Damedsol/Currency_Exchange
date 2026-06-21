@@ -20,6 +20,7 @@ const HistoryPanel = lazy(() =>
 import { useApiKey } from "./hooks/useApiKey";
 import { useAppMessage } from "./hooks/useAppMessage";
 import { useConversion } from "./hooks/useConversion";
+import { useCurrencies } from "./hooks/useCurrencies";
 import {
 	loadInitialHistory,
 	useConversionHistory,
@@ -75,6 +76,7 @@ function App(): React.JSX.Element {
 	const { isDarkMode, toggleTheme } = useTheme();
 	const { appMessage, showAppMessage, dismissMessage } = useAppMessage();
 	const apiKey = useApiKey();
+	const currenciesManager = useCurrencies(apiKey.storedApiKey);
 	const initHistory = useMemo(() => loadInitialHistory(), []);
 	const history = useConversionHistory(initHistory);
 
@@ -141,6 +143,11 @@ function App(): React.JSX.Element {
 						isApiKeyValid={apiKey.isApiKeyValid}
 						apiKeyInput={apiKey.apiKeyInput}
 						conversionHistory={history.conversionHistory}
+						currencies={currenciesManager.currencies}
+						isCurrenciesLoaded={currenciesManager.isLoaded}
+						isUpdatingCurrencies={currenciesManager.isUpdating}
+						currenciesUpdateError={currenciesManager.updateError}
+						onUpdateCurrencies={currenciesManager.updateCurrencies}
 						handleFromCurrency={conversion.handleFromCurrency}
 						handleToCurrency={conversion.handleToCurrency}
 						swapCurrencies={conversion.swapCurrencies}

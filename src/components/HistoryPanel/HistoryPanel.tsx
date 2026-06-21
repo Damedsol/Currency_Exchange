@@ -24,7 +24,7 @@ const useStyles = makeStyles({
 	rightColumn: {
 		display: "flex",
 		flexDirection: "column",
-		flexBasis: "70%", // Adjust based on desired layout
+		flex: "1 1 70%",
 		...shorthands.gap(tokens.spacingVerticalL),
 	},
 	historySection: {},
