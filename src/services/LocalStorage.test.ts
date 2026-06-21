@@ -1,13 +1,16 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
 	apiKeyRegex,
+	clearCurrenciesCache,
 	clearLocalStorage,
 	clearRatesCache,
 	loadConversionHistoryService,
+	loadCurrenciesFromCache,
 	loadRatesFromCache,
 	localStorageFetchService,
 	localStorageStoreService,
 	saveConversionHistoryService,
+	saveCurrenciesToCache,
 	saveRatesToCache,
 } from "./LocalStorage";
 
@@ -131,6 +134,94 @@ describe("rates cache", () => {
 			JSON.stringify({ invalid: "structure" }),
 		);
 		expect(loadRatesFromCache()).toBeNull();
+	});
+});
+
+describe("currencies cache", () => {
+	const mockCurrencies = {
+		USD: {
+			symbol: "$",
+			name: "US Dollar",
+			code: "USD",
+			symbol_native: "$",
+			decimal_digits: 2,
+			name_plural: "US dollars",
+			rounding: 0,
+		},
+		JPY: {
+			symbol: "¥",
+			name: "Japanese Yen",
+			code: "JPY",
+			symbol_native: "¥",
+			decimal_digits: 0,
+			name_plural: "Japanese yen",
+			rounding: 0,
+		},
+	};
+
+	it("saves and loads currencies", () => {
+		saveCurrenciesToCache(mockCurrencies);
+		const loaded = loadCurrenciesFromCache();
+		expect(loaded).toEqual(mockCurrencies);
+	});
+
+	it("returns null when cache is empty", () => {
+		expect(loadCurrenciesFromCache()).toBeNull();
+	});
+
+	it("clears currencies cache", () => {
+		saveCurrenciesToCache(mockCurrencies);
+		clearCurrenciesCache();
+		expect(loadCurrenciesFromCache()).toBeNull();
+	});
+
+	it("saves currencies with a timestamp", () => {
+		saveCurrenciesToCache(mockCurrencies);
+		const stored = localStorage.getItem("currencyMetadataCache");
+		expect(stored).not.toBeNull();
+		const parsed = JSON.parse(stored as string);
+		expect(parsed).toHaveProperty("timestamp");
+		expect(typeof parsed.timestamp).toBe("number");
+		expect(parsed).toHaveProperty("currencies");
+		expect(parsed.currencies).toEqual(mockCurrencies);
+	});
+
+	it("returns null for expired cache (over 7 days)", () => {
+		const expired = {
+			timestamp: Date.now() - 8 * 24 * 60 * 60 * 1000,
+			currencies: mockCurrencies,
+		};
+		localStorage.setItem("currencyMetadataCache", JSON.stringify(expired));
+		expect(loadCurrenciesFromCache()).toBeNull();
+	});
+
+	it("returns null for corrupted cache JSON", () => {
+		localStorage.setItem("currencyMetadataCache", "not-valid-json");
+		expect(loadCurrenciesFromCache()).toBeNull();
+	});
+
+	it("returns null for invalid cache structure", () => {
+		localStorage.setItem(
+			"currencyMetadataCache",
+			JSON.stringify({ invalid: "structure" }),
+		);
+		expect(loadCurrenciesFromCache()).toBeNull();
+	});
+
+	it("saveCurrenciesToCache handles storage errors gracefully", () => {
+		const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+		vi.stubGlobal(
+			"localStorage",
+			Object.assign({}, localStorage, {
+				setItem: vi.fn(() => {
+					throw new Error("Quota exceeded");
+				}),
+			}),
+		);
+		saveCurrenciesToCache(mockCurrencies);
+		expect(consoleSpy).toHaveBeenCalled();
+		consoleSpy.mockRestore();
+		vi.unstubAllGlobals();
 	});
 });
 

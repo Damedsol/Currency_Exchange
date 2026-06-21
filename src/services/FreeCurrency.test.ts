@@ -1,10 +1,35 @@
 // @vitest-environment jsdom
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { getCurrencyRate } from "./FreeCurrency";
+import {
+	fetchCurrencies,
+	fetchLatestRates,
+	getCurrencyRate,
+} from "./FreeCurrency";
 
 const validApiKey = "fca_live_test1234567890123456789012345678901234";
 const mockRates = { EUR: 0.85, GBP: 0.73, JPY: 110.0 };
+
+const mockCurrencies = {
+	USD: {
+		symbol: "$",
+		name: "US Dollar",
+		code: "USD",
+		symbol_native: "$",
+		decimal_digits: 2,
+		name_plural: "US dollars",
+		rounding: 0,
+	},
+	JPY: {
+		symbol: "¥",
+		name: "Japanese Yen",
+		code: "JPY",
+		symbol_native: "￥",
+		decimal_digits: 0,
+		name_plural: "Japanese yen",
+		rounding: 0,
+	},
+};
 
 function mockFetchOnce(data: Record<string, number>, ok = true): void {
 	vi.stubGlobal(
@@ -271,5 +296,225 @@ describe("FreeCurrency service", () => {
 			"API quota exceeded. Try again later.",
 		);
 		consoleSpy.mockRestore();
+	});
+});
+
+describe("fetchLatestRates", () => {
+	it("returns rates with USD base on successful fetch", async () => {
+		vi.stubGlobal(
+			"fetch",
+			vi.fn().mockResolvedValue({
+				ok: true,
+				json: () => Promise.resolve({ data: { EUR: 0.85, JPY: 110 } }),
+			}),
+		);
+		const rates = await fetchLatestRates(validApiKey);
+		expect(rates).not.toBeNull();
+		expect(rates).toHaveProperty("USD", 1.0);
+		expect(rates).toHaveProperty("EUR", 0.85);
+	});
+
+	it("returns null on HTTP error", async () => {
+		vi.stubGlobal(
+			"fetch",
+			vi.fn().mockResolvedValue({
+				ok: false,
+				status: 401,
+				json: () => Promise.resolve({ message: "Unauthorized" }),
+			}),
+		);
+		const rates = await fetchLatestRates(validApiKey);
+		expect(rates).toBeNull();
+	});
+
+	it("returns null on invalid data structure", async () => {
+		vi.stubGlobal(
+			"fetch",
+			vi.fn().mockResolvedValue({
+				ok: true,
+				json: () => Promise.resolve({ notData: "invalid" }),
+			}),
+		);
+		const rates = await fetchLatestRates(validApiKey);
+		expect(rates).toBeNull();
+	});
+
+	it("returns null on network failure", async () => {
+		vi.stubGlobal(
+			"fetch",
+			vi.fn().mockRejectedValue(new Error("Network failure")),
+		);
+		const rates = await fetchLatestRates(validApiKey);
+		expect(rates).toBeNull();
+	});
+
+	it("saves rates to localStorage cache", async () => {
+		vi.stubGlobal(
+			"fetch",
+			vi.fn().mockResolvedValue({
+				ok: true,
+				json: () => Promise.resolve({ data: { EUR: 0.85 } }),
+			}),
+		);
+		await fetchLatestRates(validApiKey);
+		const cached = localStorage.getItem("currencyRatesCache");
+		expect(cached).not.toBeNull();
+		const parsed = JSON.parse(cached!);
+		expect(parsed.rates).toHaveProperty("USD", 1.0);
+	});
+
+	it("sends API key as HTTP header", async () => {
+		const capture: { headers: Record<string, string> } = {
+			headers: {} as Record<string, string>,
+		};
+		vi.stubGlobal(
+			"fetch",
+			vi.fn((_url: string, opts?: RequestInit) => {
+				capture.headers = (opts?.headers as Record<string, string>) || {};
+				return Promise.resolve({
+					ok: true,
+					json: () => Promise.resolve({ data: { EUR: 0.85 } }),
+				});
+			}),
+		);
+		await fetchLatestRates(validApiKey);
+		expect(capture.headers.apikey).toBe(validApiKey);
+	});
+
+	it("triggers abort timeout after 10 seconds", {
+		timeout: 20000,
+	}, async () => {
+		vi.useFakeTimers();
+		let abortSignal: AbortSignal | null = null;
+		vi.stubGlobal(
+			"fetch",
+			vi.fn((_url: string, opts?: RequestInit) => {
+				abortSignal = opts?.signal ?? null;
+				return new Promise((_resolve, reject) => {
+					if (abortSignal) {
+						abortSignal.addEventListener("abort", () => {
+							reject(new DOMException("Aborted", "AbortError"));
+						});
+					}
+				});
+			}),
+		);
+		const promise = fetchLatestRates(validApiKey);
+		await vi.advanceTimersByTimeAsync(10001);
+		const rates = await promise;
+		expect(rates).toBeNull();
+		vi.useRealTimers();
+	});
+});
+
+describe("fetchCurrencies", () => {
+	it("returns currency metadata on successful fetch", async () => {
+		vi.stubGlobal(
+			"fetch",
+			vi.fn().mockResolvedValue({
+				ok: true,
+				json: () => Promise.resolve({ data: mockCurrencies }),
+			}),
+		);
+		const currencies = await fetchCurrencies(validApiKey);
+		expect(currencies).not.toBeNull();
+		expect(currencies).toHaveProperty("USD");
+		expect(currencies!["USD"]!.code).toBe("USD");
+		expect(currencies!["USD"]!.decimal_digits).toBe(2);
+		expect(currencies!["JPY"]!.decimal_digits).toBe(0);
+	});
+
+	it("returns null on network failure", async () => {
+		vi.stubGlobal(
+			"fetch",
+			vi.fn().mockRejectedValue(new Error("Network failure")),
+		);
+		const currencies = await fetchCurrencies(validApiKey);
+		expect(currencies).toBeNull();
+	});
+
+	it("sends API key as HTTP header", async () => {
+		const capture: { headers: Record<string, string> } = {
+			headers: {} as Record<string, string>,
+		};
+		vi.stubGlobal(
+			"fetch",
+			vi.fn((_url: string, opts?: RequestInit) => {
+				capture.headers = (opts?.headers as Record<string, string>) || {};
+				return Promise.resolve({
+					ok: true,
+					json: () => Promise.resolve({ data: mockCurrencies }),
+				});
+			}),
+		);
+		await fetchCurrencies(validApiKey);
+		expect(capture.headers.apikey).toBe(validApiKey);
+	});
+
+	it("returns null on invalid data structure", async () => {
+		vi.stubGlobal(
+			"fetch",
+			vi.fn().mockResolvedValue({
+				ok: true,
+				json: () => Promise.resolve({ notData: "invalid" }),
+			}),
+		);
+		const currencies = await fetchCurrencies(validApiKey);
+		expect(currencies).toBeNull();
+	});
+
+	it("returns null on HTTP error", async () => {
+		vi.stubGlobal(
+			"fetch",
+			vi.fn().mockResolvedValue({
+				ok: false,
+				status: 500,
+				json: () => Promise.resolve({ message: "Server error" }),
+			}),
+		);
+		const currencies = await fetchCurrencies(validApiKey);
+		expect(currencies).toBeNull();
+	});
+
+	it("returns null when required fields are missing", async () => {
+		vi.stubGlobal(
+			"fetch",
+			vi.fn().mockResolvedValue({
+				ok: true,
+				json: () =>
+					Promise.resolve({
+						data: {
+							XXX: { symbol: "X", name: "Test", code: "XXX" },
+						},
+					}),
+			}),
+		);
+		const currencies = await fetchCurrencies(validApiKey);
+		expect(currencies).toBeNull();
+	});
+
+	it("triggers abort timeout after 10 seconds", {
+		timeout: 20000,
+	}, async () => {
+		vi.useFakeTimers();
+		let abortSignal: AbortSignal | null = null;
+		vi.stubGlobal(
+			"fetch",
+			vi.fn((_url: string, opts?: RequestInit) => {
+				abortSignal = opts?.signal ?? null;
+				return new Promise((_resolve, reject) => {
+					if (abortSignal) {
+						abortSignal.addEventListener("abort", () => {
+							reject(new DOMException("Aborted", "AbortError"));
+						});
+					}
+				});
+			}),
+		);
+		const promise = fetchCurrencies(validApiKey);
+		await vi.advanceTimersByTimeAsync(10001);
+		const currencies = await promise;
+		expect(currencies).toBeNull();
+		vi.useRealTimers();
 	});
 });

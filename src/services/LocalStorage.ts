@@ -1,4 +1,4 @@
-import type { ConversionHistoryEntry } from "../types";
+import type { ConversionHistoryEntry, CurrencyMetadata } from "../types";
 
 /**
  * Fetches the API key from localStorage.
@@ -60,6 +60,7 @@ export function clearLocalStorage(): void {
 		// Use removeItem for targeted removal instead of clear()
 		localStorage.removeItem("apiKey");
 		localStorage.removeItem(RATES_CACHE_KEY); // Clear rates cache too
+		localStorage.removeItem(CURRENCIES_CACHE_KEY); // Clear currencies cache too
 	} catch (error) {
 		console.error("Error clearing API key from localStorage:", error);
 		// Re-throw the error.
@@ -146,6 +147,88 @@ export function clearRatesCache(): void {
 	} catch (error) {
 		console.error("Error clearing currency rates cache:", error);
 		// Decide if you want to throw or just log the error
+	}
+}
+
+// --- Currency Metadata Cache Service Functions ---
+
+const CURRENCIES_CACHE_KEY = "currencyMetadataCache";
+// Cache expiration time: 7 days in milliseconds
+const CURRENCIES_CACHE_TTL = 7 * 24 * 60 * 60 * 1000;
+
+// Structure for the cached currency metadata
+interface CurrencyMetadataCache {
+	timestamp: number;
+	currencies: Record<string, CurrencyMetadata>;
+}
+
+/**
+ * Saves the currency metadata to localStorage.
+ * @param currencies The currency metadata object to cache.
+ * @returns {void}
+ */
+export function saveCurrenciesToCache(
+	currencies: Record<string, CurrencyMetadata>,
+): void {
+	try {
+		const cacheData: CurrencyMetadataCache = {
+			timestamp: Date.now(),
+			currencies,
+		};
+		localStorage.setItem(CURRENCIES_CACHE_KEY, JSON.stringify(cacheData));
+	} catch (error) {
+		console.error("Error saving currency metadata to cache:", error);
+	}
+}
+
+/**
+ * Loads the currency metadata from localStorage cache.
+ * @returns The cached currency metadata if found and not expired, otherwise null.
+ */
+export function loadCurrenciesFromCache(): Record<
+	string,
+	CurrencyMetadata
+> | null {
+	try {
+		const storedCache = localStorage.getItem(CURRENCIES_CACHE_KEY);
+		if (storedCache) {
+			const parsedCache: CurrencyMetadataCache = JSON.parse(storedCache);
+
+			if (
+				parsedCache &&
+				typeof parsedCache === "object" &&
+				typeof parsedCache.timestamp === "number" &&
+				typeof parsedCache.currencies === "object" &&
+				parsedCache.currencies !== null
+			) {
+				const now = Date.now();
+				if (now - parsedCache.timestamp < CURRENCIES_CACHE_TTL) {
+					return parsedCache.currencies;
+				}
+				console.log("Currency metadata cache expired.");
+			} else {
+				console.warn(
+					"Invalid currency metadata cache format found in localStorage.",
+				);
+			}
+		}
+		return null;
+	} catch (error) {
+		console.error("Error loading currency metadata from cache:", error);
+		return null;
+	}
+}
+
+/**
+ * Clears the currency metadata cache from localStorage.
+ * @returns {void}
+ */
+export function clearCurrenciesCache(): void {
+	try {
+		localStorage.removeItem(CURRENCIES_CACHE_KEY);
+		console.log("Currency metadata cache cleared.");
+	} catch (error) {
+		console.error("Error clearing currency metadata cache:", error);
 	}
 }
 
