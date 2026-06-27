@@ -1,6 +1,7 @@
 import {
 	Button,
 	makeStyles,
+	Spinner,
 	shorthands,
 	Text,
 	Tooltip,
@@ -38,6 +39,9 @@ const useStyles = makeStyles({
 		flexDirection: "row",
 		alignItems: "center",
 		justifyContent: "space-between",
+		transitionProperty: "opacity",
+		transitionDuration: tokens.durationNormal,
+		transitionTimingFunction: tokens.curveEasyEase,
 	},
 	resultAmount: {
 		fontSize: tokens.fontSizeBase600,
@@ -104,6 +108,8 @@ export const ResultSection = React.memo(
 			return formatCurrencyAmount(amount * rate, toCurrency, currencies);
 		};
 
+		const isLoading = rateSource === "loading";
+
 		return (
 			<div
 				className={styles.container}
@@ -112,9 +118,13 @@ export const ResultSection = React.memo(
 			>
 				<div className={styles.resultRow}>
 					<Text size={200}>Result</Text>
-					<Text size={600} weight="semibold" className={styles.resultAmount}>
-						{calculateResult()}
-					</Text>
+					{isLoading ? (
+						<Spinner size="small" label="Calculating..." />
+					) : (
+						<Text size={600} weight="semibold" className={styles.resultAmount}>
+							{calculateResult()}
+						</Text>
+					)}
 				</div>
 
 				<div className={styles.rateRow}>
@@ -134,7 +144,7 @@ export const ResultSection = React.memo(
 							onClick={onRefreshRates}
 							aria-label="Refresh rates"
 							className={styles.refreshButton}
-							disabled={rateSource === "loading"}
+							disabled={isLoading}
 						/>
 					</Tooltip>
 				</div>
