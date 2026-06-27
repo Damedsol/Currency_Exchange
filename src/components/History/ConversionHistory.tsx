@@ -68,6 +68,9 @@ const useStyles = makeStyles({
 		opacity: 1,
 	},
 	tableRow: {
+		transitionProperty: "background-color",
+		transitionDuration: tokens.durationNormal,
+		transitionTimingFunction: tokens.curveEasyEase,
 		"&:hover": {
 			backgroundColor: tokens.colorNeutralBackground1Hover,
 		},
