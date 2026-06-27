@@ -133,3 +133,8 @@
     - `theme.spec.ts`: 4 new tests — toggle label text, data-theme attribute change, icon SVG rendering, icon path swap on mode toggle.
     - `ui-enhancements.spec.ts` (new): 9 tests — currency update section in header (with API key injection), Update button icon, Calculate button icon, aria-live region, scrollbar CSS, rate indicator, empty history, CSS variables, lazy-loaded HistoryPanel heading.
     - Coverage verified against all new features: sun/moon icons, theme toggle action, currency update relocation, Spinner loaders, custom scrollbars.
+
+- **2026-06-27: Remove HEALTHCHECK from production Dockerfile**
+  - **Details:** Removed `HEALTHCHECK` instruction from production stage (was using `wget http://localhost:80/`). Monitoring is handled externally, so built-in Docker health check is unnecessary.
+  - **Files modified:** `Dockerfile` (-4 lines), `src/config/dockerfile.test.ts` (+1 test asserting no HEALTHCHECK present).
+  - **QA:** 299/299 unit tests (28 files). Full gate: vitest 299/299.

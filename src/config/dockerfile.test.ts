@@ -13,4 +13,8 @@ describe("Dockerfile", () => {
 	it("uses Node.js 24-alpine as base image", () => {
 		expect(dockerfile).toMatch(/NODE_VERSION=24-alpine/);
 	});
+
+	it("does not contain HEALTHCHECK instruction", () => {
+		expect(dockerfile).not.toMatch(/^HEALTHCHECK\b/m);
+	});
 });
