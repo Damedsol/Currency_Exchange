@@ -4,14 +4,11 @@ import {
 	Field,
 	Input,
 	makeStyles,
+	Spinner,
 	shorthands,
-	Text,
 	tokens,
 } from "@fluentui/react-components";
-import {
-	ArrowClockwiseRegular,
-	MoneyCalculatorFilled,
-} from "@fluentui/react-icons";
+import { MoneyCalculatorFilled } from "@fluentui/react-icons";
 import React from "react";
 import type { ConversionHistoryEntry, CurrencyMetadata } from "../../types";
 import { ActionButtons } from "../ActionButtons/ActionButtons";
@@ -89,23 +86,10 @@ const useStyles = makeStyles({
 		borderBottomColor: tokens.colorNeutralStroke2,
 		borderBottomWidth: tokens.strokeWidthThin,
 	},
-	currencyUpdateRow: {
-		display: "flex",
-		flexDirection: "row",
+	spinnerButton: {
+		display: "inline-flex",
 		alignItems: "center",
-		justifyContent: "space-between",
-		...shorthands.gap(tokens.spacingHorizontalS),
-		marginTop: tokens.spacingVerticalXS,
-		paddingTop: tokens.spacingVerticalXS,
-	},
-	updateButton: {
-		minWidth: "unset",
-		minHeight: "unset",
-		fontSize: tokens.fontSizeBase200,
-	},
-	errorText: {
-		color: tokens.colorPaletteRedForeground1,
-		fontSize: tokens.fontSizeBase200,
+		...shorthands.gap(tokens.spacingHorizontalXS),
 	},
 });
 
@@ -120,10 +104,6 @@ interface ConversionControlsProps {
 	apiKeyInput: string;
 	conversionHistory: ConversionHistoryEntry[]; // Needed for ActionButtons isHistoryEmpty prop
 	currencies: Record<string, CurrencyMetadata> | undefined;
-	isCurrenciesLoaded: boolean;
-	isUpdatingCurrencies: boolean;
-	currenciesUpdateError: string | null;
-	onUpdateCurrencies: () => void;
 	handleFromCurrency: (value: string) => void;
 	handleToCurrency: (value: string) => void;
 	swapCurrencies: () => void;
@@ -145,10 +125,6 @@ export const ConversionControls: React.FC<ConversionControlsProps> = ({
 	apiKeyInput,
 	conversionHistory,
 	currencies,
-	isCurrenciesLoaded,
-	isUpdatingCurrencies,
-	currenciesUpdateError,
-	onUpdateCurrencies,
 	handleFromCurrency,
 	handleToCurrency,
 	swapCurrencies,
@@ -159,6 +135,8 @@ export const ConversionControls: React.FC<ConversionControlsProps> = ({
 	clearApiAndCache,
 }) => {
 	const styles = useStyles();
+
+	const isLoading = rateSource === "loading";
 
 	return (
 		<section
@@ -179,34 +157,6 @@ export const ConversionControls: React.FC<ConversionControlsProps> = ({
 					onSwap={swapCurrencies}
 					currencies={currencies}
 				/>
-
-				{/* Currency Data Status Row — visible only when API key is present */}
-				{storedApiKey && (
-					<div className={styles.currencyUpdateRow}>
-						{isUpdatingCurrencies ? (
-							<Text size={200}>Updating currencies...</Text>
-						) : currenciesUpdateError ? (
-							<Text size={200} className={styles.errorText}>
-								{currenciesUpdateError}
-							</Text>
-						) : isCurrenciesLoaded ? (
-							<Text size={200}>Currency data loaded</Text>
-						) : (
-							<Text size={200}>Load currencies to select them</Text>
-						)}
-						<Button
-							appearance="subtle"
-							size="small"
-							icon={<ArrowClockwiseRegular />}
-							className={styles.updateButton}
-							onClick={onUpdateCurrencies}
-							disabled={isUpdatingCurrencies}
-							aria-label="Update currencies from API"
-						>
-							Update
-						</Button>
-					</div>
-				)}
 
 				<Field label="Amount" size="large" className={styles.amountField}>
 					<Input
@@ -233,12 +183,20 @@ export const ConversionControls: React.FC<ConversionControlsProps> = ({
 
 			<Button
 				appearance="primary"
-				icon={<MoneyCalculatorFilled aria-hidden="true" />} // Hide decorative icon
+				icon={
+					isLoading ? (
+						<Spinner size="tiny" />
+					) : (
+						<MoneyCalculatorFilled aria-hidden="true" />
+					)
+				}
 				onClick={fetchRate}
-				disabled={!storedApiKey || amount <= 0 || rateSource === "loading"}
+				disabled={!storedApiKey || amount <= 0 || isLoading}
 				className={styles.primaryActionButton}
 			>
-				{rateSource === "loading" ? "Calculating..." : "Calculate"}
+				<span className={isLoading ? styles.spinnerButton : undefined}>
+					{isLoading ? "Calculating..." : "Calculate"}
+				</span>
 			</Button>
 
 			<Divider
@@ -250,7 +208,7 @@ export const ConversionControls: React.FC<ConversionControlsProps> = ({
 			<div className={styles.controlsSection}>
 				<ActionButtons
 					storedApiKey={storedApiKey}
-					amount={amount} // Pass necessary props
+					amount={amount}
 					rateSource={rateSource}
 					isApiKeyValid={isApiKeyValid}
 					apiKeyInput={apiKeyInput}

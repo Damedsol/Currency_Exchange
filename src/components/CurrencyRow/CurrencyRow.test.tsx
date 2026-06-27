@@ -2,8 +2,8 @@
 
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { CurrencyRow } from "./CurrencyRow";
 import type { CurrencyMetadata } from "../../types";
+import { CurrencyRow } from "./CurrencyRow";
 
 describe("CurrencyRow", () => {
 	const defaultProps = {

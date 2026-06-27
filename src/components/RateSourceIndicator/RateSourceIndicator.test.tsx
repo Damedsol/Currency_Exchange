@@ -10,9 +10,11 @@ describe("RateSourceIndicator", () => {
 		expect(container.textContent).toBe("");
 	});
 
-	it('renders "Loading..." text', () => {
-		render(<RateSourceIndicator rateSource="loading" />);
-		expect(screen.getByText("Loading...")).toBeDefined();
+	it("renders a Spinner for loading state", () => {
+		const { container } = render(<RateSourceIndicator rateSource="loading" />);
+		// Spinner renders with role="progressbar"
+		const spinner = container.querySelector('[role="progressbar"]');
+		expect(spinner).not.toBeNull();
 	});
 
 	it('renders "(cached)" indicator', () => {

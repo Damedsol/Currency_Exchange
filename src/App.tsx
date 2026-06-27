@@ -1,6 +1,7 @@
 import {
 	Card,
 	makeStyles,
+	Spinner,
 	shorthands,
 	tokens,
 } from "@fluentui/react-components";
@@ -20,13 +21,13 @@ const HistoryPanel = lazy(() =>
 import { useApiKey } from "./hooks/useApiKey";
 import { useAppMessage } from "./hooks/useAppMessage";
 import { useConversion } from "./hooks/useConversion";
-import { useCurrencies } from "./hooks/useCurrencies";
 import {
 	loadInitialHistory,
 	useConversionHistory,
 } from "./hooks/useConversionHistory";
-import { clearLocalStorage, clearRatesCache } from "./services/LocalStorage";
+import { useCurrencies } from "./hooks/useCurrencies";
 import { useTheme } from "./hooks/useTheme";
+import { clearLocalStorage, clearRatesCache } from "./services/LocalStorage";
 import { useGlobalStyles } from "./styles/globalStyles";
 
 const breakpoints = {
@@ -66,6 +67,12 @@ const useStyles = makeStyles({
 			flexDirection: "column",
 			...shorthands.gap(tokens.spacingVerticalXL),
 		},
+	},
+	suspenseFallback: {
+		display: "flex",
+		justifyContent: "center",
+		alignItems: "center",
+		padding: tokens.spacingVerticalL,
 	},
 });
 
@@ -125,6 +132,10 @@ function App(): React.JSX.Element {
 					handleApiKeyChange={apiKey.handleApiKeyChange}
 					handleApiKeyInputBlur={apiKey.handleApiKeyInputBlur}
 					toggleApiKeyHeaderInput={apiKey.toggleApiKeyHeaderInput}
+					isCurrenciesLoaded={currenciesManager.isLoaded}
+					isUpdatingCurrencies={currenciesManager.isUpdating}
+					currenciesUpdateError={currenciesManager.updateError}
+					onUpdateCurrencies={currenciesManager.updateCurrencies}
 				/>
 
 				<AppMessageBar
@@ -144,10 +155,6 @@ function App(): React.JSX.Element {
 						apiKeyInput={apiKey.apiKeyInput}
 						conversionHistory={history.conversionHistory}
 						currencies={currenciesManager.currencies}
-						isCurrenciesLoaded={currenciesManager.isLoaded}
-						isUpdatingCurrencies={currenciesManager.isUpdating}
-						currenciesUpdateError={currenciesManager.updateError}
-						onUpdateCurrencies={currenciesManager.updateCurrencies}
 						handleFromCurrency={conversion.handleFromCurrency}
 						handleToCurrency={conversion.handleToCurrency}
 						swapCurrencies={conversion.swapCurrencies}
@@ -160,7 +167,9 @@ function App(): React.JSX.Element {
 					<ErrorBoundary>
 						<Suspense
 							fallback={
-								<div style={{ padding: "16px" }}>Loading history...</div>
+								<div className={styles.suspenseFallback}>
+									<Spinner size="large" label="Loading history..." />
+								</div>
 							}
 						>
 							<HistoryPanel

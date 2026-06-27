@@ -103,4 +103,33 @@
   - **License scan (387 pkgs):** 100% permissive (MIT, Apache-2.0, ISC, BSD) — no copyleft conflicts.
   - **AI skills audit (2/2):** `fluent-ui-react` (score 0) ✅, `modern-linting` (score 18, false positive) ✅.
   - **Report archived at:** `.ia/docs/security_report.md` (257 lines).
-  - **QA:** `pnpm audit --json` confirms 0 advisories. `pnpm ls undici` shows 8.5.0 resolved in all 3 paths (jsdom, vitest, @vitest/coverage-v8). Full gate: oxlint 0 err, ls-lint 0 err, tsc 0 err, build OK.
+   - **QA:** `pnpm audit --json` confirms 0 advisories. `pnpm ls undici` shows 8.5.0 resolved in all 3 paths (jsdom, vitest, @vitest/coverage-v8). Full gate: oxlint 0 err, ls-lint 0 err, tsc 0 err, build OK.
+
+- **2026-06-27: UX Polish — transitions, loaders, icons, scrollbars**
+  - **6 enhancements implemented:**
+    1. **ThemeSwitcher icons:** Added `WeatherSunnyRegular` (light) / `WeatherMoonRegular` (dark) with `transition: color` on label and container. 3 new tests validating icon rendering and mode switching.
+    2. **Currencies update moved to AppHeader:** Currency status text + Update button relocated from `ConversionControls` to `AppHeader` (next to API key button). 6 new AppHeader tests. Props wired through App from `currenciesManager`.
+    3. **Spinner loaders:** Added `<Spinner>` in `ConversionControls` (Calculate button loading), `ResultSection` (result area loading), `RateSourceIndicator` (replaced "Loading..." text), and `Suspense` fallback (replaced "Loading history..." text).
+    4. **Custom neon scrollbars:** WebKit (`::-webkit-scrollbar`) and Firefox (`scrollbar-color`) styles in `main.css` using neon green thumb on dark track, dark green on light mode.
+    5. **Sun/moon icons in ThemeSwitcher:** Conditional `WeatherSunnyRegular` / `WeatherMoonRegular` icon rendered based on `isDarkMode`.
+    6. **ConversionHistory hover transition:** Added `transition: background-color` on table rows for smooth hover effect.
+  - **Files modified (13):**
+    - `src/styles/main.css` (+scrollbar styles)
+    - `src/components/ThemeSwitcher/ThemeSwitcher.tsx` (+icons, +transitions)
+    - `src/components/ThemeSwitcher/ThemeSwitcher.test.tsx` (+3 icon tests)
+    - `src/components/AppHeader/AppHeader.tsx` (+currency update section, +4 optional props)
+    - `src/components/AppHeader/AppHeader.test.tsx` (+6 currency update tests)
+    - `src/components/ConversionControls/ConversionControls.tsx` (-currency update row, +Spinner, -4 props)
+    - `src/components/ConversionControls/ConversionControls.test.tsx` (-5 currency tests, +2 spinner/absence tests)
+    - `src/components/ResultSection/ResultSection.tsx` (+Spinner for loading, +transition)
+    - `src/components/ResultSection/ResultSection.test.tsx` (+1 Spinner test)
+    - `src/components/RateSourceIndicator/RateSourceIndicator.tsx` (loading text → Spinner)
+    - `src/components/RateSourceIndicator/RateSourceIndicator.test.tsx` (+1 Spinner test)
+    - `src/components/History/ConversionHistory.tsx` (+transition on tableRow)
+    - `src/App.tsx` (wired currencies props to AppHeader, Spinner in Suspense, removed 4 props from ConversionControls)
+  - **Bug fix:** `pnpm-workspace.yaml` override `undici: ">=7.28.0"` → `"^7.28.0"` (was resolving to 8.x which breaks jsdom 29's `wrap-handler.js`).
+  - **QA:** 298/298 unit tests (28 files) + 37/37 E2E tests (5 specs, 11.0s). Full gate: oxlint 0 err, ls-lint 0 err, tsc 0 err, vitest 298/298, E2E 37/37, Vite build 258ms.
+  - **E2E coverage additions:**
+    - `theme.spec.ts`: 4 new tests — toggle label text, data-theme attribute change, icon SVG rendering, icon path swap on mode toggle.
+    - `ui-enhancements.spec.ts` (new): 9 tests — currency update section in header (with API key injection), Update button icon, Calculate button icon, aria-live region, scrollbar CSS, rate indicator, empty history, CSS variables, lazy-loaded HistoryPanel heading.
+    - Coverage verified against all new features: sun/moon icons, theme toggle action, currency update relocation, Spinner loaders, custom scrollbars.

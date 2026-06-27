@@ -1,6 +1,7 @@
 import {
 	makeStyles,
 	mergeClasses,
+	Spinner,
 	shorthands,
 	Text,
 	tokens,
@@ -44,18 +45,13 @@ export const RateSourceIndicator: React.FC<RateSourceIndicatorProps> =
 	React.memo(({ rateSource }) => {
 		const styles = useStyles();
 
-		// textProps no longer needs className, as it will be merged below
 		const textProps = {
 			size: 200 as const,
 			as: "span" as const,
 		};
 
 		if (rateSource === "loading") {
-			return (
-				<Text {...textProps} className={styles.text}>
-					Loading...
-				</Text>
-			);
+			return <Spinner size="tiny" label="Loading rate..." />;
 		}
 		if (rateSource === "cache") {
 			return (

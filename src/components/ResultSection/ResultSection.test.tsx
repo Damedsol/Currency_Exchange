@@ -2,8 +2,8 @@
 
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { ResultSection } from "./ResultSection";
 import type { CurrencyMetadata } from "../../types";
+import { ResultSection } from "./ResultSection";
 
 const mockCurrencies: Record<string, CurrencyMetadata> = {
 	USD: {
@@ -66,9 +66,13 @@ describe("ResultSection", () => {
 		expect(screen.getByText("--")).toBeDefined();
 	});
 
-	it("shows loading indicator for loading state", () => {
-		render(<ResultSection {...defaultProps} rateSource="loading" />);
-		expect(screen.getByText("Loading...")).toBeDefined();
+	it("shows Spinner during loading state", () => {
+		const { container } = render(
+			<ResultSection {...defaultProps} rateSource="loading" />,
+		);
+		// Spinner renders with role="progressbar"
+		const spinner = container.querySelector('[role="progressbar"]');
+		expect(spinner).not.toBeNull();
 	});
 
 	it("shows error indicator for error state", () => {
@@ -92,7 +96,6 @@ describe("ResultSection", () => {
 		const { container } = render(
 			<ResultSection {...jpyProps} currencies={mockCurrencies} />,
 		);
-		// 100 * 129.5 = 12950 with decimal_digits=0 → no decimal places
 		const expectedResult = (12950).toLocaleString(undefined, {
 			minimumFractionDigits: 0,
 			maximumFractionDigits: 0,
@@ -115,7 +118,6 @@ describe("ResultSection", () => {
 		const { container } = render(
 			<ResultSection {...bhdProps} currencies={mockCurrencies} />,
 		);
-		// 100 * 0.376 = 37.6 with decimal_digits=3 → "37.600" or locale equivalent
 		const expectedResult = (37.6).toLocaleString(undefined, {
 			minimumFractionDigits: 3,
 			maximumFractionDigits: 3,
@@ -152,7 +154,6 @@ describe("ResultSection", () => {
 			amount: 100,
 		};
 		render(<ResultSection {...jpyProps} currencies={mockCurrencies} />);
-		// Rate text: "1 EUR = {rate} JPY"
 		const expectedRate = (129.5).toLocaleString(undefined, {
 			minimumFractionDigits: 0,
 			maximumFractionDigits: 0,

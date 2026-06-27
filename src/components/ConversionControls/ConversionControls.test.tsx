@@ -16,10 +16,6 @@ describe("ConversionControls", () => {
 		apiKeyInput: "",
 		conversionHistory: [],
 		currencies: undefined,
-		isCurrenciesLoaded: false,
-		isUpdatingCurrencies: false,
-		currenciesUpdateError: null,
-		onUpdateCurrencies: () => {},
 		handleFromCurrency: () => {},
 		handleToCurrency: () => {},
 		swapCurrencies: () => {},
@@ -60,9 +56,13 @@ describe("ConversionControls", () => {
 		expect(screen.getByText("Calculate")).toBeDefined();
 	});
 
-	it("shows Calculating... text when loading", () => {
-		render(<ConversionControls {...defaultProps} rateSource="loading" />);
-		expect(screen.getByText("Calculating...")).toBeDefined();
+	it("shows Spinner when loading", () => {
+		const { container } = render(
+			<ConversionControls {...defaultProps} rateSource="loading" />,
+		);
+		// Spinner renders with role="progressbar" or data-spinner attribute
+		const spinner = container.querySelector('[role="progressbar"]');
+		expect(spinner).not.toBeNull();
 	});
 
 	it("renders ResultSection with zero rate when rate is not a number", () => {
@@ -76,38 +76,12 @@ describe("ConversionControls", () => {
 		expect(fieldText).toBeDefined();
 	});
 
-	it("shows update button and status text when API key present and not loaded", () => {
+	it("does not show currency update section when API key present", () => {
 		render(<ConversionControls {...defaultProps} />);
-		expect(screen.getByText("Load currencies to select them")).toBeDefined();
-		expect(screen.getByRole("button", { name: /Update/ })).toBeDefined();
-	});
-
-	it("shows loaded text when currencies are loaded", () => {
-		render(<ConversionControls {...defaultProps} isCurrenciesLoaded={true} />);
-		expect(screen.getByText("Currency data loaded")).toBeDefined();
-	});
-
-	it("shows updating text when currencies are updating", () => {
-		render(
-			<ConversionControls {...defaultProps} isUpdatingCurrencies={true} />,
-		);
-		expect(screen.getByText("Updating currencies...")).toBeDefined();
-		expect(screen.getByRole("button", { name: /Update/ })).toBeDefined();
-	});
-
-	it("shows error text when update fails", () => {
-		render(
-			<ConversionControls
-				{...defaultProps}
-				currenciesUpdateError="Update failed"
-			/>,
-		);
-		expect(screen.getByText("Update failed")).toBeDefined();
-	});
-
-	it("does not show update UI when no API key", () => {
-		render(<ConversionControls {...defaultProps} storedApiKey={null} />);
+		// Currency update was moved to AppHeader — assert it's NOT here
 		expect(screen.queryByRole("button", { name: /Update/ })).toBeNull();
 		expect(screen.queryByText("Load currencies to select them")).toBeNull();
+		expect(screen.queryByText("Currency data loaded")).toBeNull();
+		expect(screen.queryByText("Updating currencies...")).toBeNull();
 	});
 });

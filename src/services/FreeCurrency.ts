@@ -1,5 +1,5 @@
-import { loadRatesFromCache, saveRatesToCache } from "./LocalStorage";
 import type { CurrencyMetadata } from "../types";
+import { loadRatesFromCache, saveRatesToCache } from "./LocalStorage";
 
 // Define the structure for the return value, including the source
 export interface CurrencyRateResult {

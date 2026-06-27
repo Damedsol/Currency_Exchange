@@ -1,7 +1,7 @@
 import { FluentProvider, type Theme } from "@fluentui/react-components";
 import {
-	type ReactNode,
 	createContext,
+	type ReactNode,
 	useCallback,
 	useContext,
 	useLayoutEffect,

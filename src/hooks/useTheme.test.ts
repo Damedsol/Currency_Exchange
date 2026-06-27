@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 
-import { type ReactNode, createElement } from "react";
 import { act, renderHook } from "@testing-library/react";
+import { createElement, type ReactNode } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { ThemeProvider, useTheme } from "./useTheme";
 

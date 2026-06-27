@@ -2,8 +2,8 @@
 
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { CurrencySelector } from "./CurrencySelector";
 import type { CurrencyMetadata } from "../../types";
+import { CurrencySelector } from "./CurrencySelector";
 
 describe("CurrencySelector", () => {
 	const defaultProps = {

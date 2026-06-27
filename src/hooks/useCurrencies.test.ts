@@ -2,8 +2,8 @@
 
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { useCurrencies } from "./useCurrencies";
 import type { CurrencyMetadata } from "../types";
+import { useCurrencies } from "./useCurrencies";
 
 type MockCurrencyRecord = Record<string, CurrencyMetadata>;
 
