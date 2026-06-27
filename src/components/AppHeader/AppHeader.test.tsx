@@ -1,7 +1,8 @@
 // @vitest-environment jsdom
 
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
 import { AppHeader } from "./AppHeader";
 
 describe("AppHeader component", () => {
@@ -15,7 +16,10 @@ describe("AppHeader component", () => {
 		handleApiKeyChange: () => {},
 		handleApiKeyInputBlur: () => {},
 		toggleApiKeyHeaderInput: () => {},
+		// Currency update props (optional, not required)
 	};
+
+	// --- Existing API key tests ---
 
 	it("renders API key input with type password", () => {
 		render(<AppHeader {...defaultProps} />);
@@ -101,8 +105,99 @@ describe("AppHeader component", () => {
 		const { container } = render(
 			<AppHeader {...defaultProps} apiKeySaveStatus="validating" />,
 		);
-		// validating/idle returns null, so no extra SVG beyond the theme toggle
 		const svgs = container.querySelectorAll("svg");
 		expect(svgs.length).toBeGreaterThanOrEqual(1);
+	});
+
+	// --- New: Currency update tests ---
+
+	it("does not render currency update section when storedApiKey is null", () => {
+		render(
+			<AppHeader
+				{...defaultProps}
+				storedApiKey={null}
+				isCurrenciesLoaded={false}
+				isUpdatingCurrencies={false}
+				currenciesUpdateError={null}
+				onUpdateCurrencies={vi.fn()}
+			/>,
+		);
+		expect(screen.queryByText("Currency data loaded")).toBeNull();
+		expect(screen.queryByText("Load currencies")).toBeNull();
+		expect(screen.queryByText("Update")).toBeNull();
+	});
+
+	it("shows 'Currency data loaded' when currencies are loaded and API key present", () => {
+		render(
+			<AppHeader
+				{...defaultProps}
+				storedApiKey="fca_live_testkey"
+				isCurrenciesLoaded={true}
+				isUpdatingCurrencies={false}
+				currenciesUpdateError={null}
+				onUpdateCurrencies={vi.fn()}
+			/>,
+		);
+		expect(screen.getByText("Currency data loaded")).toBeDefined();
+	});
+
+	it("shows 'Updating currencies...' while updating", () => {
+		render(
+			<AppHeader
+				{...defaultProps}
+				storedApiKey="fca_live_testkey"
+				isCurrenciesLoaded={false}
+				isUpdatingCurrencies={true}
+				currenciesUpdateError={null}
+				onUpdateCurrencies={vi.fn()}
+			/>,
+		);
+		expect(screen.getByText("Updating currencies...")).toBeDefined();
+	});
+
+	it("shows error message when currenciesUpdateError is set", () => {
+		render(
+			<AppHeader
+				{...defaultProps}
+				storedApiKey="fca_live_testkey"
+				isCurrenciesLoaded={false}
+				isUpdatingCurrencies={false}
+				currenciesUpdateError="Failed to fetch"
+				onUpdateCurrencies={vi.fn()}
+			/>,
+		);
+		expect(screen.getByText("Failed to fetch")).toBeDefined();
+	});
+
+	it("calls onUpdateCurrencies when Update button is clicked", async () => {
+		const onUpdateCurrencies = vi.fn();
+		render(
+			<AppHeader
+				{...defaultProps}
+				storedApiKey="fca_live_testkey"
+				isCurrenciesLoaded={false}
+				isUpdatingCurrencies={false}
+				currenciesUpdateError={null}
+				onUpdateCurrencies={onUpdateCurrencies}
+			/>,
+		);
+		const updateBtn = screen.getByText("Update");
+		await userEvent.click(updateBtn);
+		expect(onUpdateCurrencies).toHaveBeenCalledOnce();
+	});
+
+	it("disables Update button while updating", () => {
+		render(
+			<AppHeader
+				{...defaultProps}
+				storedApiKey="fca_live_testkey"
+				isCurrenciesLoaded={false}
+				isUpdatingCurrencies={true}
+				currenciesUpdateError={null}
+				onUpdateCurrencies={vi.fn()}
+			/>,
+		);
+		const updateBtn = screen.getByText("Update");
+		expect(updateBtn.closest("button")).toBeDisabled();
 	});
 });
