@@ -97,3 +97,10 @@
       - Fallback to 2 decimals when metadata unavailable
     - **Files modified:** `ResultSection.tsx` (+1), `ConversionHistory.tsx` (+99, -36), `ConversionHistory.test.tsx` (+156, -1), `HistoryPanel.tsx` (+6, -1), `HistoryPanel.test.tsx` (+1), `App.tsx` (+1), `context.md` (+memory update).
     - **QA:** 293/293 unit tests (28 files). Full gate: oxlint 0 err, ls-lint 0 err, tsc 0 err, vitest 293/293, Vite build successful.
+
+- **2026-06-27: Security audit — undici 7.27.2 → 8.5.0, 7 CVEs fixed**
+  - **Details:** Full SCA scan via `audit` subagent detected 7 CVEs in `undici@7.27.2` (transitive via `jsdom@29.1.1`, dev only). Added `"undici": ">=7.28.0"` override in `pnpm-workspace.yaml`. Resolution resolved to `undici@8.5.0` (latest compatible). All 7 vulnerabilities eliminated: 3 HIGH (SOCKS5 proxy routing, WebSocket DoS, TLS bypass), 2 MEDIUM (header injection, cache info disclosure), 2 LOW (SameSite downgrade, queue poisoning).
+  - **License scan (387 pkgs):** 100% permissive (MIT, Apache-2.0, ISC, BSD) — no copyleft conflicts.
+  - **AI skills audit (2/2):** `fluent-ui-react` (score 0) ✅, `modern-linting` (score 18, false positive) ✅.
+  - **Report archived at:** `.ia/docs/security_report.md` (257 lines).
+  - **QA:** `pnpm audit --json` confirms 0 advisories. `pnpm ls undici` shows 8.5.0 resolved in all 3 paths (jsdom, vitest, @vitest/coverage-v8). Full gate: oxlint 0 err, ls-lint 0 err, tsc 0 err, build OK.
