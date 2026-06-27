@@ -1,18 +1,19 @@
 import {
-	makeStyles,
-	shorthands,
-	tokens,
 	Button,
 	Input,
+	makeStyles,
 	mergeClasses,
+	shorthands,
+	Text,
 	Tooltip,
+	tokens,
 } from "@fluentui/react-components";
 import {
-	KeyRegular,
 	ArrowClockwiseRegular,
 	CheckmarkCircleRegular,
-	WarningRegular,
 	ErrorCircleRegular,
+	KeyRegular,
+	WarningRegular,
 } from "@fluentui/react-icons";
 import React from "react";
 
@@ -42,12 +43,12 @@ const useStyles = makeStyles({
 		overflow: "hidden",
 		maxWidth: 0,
 		opacity: 0,
-		display: "flex", // Added to align input and icon
-		alignItems: "center", // Added to align input and icon
-		...shorthands.gap(tokens.spacingHorizontalXS), // Gap between input and icon
+		display: "flex",
+		alignItems: "center",
+		...shorthands.gap(tokens.spacingHorizontalXS),
 	},
 	headerInputWrapperVisible: {
-		maxWidth: "250px", // Adjust as needed
+		maxWidth: "250px",
 		opacity: 1,
 	},
 	headerActionButton: {
@@ -78,6 +79,25 @@ const useStyles = makeStyles({
 	apiKeySavingIcon: {
 		// Style if needed
 	},
+	currencyUpdateRow: {
+		display: "flex",
+		flexDirection: "row",
+		alignItems: "center",
+		...shorthands.gap(tokens.spacingHorizontalXS),
+		fontSize: tokens.fontSizeBase200,
+	},
+	updateButton: {
+		minWidth: "unset",
+		minHeight: "unset",
+		fontSize: tokens.fontSizeBase200,
+	},
+	errorText: {
+		color: tokens.colorPaletteRedForeground1,
+		fontSize: tokens.fontSizeBase200,
+	},
+	statusText: {
+		fontSize: tokens.fontSizeBase200,
+	},
 });
 
 interface AppHeaderProps {
@@ -90,6 +110,10 @@ interface AppHeaderProps {
 	handleApiKeyChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 	handleApiKeyInputBlur: () => void;
 	toggleApiKeyHeaderInput: () => void;
+	isCurrenciesLoaded?: boolean;
+	isUpdatingCurrencies?: boolean;
+	currenciesUpdateError?: string | null;
+	onUpdateCurrencies?: () => void;
 }
 
 export const AppHeader: React.FC<AppHeaderProps> = ({
@@ -102,6 +126,10 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
 	handleApiKeyChange,
 	handleApiKeyInputBlur,
 	toggleApiKeyHeaderInput,
+	isCurrenciesLoaded = false,
+	isUpdatingCurrencies = false,
+	currenciesUpdateError = null,
+	onUpdateCurrencies = () => {},
 }) => {
 	const styles = useStyles();
 
@@ -113,6 +141,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
 				return (
 					<Tooltip content="Saving API Key..." relationship="label">
 						<ArrowClockwiseRegular
+							aria-hidden={true}
 							className={styles.apiKeySavingIcon}
 							style={iconStyle}
 						/>
@@ -122,6 +151,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
 				return (
 					<Tooltip content="API Key Saved" relationship="label">
 						<CheckmarkCircleRegular
+							aria-hidden={true}
 							className={styles.apiKeySavedIcon}
 							style={iconStyle}
 						/>
@@ -131,6 +161,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
 				return (
 					<Tooltip content="Invalid API Key Format" relationship="label">
 						<WarningRegular
+							aria-hidden={true}
 							className={styles.apiKeyInvalidIcon}
 							style={iconStyle}
 						/>
@@ -140,6 +171,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
 				return (
 					<Tooltip content="Error Saving API Key" relationship="label">
 						<ErrorCircleRegular
+							aria-hidden={true}
 							className={styles.apiKeyErrorIcon}
 							style={iconStyle}
 						/>
@@ -150,6 +182,44 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
 			default:
 				return null;
 		}
+	};
+
+	// Render currency update status row (only when API key is present)
+	const renderCurrencyUpdate = (): React.ReactNode | null => {
+		if (!storedApiKey) return null;
+
+		return (
+			<div className={styles.currencyUpdateRow}>
+				{isUpdatingCurrencies ? (
+					<Text size={200} className={styles.statusText}>
+						Updating currencies...
+					</Text>
+				) : currenciesUpdateError ? (
+					<Text size={200} className={styles.errorText}>
+						{currenciesUpdateError}
+					</Text>
+				) : isCurrenciesLoaded ? (
+					<Text size={200} className={styles.statusText}>
+						Currency data loaded
+					</Text>
+				) : (
+					<Text size={200} className={styles.statusText}>
+						Load currencies to select them
+					</Text>
+				)}
+				<Button
+					appearance="subtle"
+					size="small"
+					icon={<ArrowClockwiseRegular />}
+					className={styles.updateButton}
+					onClick={onUpdateCurrencies}
+					disabled={isUpdatingCurrencies}
+					aria-label="Update currencies from API"
+				>
+					Update
+				</Button>
+			</div>
+		);
 	};
 
 	return (
@@ -168,13 +238,14 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
 							placeholder="Enter API Key..."
 							size="small"
 							appearance="outline"
+							autoComplete="new-password"
 							style={{
-								width: "200px", // Fixed width for the input itself
+								width: "200px",
 							}}
 							value={apiKeyInput}
 							onChange={handleApiKeyChange}
 							onBlur={handleApiKeyInputBlur}
-							autoFocus // Focus when revealed
+							autoFocus
 						/>
 						{renderApiKeyStatusIcon()}
 					</>
@@ -199,8 +270,10 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
 							? "Hide API Key Input"
 							: "Show API Key Input"
 					}
+					aria-expanded={isApiKeyHeaderInputVisible}
 				/>
 			</Tooltip>
+			{renderCurrencyUpdate()}
 			<ThemeSwitcher isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
 		</header>
 	);

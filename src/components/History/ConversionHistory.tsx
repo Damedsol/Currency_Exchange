@@ -2,24 +2,25 @@ import {
 	Button,
 	makeStyles,
 	shorthands,
-	tokens,
+	Table,
 	TableBody,
 	TableCell,
-	TableRow,
+	TableCellLayout,
 	TableHeader,
 	TableHeaderCell,
-	Table,
-	TableCellLayout,
+	TableRow,
 	Tooltip,
+	tokens,
 } from "@fluentui/react-components";
 import { ArrowRepeatAllRegular } from "@fluentui/react-icons";
-import { useState, useEffect } from "react";
+import { useDeferredValue, useEffect, useState } from "react";
 
-import type { ConversionHistoryEntry } from "../../services/LocalStorage";
+import type { ConversionHistoryEntry, CurrencyMetadata } from "../../types";
 
 interface ConversionHistoryProps {
 	history: ConversionHistoryEntry[];
 	onRepeat: (entry: ConversionHistoryEntry) => void;
+	currencies?: Record<string, CurrencyMetadata> | undefined;
 }
 
 // Define styles using makeStyles
@@ -53,9 +54,11 @@ const useStyles = makeStyles({
 	},
 	numericCell: {
 		textAlign: "right",
+		fontFamily: tokens.fontFamilyMonospace,
 	},
 	rateCell: {
 		textAlign: "right",
+		fontFamily: tokens.fontFamilyMonospace,
 	},
 	tableWrapper: {
 		opacity: 0,
@@ -65,11 +68,14 @@ const useStyles = makeStyles({
 		opacity: 1,
 	},
 	tableRow: {
+		transitionProperty: "background-color",
+		transitionDuration: tokens.durationNormal,
+		transitionTimingFunction: tokens.curveEasyEase,
 		"&:hover": {
 			backgroundColor: tokens.colorNeutralBackground1Hover,
 		},
 		"&:nth-child(odd)": {
-			backgroundColor: tokens.colorNeutralBackground1Selected,
+			backgroundColor: tokens.colorNeutralBackground4,
 		},
 	},
 	timestampCell: {
@@ -84,22 +90,36 @@ const useStyles = makeStyles({
 	headerCell: {
 		textAlign: "center",
 		fontWeight: "600",
+		backgroundColor: tokens.colorBrandBackground,
+		color: tokens.colorNeutralForegroundOnBrand,
 	},
 	amountCell: {
 		textAlign: "right",
+		fontFamily: tokens.fontFamilyMonospace,
 	},
 });
 
-// Helper to format numbers clearly
-const formatNumber = (
+/**
+ * Formats a number using decimal_digits from currency metadata.
+ * Falls back to 2 decimal places when metadata is unavailable.
+ * Uses useGrouping: false for compact table display.
+ */
+const formatHistoryValue = (
 	num: number,
-	minDecimals: number,
-	maxDecimals: number,
+	currencyCode: string,
+	currencies?: Record<string, CurrencyMetadata>,
 ): string => {
+	if (num === 0 || isNaN(num)) {
+		return "--";
+	}
+
+	const meta = currencies?.[currencyCode];
+	const digits = meta?.decimal_digits ?? 2;
+
 	return num.toLocaleString(undefined, {
-		minimumFractionDigits: minDecimals,
-		maximumFractionDigits: maxDecimals,
-		useGrouping: false, // Disable thousands separators
+		minimumFractionDigits: digits,
+		maximumFractionDigits: digits,
+		useGrouping: false,
 	});
 };
 
@@ -149,8 +169,11 @@ const formatShortDate = (
 export const ConversionHistory = ({
 	history,
 	onRepeat,
+	currencies,
 }: ConversionHistoryProps): React.JSX.Element => {
 	const styles = useStyles();
+	const deferredHistory = useDeferredValue(history);
+	const isStale = history !== deferredHistory;
 	// State for visibility transition
 	const [isVisible, setIsVisible] = useState(false);
 
@@ -164,45 +187,47 @@ export const ConversionHistory = ({
 	}, []);
 
 	return (
-		<div>
+		<div role="region" aria-label="Conversion History" tabIndex={0}>
 			<div
 				className={`${styles.tableWrapper} ${isVisible ? styles.tableWrapperVisible : ""}`}
 			>
 				<Table
 					className={styles.tableLayoutFixed}
-					aria-label="Conversion History Table"
+					aria-label="Conversion history table"
 					size="medium"
+					style={{ opacity: isStale ? 0.6 : 1 }}
 				>
 					<TableHeader>
 						<TableRow>
-							<TableHeaderCell className={styles.headerCell}>
+							<TableHeaderCell className={styles.headerCell} scope="col">
 								Amount
 							</TableHeaderCell>
-							<TableHeaderCell className={styles.headerCell}>
-								From
-							</TableHeaderCell>
-							<TableHeaderCell className={styles.headerCell}>
-								To
-							</TableHeaderCell>
-							<TableHeaderCell className={styles.headerCell}>
+							<TableHeaderCell className={styles.headerCell} scope="col">
 								Result
 							</TableHeaderCell>
-							<TableHeaderCell className={styles.headerCell}>
+							<TableHeaderCell className={styles.headerCell} scope="col">
+								From
+							</TableHeaderCell>
+							<TableHeaderCell className={styles.headerCell} scope="col">
+								To
+							</TableHeaderCell>
+							<TableHeaderCell className={styles.headerCell} scope="col">
 								Rate
 							</TableHeaderCell>
-							<TableHeaderCell className={styles.headerCell}>
+							<TableHeaderCell className={styles.headerCell} scope="col">
 								Timestamp
 							</TableHeaderCell>
 							<TableHeaderCell
 								className={styles.headerCell}
 								style={{ width: "60px" }}
+								scope="col"
 							>
 								Action
 							</TableHeaderCell>
 						</TableRow>
 					</TableHeader>
 					<TableBody>
-						{history.length === 0 ? (
+						{deferredHistory.length === 0 ? (
 							<TableRow>
 								<TableCell colSpan={7}>
 									<TableCellLayout
@@ -216,56 +241,86 @@ export const ConversionHistory = ({
 								</TableCell>
 							</TableRow>
 						) : (
-							history.map((entry) => (
+							deferredHistory.map((entry) => (
 								<TableRow key={entry.timestamp} className={styles.tableRow}>
 									<TableCell className={styles.amountCell}>
 										<Tooltip
-											content={formatNumber(entry.amount, 3, 3)}
-											relationship="label"
+											content={formatHistoryValue(
+												entry.amount,
+												entry.fromCurrency,
+												currencies,
+											)}
+											relationship="description"
 										>
 											<TableCellLayout truncate>
-												{formatNumber(entry.amount, 3, 3)}
+												{formatHistoryValue(
+													entry.amount,
+													entry.fromCurrency,
+													currencies,
+												)}
+											</TableCellLayout>
+										</Tooltip>
+									</TableCell>
+									<TableCell className={styles.numericCell}>
+										<Tooltip
+											content={formatHistoryValue(
+												entry.result,
+												entry.toCurrency,
+												currencies,
+											)}
+											relationship="description"
+										>
+											<TableCellLayout truncate>
+												{formatHistoryValue(
+													entry.result,
+													entry.toCurrency,
+													currencies,
+												)}
 											</TableCellLayout>
 										</Tooltip>
 									</TableCell>
 									<TableCell className={styles.currencyCell}>
-										<Tooltip content={entry.fromCurrency} relationship="label">
+										<Tooltip
+											content={entry.fromCurrency}
+											relationship="description"
+										>
 											<TableCellLayout truncate>
 												{entry.fromCurrency}
 											</TableCellLayout>
 										</Tooltip>
 									</TableCell>
 									<TableCell className={styles.currencyCell}>
-										<Tooltip content={entry.toCurrency} relationship="label">
+										<Tooltip
+											content={entry.toCurrency}
+											relationship="description"
+										>
 											<TableCellLayout truncate>
 												{entry.toCurrency}
 											</TableCellLayout>
 										</Tooltip>
 									</TableCell>
-									<TableCell className={styles.numericCell}>
-										<Tooltip
-											content={formatNumber(entry.result, 3, 3)}
-											relationship="label"
-										>
-											<TableCellLayout truncate>
-												{formatNumber(entry.result, 3, 3)}
-											</TableCellLayout>
-										</Tooltip>
-									</TableCell>
 									<TableCell className={styles.rateCell}>
 										<Tooltip
-											content={formatNumber(entry.rate, 3, 3)}
-											relationship="label"
+											content={formatHistoryValue(
+												entry.rate,
+												entry.toCurrency,
+												currencies,
+											)}
+											relationship="description"
 										>
 											<TableCellLayout truncate>
-												{formatNumber(entry.rate, 3, 3)}
+												{formatHistoryValue(
+													entry.rate,
+													entry.toCurrency,
+													currencies,
+												)}
 											</TableCellLayout>
 										</Tooltip>
 									</TableCell>
 									<TableCell className={styles.timestampCell}>
 										<Tooltip
 											content={formatTimestamp(entry.timestamp)}
-											relationship="label"
+											relationship="description"
 										>
 											<TableCellLayout truncate>
 												{formatShortDate(entry.timestamp)}
@@ -275,7 +330,7 @@ export const ConversionHistory = ({
 									<TableCell className={styles.actionCell}>
 										<Tooltip
 											content="Repeat this conversion"
-											relationship="label"
+											relationship="description"
 										>
 											<Button
 												appearance="subtle"

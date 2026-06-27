@@ -1,31 +1,30 @@
 import {
-	makeStyles,
-	shorthands,
-	tokens,
-	Divider,
-	Text,
 	Button,
 	Dialog,
-	DialogTrigger,
-	DialogSurface,
-	DialogBody,
-	DialogTitle,
-	DialogContent,
 	DialogActions,
+	DialogBody,
+	DialogContent,
+	DialogSurface,
+	DialogTitle,
+	DialogTrigger,
+	Divider,
+	makeStyles,
+	shorthands,
+	Text,
+	tokens,
 } from "@fluentui/react-components";
 import { HistoryDismissRegular, WarningRegular } from "@fluentui/react-icons";
 import React, { useState } from "react";
-
+import type { ConversionHistoryEntry, CurrencyMetadata } from "../../types";
+import { EmptyState } from "../EmptyState/EmptyState";
 import { ConversionHistory } from "../History/ConversionHistory";
-
-import type { ConversionHistoryEntry } from "../../services/LocalStorage";
 
 // Styles specific to the history panel, adapted from App.tsx
 const useStyles = makeStyles({
 	rightColumn: {
 		display: "flex",
 		flexDirection: "column",
-		flexBasis: "70%", // Adjust based on desired layout
+		flex: "1 1 70%",
 		...shorthands.gap(tokens.spacingVerticalL),
 	},
 	historySection: {},
@@ -46,6 +45,9 @@ const useStyles = makeStyles({
 		alignItems: "center",
 		justifyContent: "center",
 		...shorthands.gap(tokens.spacingHorizontalXS),
+		fontWeight: tokens.fontWeightMedium,
+		textTransform: "uppercase",
+		minHeight: "44px",
 	},
 	dismissButton: {
 		// Copied from AppMessageBar for consistency if needed, or rely on default
@@ -53,12 +55,27 @@ const useStyles = makeStyles({
 	destructiveActionButton: {
 		backgroundColor: tokens.colorPaletteRedBackground1,
 		color: tokens.colorNeutralForegroundOnBrand,
+		textTransform: "uppercase",
+		fontWeight: tokens.fontWeightMedium,
+		minHeight: "44px",
 		":hover": {
-			backgroundColor: tokens.colorPaletteRedBackground2,
+			backgroundColor: tokens.colorNeutralBackground1,
+			color: tokens.colorPaletteRedForeground1,
+			...shorthands.borderColor(tokens.colorPaletteRedBorder1),
 		},
 		":active": {
 			backgroundColor: tokens.colorPaletteRedBackground2,
+			transform: "scale(0.98)",
 		},
+	},
+	dialogSurface: {
+		...shorthands.border("2px", "solid", tokens.colorBrandStroke1),
+	},
+	divider: {
+		marginTop: "1.5rem",
+		marginBottom: "1.5rem",
+		borderBottomColor: tokens.colorNeutralStroke2,
+		borderBottomWidth: tokens.strokeWidthThin,
 	},
 });
 
@@ -66,12 +83,14 @@ interface HistoryPanelProps {
 	history: ConversionHistoryEntry[];
 	onRepeatConversion: (entry: ConversionHistoryEntry) => void;
 	clearConversionHistory: () => void;
+	currencies: Record<string, CurrencyMetadata> | undefined;
 }
 
 export const HistoryPanel: React.FC<HistoryPanelProps> = ({
 	history,
 	onRepeatConversion,
 	clearConversionHistory,
+	currencies,
 }) => {
 	const styles = useStyles();
 	const [isHistoryClearDialogOpen, setIsHistoryClearDialogOpen] =
@@ -113,11 +132,14 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
 								Clear History
 							</Button>
 						</DialogTrigger>
-						<DialogSurface>
+						<DialogSurface
+							className={styles.dialogSurface}
+							aria-describedby="history-clear-description"
+						>
 							<DialogBody>
 								<DialogTitle>
 									<WarningRegular
-										aria-hidden="true" // Hide decorative icon
+										aria-hidden="true"
 										style={{
 											color: tokens.colorPaletteYellowForeground1,
 											fontSize: tokens.fontSizeBase500,
@@ -126,7 +148,7 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
 									/>
 									Confirmar eliminación del historial
 								</DialogTitle>
-								<DialogContent>
+								<DialogContent id="history-clear-description">
 									¿Estás seguro de que deseas eliminar todo el historial de
 									conversiones? Esta acción no se puede deshacer.
 								</DialogContent>
@@ -134,6 +156,7 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
 									<Button
 										appearance="subtle"
 										onClick={() => setIsHistoryClearDialogOpen(false)}
+										autoFocus
 										className={styles.dismissButton}
 									>
 										Cancelar
@@ -150,8 +173,20 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
 						</DialogSurface>
 					</Dialog>
 				</div>
-				<Divider />
-				<ConversionHistory history={history} onRepeat={onRepeatConversion} />
+				<Divider
+					className={styles.divider}
+					role="separator"
+					aria-orientation="horizontal"
+				/>
+				{history.length === 0 ? (
+					<EmptyState message="No conversion history yet." />
+				) : (
+					<ConversionHistory
+						history={history}
+						onRepeat={onRepeatConversion}
+						currencies={currencies}
+					/>
+				)}
 			</div>
 		</aside>
 	);

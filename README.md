@@ -4,8 +4,9 @@
 [![Version](https://img.shields.io/badge/version-1.11.0-blue.svg)](https://github.com/Damedsol/Currency_Exchange)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9.3-blue?logo=typescript)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-19.2.0-blue?logo=react)](https://reactjs.org/)
-[![Vite](https://img.shields.io/badge/Vite-7.1.11-646CFF?logo=vite)](https://vitejs.dev/)
-[![FluentUI](https://img.shields.io/badge/FluentUI-9.72.3-blue?logo=microsoft)](https://developer.microsoft.com/en-us/fluentui)
+[![Vite](https://img.shields.io/badge/Vite-8.0.16-646CFF?logo=vite)](https://vitejs.dev/)
+[![FluentUI](https://img.shields.io/badge/FluentUI-9.74.1-blue?logo=microsoft)](https://developer.microsoft.com/en-us/fluentui)
+[![Coverage](https://img.shields.io/badge/coverage-98%25-brightgreen)](https://img.shields.io/badge/coverage-98%25-brightgreen)
 [![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED?logo=docker)](https://www.docker.com/)
 [![PNPM](https://img.shields.io/badge/PNPM-11.2.2-orange?logo=pnpm)](https://pnpm.io/)
 [![Node.js](https://img.shields.io/badge/Node.js-LTS-green?logo=node.js)](https://nodejs.org/)
@@ -41,8 +42,8 @@ A modern, responsive web application for real-time currency conversion built wit
 | :--- | :--- | :--- |
 | **React** | v19.2.0 | Frontend core library (concurrent features) |
 | **TypeScript** | v5.9.3 | Static typing and modern JS support |
-| **Vite** | v7.1.11 | Fast build tool and development server |
-| **Fluent UI React** | v9.72.3 | Microsoft's modern component-based design system |
+| **Vite** | v8.0.16 | Fast build tool and development server |
+| **Fluent UI React** | v9.74.1 | Microsoft's modern component-based design system |
 | **PNPM** | v11.2.2 | Fast, disk space efficient package manager |
 | **Oxlint** | LATEST | Blazing-fast static linter (Rust-powered) |
 | **Biome** | LATEST | Blazing-fast formatting and import organization (Rust-powered) |
@@ -141,6 +142,9 @@ currencyExchange/
 │   └── main.tsx                   # App Entry point
 ├── docs/                          # Project documentation
 │   └── docker-usage.md            # Detailed Docker usage guide (English)
+├── .ia/                           # Agentic AI configuration & memory
+│   ├── AGENTS.md                  # Local agent behavior profile
+│   └── memory/context.md          # Persistent session memory
 ├── public/                        # Static assets & favicons
 ├── Dockerfile                     # Multi-stage Docker build (dev, builder, production)
 ├── docker-compose.yml             # Dynamic multi-environment orchestration file
@@ -160,6 +164,11 @@ currencyExchange/
 pnpm dev                    # Start Vite dev server with HMR
 pnpm build                  # Build static files for production to /dist
 pnpm preview                # Preview production build locally
+
+# Testing (Vitest)
+pnpm test                   # Run unit & integration tests (244 tests)
+pnpm test:coverage          # Run tests with coverage report (98%+)
+pnpm test:e2e               # Run Playwright E2E tests (24 tests)
 
 # Code Quality & Format
 pnpm format                 # Formats files and organizes imports with Biome
@@ -184,6 +193,8 @@ Our production [nginx.conf](nginx.conf) unifies performance and security policie
 
 ## 📚 Documentation
 - **[Docker Usage Guide](docs/docker-usage.md)**: Deep dive into the containerized environment setup.
+- **[AGENTS.md](AGENTS.md)**: Coding standards and agent behavior profile.
+- **[.ia/memory/context.md](.ia/memory/context.md)**: Technical decisions and session history.
 - **[LICENSE.md](LICENSE.md)**: Details about Creative Commons CC BY 4.0 policies.
 
 ---

@@ -4,6 +4,12 @@ dist
 .husky
 .git
 .gitignore
+.env
+.env.*
+!.env.example
 Dockerfile
 docker-compose.yml
-*.log 
+*.log
+coverage
+e2e/test-results
+playwright-report

@@ -1,20 +1,19 @@
 import {
-	makeStyles,
-	shorthands,
-	tokens,
+	Button,
 	Divider,
 	Field,
 	Input,
-	Button,
+	makeStyles,
+	Spinner,
+	shorthands,
+	tokens,
 } from "@fluentui/react-components";
 import { MoneyCalculatorFilled } from "@fluentui/react-icons";
 import React from "react";
-
+import type { ConversionHistoryEntry, CurrencyMetadata } from "../../types";
 import { ActionButtons } from "../ActionButtons/ActionButtons";
 import { CurrencyRow } from "../CurrencyRow/CurrencyRow";
 import { ResultSection } from "../ResultSection/ResultSection";
-
-import type { ConversionHistoryEntry } from "../../services/LocalStorage";
 
 // Define RateSource type
 type RateSource = "idle" | "cache" | "api" | "error" | "loading";
@@ -24,7 +23,8 @@ const useStyles = makeStyles({
 	leftColumn: {
 		display: "flex",
 		flexDirection: "column",
-		flexBasis: "30%", // Adjust based on desired layout
+		flexBasis: "30%",
+		flexShrink: 0,
 		...shorthands.gap(tokens.spacingVerticalL),
 	},
 	controlsSection: {
@@ -38,6 +38,7 @@ const useStyles = makeStyles({
 			transitionDuration: tokens.durationNormal,
 			transitionTimingFunction: tokens.curveEasyEase,
 			outlineStyle: "none",
+			minHeight: "44px",
 		},
 		":focus-within": {
 			"& input": {
@@ -52,16 +53,22 @@ const useStyles = makeStyles({
 		backgroundColor: tokens.colorBrandBackground,
 		color: tokens.colorNeutralForegroundOnBrand,
 		...shorthands.padding(tokens.spacingVerticalS, tokens.spacingHorizontalL),
-		fontWeight: tokens.fontWeightSemibold,
+		fontWeight: tokens.fontWeightMedium,
+		textTransform: "uppercase",
+		minHeight: "44px",
 		":hover": {
-			backgroundColor: tokens.colorBrandBackgroundHover,
+			backgroundColor: tokens.colorNeutralBackground1,
+			color: tokens.colorCompoundBrandStroke,
+			...shorthands.borderColor(tokens.colorCompoundBrandStroke),
 		},
 		":active": {
 			backgroundColor: tokens.colorBrandBackgroundPressed,
+			transform: "scale(0.98)",
 		},
 		":disabled": {
 			backgroundColor: tokens.colorNeutralBackgroundDisabled,
 			color: tokens.colorNeutralForegroundDisabled,
+			opacity: 0.4,
 		},
 	},
 	visuallyHidden: {
@@ -72,6 +79,17 @@ const useStyles = makeStyles({
 		position: "absolute",
 		whiteSpace: "nowrap",
 		width: "1px",
+	},
+	divider: {
+		marginTop: "1.5rem",
+		marginBottom: "1.5rem",
+		borderBottomColor: tokens.colorNeutralStroke2,
+		borderBottomWidth: tokens.strokeWidthThin,
+	},
+	spinnerButton: {
+		display: "inline-flex",
+		alignItems: "center",
+		...shorthands.gap(tokens.spacingHorizontalXS),
 	},
 });
 
@@ -85,6 +103,7 @@ interface ConversionControlsProps {
 	isApiKeyValid: boolean;
 	apiKeyInput: string;
 	conversionHistory: ConversionHistoryEntry[]; // Needed for ActionButtons isHistoryEmpty prop
+	currencies: Record<string, CurrencyMetadata> | undefined;
 	handleFromCurrency: (value: string) => void;
 	handleToCurrency: (value: string) => void;
 	swapCurrencies: () => void;
@@ -105,6 +124,7 @@ export const ConversionControls: React.FC<ConversionControlsProps> = ({
 	isApiKeyValid,
 	apiKeyInput,
 	conversionHistory,
+	currencies,
 	handleFromCurrency,
 	handleToCurrency,
 	swapCurrencies,
@@ -115,6 +135,8 @@ export const ConversionControls: React.FC<ConversionControlsProps> = ({
 	clearApiAndCache,
 }) => {
 	const styles = useStyles();
+
+	const isLoading = rateSource === "loading";
 
 	return (
 		<section
@@ -133,7 +155,9 @@ export const ConversionControls: React.FC<ConversionControlsProps> = ({
 					onFromChange={handleFromCurrency}
 					onToChange={handleToCurrency}
 					onSwap={swapCurrencies}
+					currencies={currencies}
 				/>
+
 				<Field label="Amount" size="large" className={styles.amountField}>
 					<Input
 						type="number"
@@ -141,6 +165,9 @@ export const ConversionControls: React.FC<ConversionControlsProps> = ({
 						onChange={handleAmountChange}
 						appearance="outline"
 						size="large"
+						aria-valuemin={0}
+						aria-valuenow={amount}
+						aria-label="Amount in source currency"
 					/>
 				</Field>
 				<ResultSection
@@ -150,25 +177,38 @@ export const ConversionControls: React.FC<ConversionControlsProps> = ({
 					fromCurrency={fromCurrency}
 					toCurrency={toCurrency}
 					onRefreshRates={handleClearCacheAndFetch}
+					currencies={currencies}
 				/>
 			</div>
 
 			<Button
 				appearance="primary"
-				icon={<MoneyCalculatorFilled aria-hidden="true" />} // Hide decorative icon
+				icon={
+					isLoading ? (
+						<Spinner size="tiny" />
+					) : (
+						<MoneyCalculatorFilled aria-hidden="true" />
+					)
+				}
 				onClick={fetchRate}
-				disabled={!storedApiKey || amount <= 0 || rateSource === "loading"}
+				disabled={!storedApiKey || amount <= 0 || isLoading}
 				className={styles.primaryActionButton}
 			>
-				{rateSource === "loading" ? "Calculating..." : "Calculate"}
+				<span className={isLoading ? styles.spinnerButton : undefined}>
+					{isLoading ? "Calculating..." : "Calculate"}
+				</span>
 			</Button>
 
-			<Divider />
+			<Divider
+				className={styles.divider}
+				role="separator"
+				aria-orientation="horizontal"
+			/>
 
 			<div className={styles.controlsSection}>
 				<ActionButtons
 					storedApiKey={storedApiKey}
-					amount={amount} // Pass necessary props
+					amount={amount}
 					rateSource={rateSource}
 					isApiKeyValid={isApiKeyValid}
 					apiKeyInput={apiKeyInput}

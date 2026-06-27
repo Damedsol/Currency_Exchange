@@ -1,16 +1,16 @@
 import {
-	makeStyles,
-	tokens,
+	Button,
 	MessageBar,
 	MessageBarBody,
-	Button,
 	type MessageBarIntent,
+	makeStyles,
 	mergeClasses,
+	tokens,
 } from "@fluentui/react-components";
 import { DismissRegular } from "@fluentui/react-icons";
 import React from "react";
+import type { AppMessage } from "../../types";
 
-// Styles specific to the message bar, adapted from App.tsx
 const useStyles = makeStyles({
 	messageBarContainer: {
 		transitionProperty: "max-height, opacity",
@@ -19,9 +19,10 @@ const useStyles = makeStyles({
 		overflow: "hidden",
 		maxHeight: 0,
 		opacity: 0,
+		boxShadow: "none",
 	},
 	messageBarContainerVisible: {
-		maxHeight: "60px", // Adjust as needed
+		maxHeight: "60px",
 		opacity: 1,
 		marginBottom: tokens.spacingVerticalM,
 	},
@@ -32,14 +33,26 @@ const useStyles = makeStyles({
 			backgroundColor: tokens.colorSubtleBackgroundHover,
 		},
 	},
+	successBorder: {
+		borderLeft: `4px solid ${tokens.colorStatusSuccessForeground1}`,
+	},
+	errorBorder: {
+		borderLeft: `4px solid ${tokens.colorStatusDangerForeground1}`,
+	},
+	warningBorder: {
+		borderLeft: `4px solid ${tokens.colorStatusWarningForeground1}`,
+	},
+	infoBorder: {
+		borderLeft: `4px solid ${tokens.colorNeutralStrokeAccessible}`,
+	},
 });
 
-// App Message type (copied from App.tsx)
-interface AppMessage {
-	text: React.ReactNode | null;
-	intent: MessageBarIntent;
-	visible: boolean;
-}
+const prefixByIntent: Record<MessageBarIntent, string> = {
+	success: "[OK] ",
+	error: "[!] ",
+	warning: "[?] ",
+	info: "",
+};
 
 interface AppMessageBarProps {
 	appMessage: AppMessage;
@@ -51,26 +64,39 @@ export const AppMessageBar: React.FC<AppMessageBarProps> = ({
 	dismissMessage,
 }) => {
 	const styles = useStyles();
+	const prefix = prefixByIntent[appMessage.intent];
+
+	const borderClassMap = {
+		success: styles.successBorder,
+		error: styles.errorBorder,
+		warning: styles.warningBorder,
+		info: styles.infoBorder,
+	} as const;
+	const borderClass = appMessage.visible
+		? borderClassMap[appMessage.intent]
+		: undefined;
 
 	return (
 		<div
+			role="alert"
 			className={mergeClasses(
 				styles.messageBarContainer,
 				appMessage.visible && styles.messageBarContainerVisible,
 			)}
-			// Add role="region" and aria-label for better landmark identification if needed
-			// Or role="alert" if it's specifically for alerts, though MessageBar might handle this.
-			// For now, keep it simple.
 		>
 			{appMessage.visible && (
-				<MessageBar intent={appMessage.intent} style={{ width: "100%" }}>
+				<MessageBar
+					intent={appMessage.intent}
+					className={borderClass}
+					style={{ width: "100%" }}
+				>
 					<MessageBarBody>
-						{/* MessageBarTitle could be used if needed */}
+						{prefix}
 						{appMessage.text}
 					</MessageBarBody>
 					<Button
 						appearance="transparent"
-						icon={<DismissRegular aria-hidden="true" />} // Hide icon if label is sufficient
+						icon={<DismissRegular aria-hidden="true" />}
 						onClick={dismissMessage}
 						aria-label="Dismiss message"
 						className={styles.dismissButton}

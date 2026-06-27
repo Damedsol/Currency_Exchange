@@ -1,15 +1,15 @@
 import {
 	Button,
+	Dialog,
+	DialogActions,
+	DialogBody,
+	DialogContent,
+	DialogSurface,
+	DialogTitle,
+	DialogTrigger,
 	makeStyles,
 	shorthands,
 	tokens,
-	Dialog,
-	DialogTrigger,
-	DialogSurface,
-	DialogBody,
-	DialogTitle,
-	DialogContent,
-	DialogActions,
 } from "@fluentui/react-components";
 import { DeleteRegular, WarningRegular } from "@fluentui/react-icons";
 import React, { useState } from "react";
@@ -27,7 +27,9 @@ const useStyles = makeStyles({
 		color: tokens.colorPaletteRedForeground1,
 		...shorthands.padding(tokens.spacingVerticalS, tokens.spacingHorizontalL),
 		...shorthands.borderRadius(tokens.borderRadiusMedium),
-		fontWeight: tokens.fontWeightSemibold,
+		fontWeight: tokens.fontWeightMedium,
+		textTransform: "uppercase",
+		minHeight: "44px",
 		...shorthands.border(
 			tokens.strokeWidthThin,
 			"solid",
@@ -45,6 +47,7 @@ const useStyles = makeStyles({
 		":active": {
 			backgroundColor: tokens.colorNeutralBackground1Pressed,
 			color: tokens.colorPaletteRedForeground1,
+			transform: "scale(0.98)",
 		},
 		":focus-visible": {
 			outlineColor: tokens.colorPaletteRedBorder1,
@@ -62,12 +65,16 @@ const useStyles = makeStyles({
 	confirmButton: {
 		backgroundColor: tokens.colorPaletteRedBackground1,
 		color: tokens.colorNeutralForegroundOnBrand,
+		textTransform: "uppercase",
 		":hover": {
 			backgroundColor: tokens.colorPaletteRedBackground2,
 		},
 		":active": {
 			backgroundColor: tokens.colorPaletteRedBorderActive,
 		},
+	},
+	dialogSurface: {
+		...shorthands.border("2px", "solid", tokens.colorBrandStroke1),
 	},
 });
 
@@ -107,7 +114,10 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({ onClearAll }) => {
 						Clear all data
 					</Button>
 				</DialogTrigger>
-				<DialogSurface>
+				<DialogSurface
+					className={styles.dialogSurface}
+					aria-describedby="clear-all-description"
+				>
 					<DialogBody>
 						<DialogTitle className={styles.dialogTitle}>
 							<WarningRegular
@@ -116,7 +126,7 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({ onClearAll }) => {
 							/>
 							Confirmar eliminación
 						</DialogTitle>
-						<DialogContent>
+						<DialogContent id="clear-all-description">
 							¿Estás seguro de que deseas eliminar todos los datos almacenados?
 							Esta acción eliminará tu clave API y todo el historial de
 							conversiones. Esta acción no se puede deshacer.
@@ -125,6 +135,7 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({ onClearAll }) => {
 							<Button
 								appearance="subtle"
 								onClick={() => setIsDialogOpen(false)}
+								autoFocus
 							>
 								Cancelar
 							</Button>

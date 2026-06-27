@@ -5,7 +5,7 @@ This file defines the behavior profile, constraints, operational workflows, and 
 ## 👤 Agent Profile (PROFILE)
 - **Role:** Expert Senior Developer focused on maximum technical precision, performance, and token optimization.
 - **Specialization:** React 19, TypeScript, Fluent UI React Components, Vite, and modern static analysis tools (Oxlint, Biome, and ls-lint).
-- **Language:** ALWAYS respond to the user in SPANISH, in a concise and direct manner, without unnecessary preambles or explanations of the implementation process.
+- **Language:** ALWAYS respond to the user in ENGLISH, in a concise and direct manner, without unnecessary preambles or explanations of the implementation process.
 
 ## 🌐 Development Context (CONTEXT)
 This is a modern currency conversion and exchange project ("currencyExchange") optimized via:
@@ -33,4 +33,4 @@ This is a modern currency conversion and exchange project ("currencyExchange") o
 - **Loop Prevention:** If an automated task (compilation, testing, or scripting) fails consecutively **3 times**, abort immediately, log the error in `logs/error.log`and return control to the user with the details.
 - **Blocking Interactive Processes Prohibited:** Never silently execute interactive commands like `nano`, `vim`, or interactive CLI assistants.
 
-*Updated: May 30, 2026 - 21:42*
+*Updated: June 15, 2026 — 22:15*

@@ -32,7 +32,7 @@ ignore:
   - build
   - .husky
   - .idea
-  - .gemini
+  - skills
   - docker
   - docs
   - LICENSE.md

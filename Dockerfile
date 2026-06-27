@@ -1,5 +1,5 @@
 # Use the official Node.js LTS Alpine image as a base
-ARG NODE_VERSION=lts-alpine
+ARG NODE_VERSION=24-alpine
 
 # Stage 1: Development Environment
 FROM node:${NODE_VERSION} AS development
@@ -74,11 +74,14 @@ RUN pnpm run build
 # Stage 3: Production Environment
 FROM nginx:alpine AS production
 
+# Health check for container orchestration
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:80/ || exit 1
+
 # Copy custom Nginx configuration for production
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Copy built artifacts from the builder stage
-# Nginx runs as a non-root user by default, permissions should be fine
 COPY --from=builder /app/dist /usr/share/nginx/html
 
 # Expose Nginx port

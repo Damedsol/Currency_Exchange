@@ -1,0 +1,273 @@
+// @vitest-environment jsdom
+
+import { act, renderHook } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
+import { useConversion } from "./useConversion";
+
+const { getCurrencyRate } = vi.hoisted(() => ({
+	getCurrencyRate: vi.fn(),
+}));
+
+vi.mock("../services/FreeCurrency", () => ({ getCurrencyRate }));
+
+describe("useConversion", () => {
+	const defaultParams = {
+		storedApiKey: "fca_live_test1234567890123456789012345678901",
+		onConversionComplete: vi.fn(),
+		showError: vi.fn(),
+	};
+
+	it("initial state is idle with default currencies", () => {
+		const { result } = renderHook(() => useConversion(defaultParams));
+		expect(result.current.amount).toBe(1000);
+		expect(result.current.fromCurrency).toBe("EUR");
+		expect(result.current.toCurrency).toBe("USD");
+		expect(result.current.rate).toBe(0);
+		expect(result.current.rateSource).toBe("idle");
+	});
+
+	it("handleFromCurrency updates base currency and resets rate", () => {
+		const { result } = renderHook(() => useConversion(defaultParams));
+		act(() => result.current.handleFromCurrency("GBP"));
+		expect(result.current.fromCurrency).toBe("GBP");
+		expect(result.current.rate).toBe(0);
+		expect(result.current.rateSource).toBe("idle");
+	});
+
+	it("handleToCurrency updates target currency and resets rate", () => {
+		const { result } = renderHook(() => useConversion(defaultParams));
+		act(() => result.current.handleToCurrency("JPY"));
+		expect(result.current.toCurrency).toBe("JPY");
+		expect(result.current.rate).toBe(0);
+	});
+
+	it("handleAmountChange updates amount from event", () => {
+		const { result } = renderHook(() => useConversion(defaultParams));
+		act(() =>
+			result.current.handleAmountChange({
+				target: { value: "500" },
+			} as React.ChangeEvent<HTMLInputElement>),
+		);
+		expect(result.current.amount).toBe(500);
+	});
+
+	it("swapCurrencies swaps from and to", () => {
+		const { result } = renderHook(() => useConversion(defaultParams));
+		act(() => result.current.swapCurrencies());
+		expect(result.current.fromCurrency).toBe("USD");
+		expect(result.current.toCurrency).toBe("EUR");
+	});
+
+	it("fetchRate with same currency sets rate to 1", async () => {
+		const { result } = renderHook(() => useConversion(defaultParams));
+		act(() => result.current.handleFromCurrency("EUR"));
+		act(() => result.current.handleToCurrency("EUR"));
+		await act(async () => result.current.fetchRate());
+		expect(result.current.rate).toBe(1);
+		expect(result.current.rateSource).toBe("api");
+	});
+
+	it("fetchRate calls getCurrencyRate with correct params", async () => {
+		getCurrencyRate.mockResolvedValueOnce({
+			source: "api",
+			rate: 1.2,
+		});
+		const onComplete = vi.fn();
+		const { result } = renderHook(() =>
+			useConversion({ ...defaultParams, onConversionComplete: onComplete }),
+		);
+		await act(async () => result.current.fetchRate());
+		expect(result.current.rate).toBe(1.2);
+		expect(result.current.rateSource).toBe("api");
+	});
+
+	it("fetchRate error shows error message", async () => {
+		getCurrencyRate.mockRejectedValueOnce(new Error("API error"));
+		const showError = vi.fn();
+		const { result } = renderHook(() =>
+			useConversion({ ...defaultParams, showError }),
+		);
+		await act(async () => result.current.fetchRate());
+		expect(result.current.rate).toBe(0);
+		expect(result.current.rateSource).toBe("error");
+	});
+
+	it("fetchRate error calls showError callback", async () => {
+		getCurrencyRate.mockRejectedValueOnce(new Error("Network failure"));
+		const showError = vi.fn();
+		const { result } = renderHook(() =>
+			useConversion({ ...defaultParams, showError }),
+		);
+		await act(async () => result.current.fetchRate());
+		expect(showError).toHaveBeenCalled();
+	});
+
+	it("onConversionComplete is called with correct entry on success", async () => {
+		getCurrencyRate.mockResolvedValueOnce({
+			source: "api",
+			rate: 1.15,
+		});
+		const onComplete = vi.fn();
+		const { result } = renderHook(() =>
+			useConversion({ ...defaultParams, onConversionComplete: onComplete }),
+		);
+		act(() =>
+			result.current.handleAmountChange({
+				target: { value: "200" },
+			} as React.ChangeEvent<HTMLInputElement>),
+		);
+		await act(async () => result.current.fetchRate());
+		expect(result.current.rate).toBe(1.15);
+		expect(onComplete).toHaveBeenCalledWith(
+			expect.objectContaining({
+				fromCurrency: "EUR",
+				toCurrency: "USD",
+				amount: 200,
+				rate: 1.15,
+				result: expect.closeTo(230, 2),
+				timestamp: expect.any(Number),
+			}),
+		);
+	});
+
+	it("swapCurrencies clears previous error state", () => {
+		const { result } = renderHook(() => useConversion(defaultParams));
+		// Simulate error state
+		act(() => {
+			result.current.handleFromCurrency("GBP");
+		});
+		act(() => result.current.swapCurrencies());
+		expect(result.current.fromCurrency).toBe("USD");
+		expect(result.current.toCurrency).toBe("GBP");
+		expect(result.current.rate).toBe(0);
+		expect(result.current.rateSource).toBe("idle");
+	});
+
+	it("transitions through loading state during fetch", async () => {
+		let resolvePromise!: (value: unknown) => void;
+		const deferredPromise = new Promise((resolve) => {
+			resolvePromise = resolve;
+		});
+		getCurrencyRate.mockReturnValueOnce(deferredPromise);
+		const { result } = renderHook(() => useConversion(defaultParams));
+		let fetchPromise: Promise<void>;
+		act(() => {
+			fetchPromise = result.current.fetchRate();
+		});
+		expect(result.current.rateSource).toBe("loading");
+		await act(async () => {
+			resolvePromise({ source: "api", rate: 1.2 });
+			await fetchPromise!;
+		});
+		expect(result.current.rateSource).toBe("api");
+	});
+
+	it("fetchRate sets rate to 0 and calls showError when API returns error source", async () => {
+		getCurrencyRate.mockResolvedValueOnce({
+			source: "error",
+			rate: undefined,
+		});
+		const showError = vi.fn();
+		const { result } = renderHook(() =>
+			useConversion({ ...defaultParams, showError }),
+		);
+		await act(async () => result.current.fetchRate());
+		expect(result.current.rate).toBe(0);
+		expect(result.current.rateSource).toBe("error");
+		expect(showError).toHaveBeenCalledWith(
+			"Error fetching currency rate. Check your API key or network connection.",
+		);
+	});
+
+	it("repeatConversion sets currencies and amount and triggers fetch when storedApiKey is set", async () => {
+		getCurrencyRate.mockResolvedValueOnce({
+			source: "api",
+			rate: 1.5,
+		});
+		const { result } = renderHook(() => useConversion(defaultParams));
+		act(() => {
+			result.current.repeatConversion({
+				fromCurrency: "GBP",
+				toCurrency: "JPY",
+				amount: 200,
+				rate: 1.5,
+				result: 300,
+				timestamp: Date.now(),
+			});
+		});
+		expect(result.current.fromCurrency).toBe("GBP");
+		expect(result.current.toCurrency).toBe("JPY");
+		expect(result.current.amount).toBe(200);
+		expect(result.current.rateSource).toBe("loading");
+	});
+
+	it("repeatConversion does not fetch when storedApiKey is null", async () => {
+		const { result } = renderHook(() =>
+			useConversion({ ...defaultParams, storedApiKey: null }),
+		);
+		act(() => {
+			result.current.repeatConversion({
+				fromCurrency: "GBP",
+				toCurrency: "JPY",
+				amount: 200,
+				rate: 1.5,
+				result: 300,
+				timestamp: Date.now(),
+			});
+		});
+		expect(result.current.fromCurrency).toBe("GBP");
+		expect(result.current.toCurrency).toBe("JPY");
+		expect(result.current.amount).toBe(200);
+		expect(result.current.rateSource).toBe("idle");
+	});
+
+	it("handleAmountChange ignores negative values", () => {
+		const { result } = renderHook(() => useConversion(defaultParams));
+		act(() =>
+			result.current.handleAmountChange({
+				target: { value: "-50" },
+			} as React.ChangeEvent<HTMLInputElement>),
+		);
+		expect(result.current.amount).toBe(1000);
+	});
+
+	it("fetchRate with storedApiKey null sets idle source", async () => {
+		const { result } = renderHook(() =>
+			useConversion({ ...defaultParams, storedApiKey: null }),
+		);
+		act(() => result.current.handleFromCurrency("EUR"));
+		act(() => result.current.handleToCurrency("USD"));
+		await act(async () => result.current.fetchRate());
+		expect(result.current.rate).toBe(0);
+		expect(result.current.rateSource).toBe("idle");
+	});
+
+	it("fetchRate handles API error source", async () => {
+		getCurrencyRate.mockResolvedValueOnce({
+			source: "error",
+			rate: null,
+		});
+		const showError = vi.fn();
+		const { result } = renderHook(() =>
+			useConversion({ ...defaultParams, showError }),
+		);
+		await act(async () => result.current.fetchRate());
+		expect(result.current.rate).toBe(0);
+		expect(result.current.rateSource).toBe("error");
+		expect(showError).toHaveBeenCalled();
+	});
+
+	it("fetchRate handles non-numeric rate from API without error", async () => {
+		getCurrencyRate.mockResolvedValueOnce({
+			source: "api",
+			rate: null,
+		});
+		const showError = vi.fn();
+		const { result } = renderHook(() =>
+			useConversion({ ...defaultParams, showError }),
+		);
+		await act(async () => result.current.fetchRate());
+		expect(result.current.rate).toBe(0);
+		expect(showError).not.toHaveBeenCalled();
+	});
+});
