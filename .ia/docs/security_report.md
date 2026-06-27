@@ -1,6 +1,6 @@
 # 🛡️ Reporte de Seguridad e Integridad de Software
 
-**Proyecto:** `currencyExchange` v1.11.0  
+**Proyecto:** `currencyExchange` v2.0.0  
 **Fecha de auditoría:** 2026-06-27  
 **Auditor:** Agente AppSec (security-audit skill)  
 **Alcance:** Dependencias directas + transitivas (387 paquetes), skills de IA, licencias
