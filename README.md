@@ -1,14 +1,14 @@
 # Currency Exchange 💱
 
 [![License: CC BY 4.0](https://img.shields.io/badge/License-CC_BY_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/)
-[![Version](https://img.shields.io/badge/version-2.0.1-blue.svg)](https://github.com/Damedsol/Currency_Exchange)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.9.3-blue?logo=typescript)](https://www.typescriptlang.org/)
-[![React](https://img.shields.io/badge/React-19.2.0-blue?logo=react)](https://reactjs.org/)
+[![Version](https://img.shields.io/badge/version-2.1.1-blue.svg)](https://github.com/Damedsol/Currency_Exchange)
+[![TypeScript](https://img.shields.io/badge/TypeScript-6.0.3-blue?logo=typescript)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React-19.2.6-blue?logo=react)](https://reactjs.org/)
 [![Vite](https://img.shields.io/badge/Vite-8.0.16-646CFF?logo=vite)](https://vitejs.dev/)
 [![FluentUI](https://img.shields.io/badge/FluentUI-9.74.1-blue?logo=microsoft)](https://developer.microsoft.com/en-us/fluentui)
 [![Coverage](https://img.shields.io/badge/coverage-98%25-brightgreen)](https://img.shields.io/badge/coverage-98%25-brightgreen)
 [![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED?logo=docker)](https://www.docker.com/)
-[![PNPM](https://img.shields.io/badge/PNPM-11.2.2-orange?logo=pnpm)](https://pnpm.io/)
+[![PNPM](https://img.shields.io/badge/PNPM-11.15.0-orange?logo=pnpm)](https://pnpm.io/)
 [![Node.js](https://img.shields.io/badge/Node.js-LTS-green?logo=node.js)](https://nodejs.org/)
 
 A modern, responsive web application for real-time currency conversion built with React 19, TypeScript, and Microsoft Fluent UI. The app integrates with the [Free Currency API](https://freecurrencyapi.com/) to provide accurate, up-to-date exchange rates for over 160 international currencies.
@@ -40,11 +40,11 @@ A modern, responsive web application for real-time currency conversion built wit
 
 | Component / Layer | Version | Purpose |
 | :--- | :--- | :--- |
-| **React** | v19.2.0 | Frontend core library (concurrent features) |
-| **TypeScript** | v5.9.3 | Static typing and modern JS support |
+| **React** | v19.2.6 | Frontend core library (concurrent features) |
+| **TypeScript** | v6.0.3 | Static typing and modern JS support |
 | **Vite** | v8.0.16 | Fast build tool and development server |
 | **Fluent UI React** | v9.74.1 | Microsoft's modern component-based design system |
-| **PNPM** | v11.2.2 | Fast, disk space efficient package manager |
+| **PNPM** | v11.15.0 | Fast, disk space efficient package manager |
 | **Oxlint** | LATEST | Blazing-fast static linter (Rust-powered) |
 | **Biome** | LATEST | Blazing-fast formatting and import organization (Rust-powered) |
 | **ls-lint** | LATEST | Filename consistency enforcer |
