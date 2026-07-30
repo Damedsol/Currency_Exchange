@@ -145,6 +145,8 @@ currencyExchange/
 ├── .ia/                           # Agentic AI configuration & memory
 │   ├── AGENTS.md                  # Local agent behavior profile
 │   └── memory/context.md          # Persistent session memory
+├── .nvmrc                         # Node.js version for nvm/nodenv (Node 24)
+├── SECURITY.md                    # Vulnerability reporting policy
 ├── public/                        # Static assets & favicons
 ├── Dockerfile                     # Multi-stage Docker build (dev, builder, production)
 ├── docker-compose.yml             # Dynamic multi-environment orchestration file
@@ -181,18 +183,23 @@ pnpm lint                   # Performs correctness checks with Oxlint & ls-lint
 ## 🛡️ Security Hardening & Gzip Policies
 Our production [nginx.conf](nginx.conf) unifies performance and security policies:
 - **`server_tokens off;`**: Obscures Nginx version details.
-- **Hidden Files Lock**: Access to any hidden files (such as `.env` or `.git`) is blocked, returning a silent **HTTP 404** error.
+- **Hidden Files Lock**: Access to any hidden files (such as `.env` or `.git`) is blocked via `deny all`, returning **HTTP 404**.
 - **Compresión Gzip**: Active for HTML, CSS, JavaScript, JSON, and SVG files.
-- **HTTP Headers**:
+- **Content Security Policy**: Delivered exclusively via HTTP header (no `<meta>` tag in HTML) — `default-src 'self'; script-src 'self' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https://api.freecurrencyapi.com; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'none'`.
+- **HTTP Security Headers**:
+  - `Strict-Transport-Security: max-age=63072000; includeSubDomains; preload` (HSTS 2 years).
   - `X-Frame-Options: SAMEORIGIN` (prevents clickjacking).
   - `X-Content-Type-Options: nosniff` (prevents MIME sniffing).
-
+  - `Cross-Origin-Resource-Policy: same-origin` (resource isolation).
+  - `Cross-Origin-Opener-Policy: same-origin` (cross-origin isolation).
   - `Referrer-Policy: strict-origin-when-cross-origin`.
+- **Cache Hardening**: `no-transform` directive on SPA route to prevent proxy cache corruption.
 
 ---
 
 ## 📚 Documentation
 - **[Docker Usage Guide](docs/docker-usage.md)**: Deep dive into the containerized environment setup.
+- **[Security Policy](SECURITY.md)**: How to report vulnerabilities.
 - **[AGENTS.md](AGENTS.md)**: Coding standards and agent behavior profile.
 - **[.ia/memory/context.md](.ia/memory/context.md)**: Technical decisions and session history.
 - **[LICENSE.md](LICENSE.md)**: Details about Creative Commons CC BY 4.0 policies.
