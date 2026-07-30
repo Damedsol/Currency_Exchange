@@ -2,11 +2,11 @@
 
 ## Stack and Configuration
 - **React 19 + Fluent UI v9:** UI built with `FluentProvider`, `makeStyles` (Griffel atomic CSS-in-JS), and components from `@fluentui/react-components`.
-- **Oxlint (linter):** Only active linter. `correctness` and `perf` rules at `warn`. No ESLint.
+- **Oxlint (linter):** Only active linter. `correctness` at `error`, `perf` at `warn`. No ESLint.
 - **Biome (formatter):** Exclusive. `indentStyle: tab`, `indentWidth: 2`, `lineWidth: 80`, `trailingCommas: all`. No Prettier.
 - **ls-lint:** Components `PascalCase.tsx`, services `PascalCase.ts`, styles `kebabcase.css`.
 - **pnpm catalogs/workspaces:** Centralized dependency management via `catalog:` in `pnpm-workspace.yaml`.
-- **Vite 7.1.11:** React plugins, HMR with polling (300ms) for Docker, manual chunking (react-dom, react, fluent).
+- **Vite 8.0.16:** React plugins, HMR with polling (300ms) for Docker, manual chunking (react-dom, react, fluent).
 - **TypeScript 6 (strict):** `strict: true`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, `noImplicitOverride`.
 - **Docker multi-stage:** `development` (Vite HMR), `builder` (compilation), `production` (Nginx Alpine).
 - **Docker Compose:** Bind volume for `./src` and `./public`, named volumes for `node_modules` and `vite_cache`.
@@ -15,7 +15,7 @@
 ## Strategic Decisions
 - **Rust tooling exclusivity:** Explicit prohibition against reinstalling ESLint or Prettier. Only Oxlint + Biome are permitted.
 - **Agnostic environment:** Use of environment variables (`.env.development`/`.env.production`) for API, debug, and HMR configuration.
-- **Production security (Nginx):** `server_tokens off`, hidden file blocking (HTTP 404), security headers (X-Frame-Options, X-Content-Type-Options, X-XSS-Protection, Referrer-Policy), gzip compression.
+- **Production security (Nginx):** `server_tokens off`, hidden file blocking (HTTP 404), CSP via HTTP header (no meta tag), HSTS, X-Frame-Options, X-Content-Type-Options, Cross-Origin-Resource-Policy, Cross-Origin-Opener-Policy, Referrer-Policy, gzip compression.
 - **Smart caching:** Source indicator (cache vs live API) in the UI for exchange rates.
 - **Local persistence:** API key and conversion data stored in LocalStorage.
 - **Single-source agentic config:** Root `AGENTS.md` as the master standard, locally complemented by `.ia/AGENTS.md`.
@@ -138,3 +138,18 @@
   - **Details:** Removed `HEALTHCHECK` instruction from production stage (was using `wget http://localhost:80/`). Monitoring is handled externally, so built-in Docker health check is unnecessary.
   - **Files modified:** `Dockerfile` (-4 lines), `src/config/dockerfile.test.ts` (+1 test asserting no HEALTHCHECK present).
   - **QA:** 299/299 unit tests (28 files). Full gate: vitest 299/299.
+
+- **2026-07-30: Pre-publication audit — security + dependencies + documentation**
+  - **Fonts fixed:** Replaced 16 corrupt `.woff2` files (were TTF mislabeled) with genuine WOFF2 from neon-code. Added 16 TTF fallback files. Updated `fonts.css` with dual format (`woff2` primary, `truetype` fallback).
+  - **CSP delegated to nginx:** Removed `<meta http-equiv="Content-Security-Policy">` from `index.html`. `frame-ancestors` removed from meta (only works in HTTP headers). `'unsafe-inline'` no longer needed in production CSP (nginx header is strict).
+  - **nginx.conf restructured:** Each location block is self-contained with all security headers (nginx doesn't inherit `add_header` between levels). Removed global fallback block (was creating false sense of security). Removed deprecated `X-XSS-Protection`. Removed `Permissions-Policy` (not needed for currency converter). Added `no-transform` to SPA `Cache-Control`.
+  - **console.log gated:** All 9 `console.log` calls in services (`FreeCurrency.ts`, `LocalStorage.ts`) wrapped with `if (import.meta.env.DEV)`.
+  - **ErrorBoundary:** Added `componentDidCatch` with `console.error("[ErrorBoundary]", error, componentStack)`.
+  - **E2E mock key:** `VALID_API_KEY` now reads from `process.env.E2E_API_KEY` with fallback mock.
+  - **Dockerfile:** Removed `|| pnpm install` fallback (only `--frozen-lockfile`).
+  - **pnpm-workspace.yaml:** Removed orphan `ls-lint` catalog entry. Removed `scheduler` catalog entry (handled by React 19). Changed `resolutionMode: lowest-direct` to `highest`.
+  - **Oxlint:** `correctness` changed from `"warn"` to `"error"`.
+  - **Dependencies:** Removed `scheduler` from `package.json` (React 19 handles it as peer). Updated lockfile.
+  - **New files:** `.nvmrc` (Node 24), `SECURITY.md` (vulnerability reporting).
+  - **Tags normalized:** 21 tags renamed from uppercase `V` to lowercase `v` (e.g. `V2.0.1` → `v2.0.1`).
+  - **QA:** 299/299 unit tests (28 files). Docker build (production target) verified + nginx config test + security headers verified via curl. Full gate: oxlint 0 err, ls-lint 0 err, tsc 0 err, vitest 299/299, Vite build OK.
