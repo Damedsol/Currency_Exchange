@@ -72,9 +72,6 @@ catalogs:
     react-dom:
       specifier: ^19.2.0
       version: 19.2.6
-    scheduler:
-      specifier: ^0.27.0
-      version: 0.27.0
     typescript:
       specifier: ^6.0.0
       version: 6.0.3
@@ -112,9 +109,6 @@ importers:
       react-dom:
         specifier: 'catalog:'
         version: 19.2.6(react@19.2.6)
-      scheduler:
-        specifier: 'catalog:'
-        version: 0.27.0
     devDependencies:
       '@biomejs/biome':
         specifier: 'catalog:'

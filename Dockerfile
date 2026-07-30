@@ -61,8 +61,7 @@ ENV NODE_ENV=production
 # Copy package manifests as the node user
 COPY --chown=node:node package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
-# Install dependencies using pnpm frozen lockfile for reproducibility as the node user
-# If lockfile has issues, fallback to regular install
+# Install dependencies using pnpm frozen lockfile for reproducibility
 RUN pnpm install --frozen-lockfile
 
 # Copy the rest of the application code as the node user
