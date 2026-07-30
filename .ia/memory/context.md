@@ -148,7 +148,7 @@
   - **Files modified:** `pnpm-workspace.yaml` (3 override lines), `pnpm-lock.yaml` (auto-generated).
   - **QA:** oxlint 0 err, ls-lint 0 err, vitest 299/299 (28 files), Vite build 247ms. `pnpm audit` reports 0 known vulnerabilities.
   - **Branch:** `bugfix/transitive-vulns-jsyaml-fasturi-postcss`
-  - **Commit:** `4e954a3` `fix(security): bump js-yaml>=4.3.0, fast-uri>=3.1.4, postcss>=8.5.18`
+  - **Commit:** `ffd9997` `fix(security): bump js-yaml>=4.3.0, fast-uri>=3.1.4, postcss>=8.5.18`
 
 - **2026-07-30: Pre-publication audit — security + dependencies + documentation**
   - **Fonts fixed:** Replaced 16 corrupt `.woff2` files (were TTF mislabeled) with genuine WOFF2 from neon-code. Added 16 TTF fallback files. Updated `fonts.css` with dual format (`woff2` primary, `truetype` fallback).
