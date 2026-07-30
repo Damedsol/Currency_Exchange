@@ -1,7 +1,8 @@
 import { expect, test } from "@playwright/test";
 
 // Valid API key format: fca_live_ + 40 alphanumeric chars
-const VALID_API_KEY = "fca_live_" + "a".repeat(40);
+// Use env variable or fall back to a mock key for CI
+const VALID_API_KEY = process.env.E2E_API_KEY || "fca_live_" + "a".repeat(40);
 
 test.describe("UI enhancements", () => {
 	test.beforeEach(async ({ page }) => {

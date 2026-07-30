@@ -124,7 +124,7 @@ export function loadRatesFromCache(): Record<string, number> | null {
 				if (now - parsedCache.timestamp < CACHE_EXPIRATION_TIME) {
 					return parsedCache.rates;
 				}
-				console.log("Currency rates cache expired.");
+				if (import.meta.env.DEV) console.log("Currency rates cache expired.");
 			} else {
 				console.warn("Invalid rates cache format found in localStorage.");
 			}
@@ -143,7 +143,7 @@ export function loadRatesFromCache(): Record<string, number> | null {
 export function clearRatesCache(): void {
 	try {
 		localStorage.removeItem(RATES_CACHE_KEY);
-		console.log("Currency rates cache cleared.");
+		if (import.meta.env.DEV) console.log("Currency rates cache cleared.");
 	} catch (error) {
 		console.error("Error clearing currency rates cache:", error);
 		// Decide if you want to throw or just log the error
@@ -205,7 +205,8 @@ export function loadCurrenciesFromCache(): Record<
 				if (now - parsedCache.timestamp < CURRENCIES_CACHE_TTL) {
 					return parsedCache.currencies;
 				}
-				console.log("Currency metadata cache expired.");
+				if (import.meta.env.DEV)
+					console.log("Currency metadata cache expired.");
 			} else {
 				console.warn(
 					"Invalid currency metadata cache format found in localStorage.",
@@ -226,7 +227,7 @@ export function loadCurrenciesFromCache(): Record<
 export function clearCurrenciesCache(): void {
 	try {
 		localStorage.removeItem(CURRENCIES_CACHE_KEY);
-		console.log("Currency metadata cache cleared.");
+		if (import.meta.env.DEV) console.log("Currency metadata cache cleared.");
 	} catch (error) {
 		console.error("Error clearing currency metadata cache:", error);
 	}

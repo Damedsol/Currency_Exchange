@@ -1,7 +1,7 @@
 {
 	"name": "currencyexchange",
 	"private": true,
-	"version": "2.0.1",
+	"version": "2.1.0",
 	"author": {
 		"email": "contact@damedsol.dev",
 		"name": "Damedsol",
@@ -27,8 +27,7 @@
 		"@fluentui/react-components": "catalog:",
 		"@fluentui/react-icons": "catalog:",
 		"react": "catalog:",
-		"react-dom": "catalog:",
-		"scheduler": "catalog:"
+		"react-dom": "catalog:"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "catalog:",
