@@ -139,6 +139,17 @@
   - **Files modified:** `Dockerfile` (-4 lines), `src/config/dockerfile.test.ts` (+1 test asserting no HEALTHCHECK present).
   - **QA:** 299/299 unit tests (28 files). Full gate: vitest 299/299.
 
+- **2026-07-30: Fix 4 Dependabot alerts — js-yaml, fast-uri, postcss**
+  - **Details:** Updated overrides in `pnpm-workspace.yaml` to fix 3 transitive dependency vulnerabilities:
+    - `js-yaml`: `>=4.1.2` → `>=4.3.0` (resolved `4.2.0` → `5.2.2`). DoS via quadratic parsing of YAML merge chains.
+    - `fast-uri`: `3.1.2` → `>=3.1.4` (resolved `3.1.2` → `4.1.1`). Fixed IDN canonicalization bypass + backslash authority delimiter bypass (2 CVEs).
+    - `postcss`: _new_ override `>=8.5.18` (resolved `8.5.15` → `8.5.23`). Path traversal in source map auto-loading (arbitrary .map file disclosure).
+  - **Research:** All 3 packages are dev/build-only transitive deps. `js-yaml`/`fast-uri` via `@commitlint/cli`, `postcss` via `vite@8.0.16`. No app code uses any of them directly. Vite depends on postcss `^8.5.15`, so `8.5.23` is fully compatible.
+  - **Files modified:** `pnpm-workspace.yaml` (3 override lines), `pnpm-lock.yaml` (auto-generated).
+  - **QA:** oxlint 0 err, ls-lint 0 err, vitest 299/299 (28 files), Vite build 247ms. `pnpm audit` reports 0 known vulnerabilities.
+  - **Branch:** `bugfix/transitive-vulns-jsyaml-fasturi-postcss`
+  - **Commit:** `ffd9997` `fix(security): bump js-yaml>=4.3.0, fast-uri>=3.1.4, postcss>=8.5.18`
+
 - **2026-07-30: Pre-publication audit — security + dependencies + documentation**
   - **Fonts fixed:** Replaced 16 corrupt `.woff2` files (were TTF mislabeled) with genuine WOFF2 from neon-code. Added 16 TTF fallback files. Updated `fonts.css` with dual format (`woff2` primary, `truetype` fallback).
   - **CSP delegated to nginx:** Removed `<meta http-equiv="Content-Security-Policy">` from `index.html`. `frame-ancestors` removed from meta (only works in HTTP headers). `'unsafe-inline'` no longer needed in production CSP (nginx header is strict).
