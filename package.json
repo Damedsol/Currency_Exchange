@@ -27,8 +27,7 @@
 		"@fluentui/react-components": "catalog:",
 		"@fluentui/react-icons": "catalog:",
 		"react": "catalog:",
-		"react-dom": "catalog:",
-		"scheduler": "catalog:"
+		"react-dom": "catalog:"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "catalog:",

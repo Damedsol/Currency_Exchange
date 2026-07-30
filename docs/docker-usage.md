@@ -77,11 +77,14 @@ All Docker and Nginx configurations are centralized directly in the root directo
 
 The Nginx production stage includes strict policies to mitigate common attack vectors:
 - **`server_tokens off;`**: Hides the Nginx version in HTTP response headers.
-- **Hidden Files Protection**: Silently blocks access to any hidden files or folders starting with a dot (e.g. `.env`, `.git`) by returning an **HTTP 404** status code.
-- **Global Security Headers**:
-  - `X-Frame-Options: SAMEORIGIN` (mitigates Clickjacking).
-  - `X-Content-Type-Options: nosniff` (mitigates MIME-type Sniffing).
-  - `X-XSS-Protection: 1; mode=block` (mitigates cross-site scripting attacks).
+- **Hidden Files Protection**: Access to hidden files (`.env`, `.git`, etc.) is blocked via `deny all`, returning **HTTP 404**.
+- **Content Security Policy**: Delivered exclusively via HTTP header (no `<meta>` tag in HTML) — `default-src 'self'; script-src 'self' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https://api.freecurrencyapi.com; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'none'`.
+- **HTTP Security Headers**:
+  - `Strict-Transport-Security: max-age=63072000; includeSubDomains; preload` (HSTS 2 years).
+  - `X-Frame-Options: SAMEORIGIN` (prevents clickjacking).
+  - `X-Content-Type-Options: nosniff` (prevents MIME sniffing).
+  - `Cross-Origin-Resource-Policy: same-origin` (resource isolation).
+  - `Cross-Origin-Opener-Policy: same-origin` (cross-origin isolation).
   - `Referrer-Policy: strict-origin-when-cross-origin`.
 
 ---
