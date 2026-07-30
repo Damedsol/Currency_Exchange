@@ -33,7 +33,7 @@ const MEMORY_CACHE_TTL = 300_000; // 5 minutes
 export async function fetchLatestRates(
 	apiKey: string,
 ): Promise<Record<string, number> | null> {
-	console.log("Fetching fresh rates from API.");
+	if (import.meta.env.DEV) console.log("Fetching fresh rates from API.");
 	const controller = new AbortController();
 	const timeoutId = setTimeout(() => controller.abort(), 10_000);
 	try {
@@ -65,7 +65,8 @@ export async function fetchLatestRates(
 		rates[BASE_CURRENCY] = 1.0;
 
 		saveRatesToCache(rates);
-		console.log("Rates saved to cache (localStorage).");
+		if (import.meta.env.DEV)
+			console.log("Rates saved to cache (localStorage).");
 
 		return rates;
 	} catch (error) {
@@ -87,7 +88,7 @@ export async function fetchLatestRates(
 export async function fetchCurrencies(
 	apiKey: string,
 ): Promise<Record<string, CurrencyMetadata> | null> {
-	console.log("Fetching currencies from API.");
+	if (import.meta.env.DEV) console.log("Fetching currencies from API.");
 	const controller = new AbortController();
 	const timeoutId = setTimeout(() => controller.abort(), 10_000);
 	try {
@@ -165,7 +166,7 @@ export const getCurrencyRate = async ({
 	const cachedRates = loadRatesFromCache();
 
 	if (cachedRates) {
-		console.log("Using cached rates.");
+		if (import.meta.env.DEV) console.log("Using cached rates.");
 		const rate = calculateRate(cachedRates, fromCurrency, toCurrency);
 		if (rate !== null) {
 			return { rate, source: "cache" };
@@ -187,7 +188,7 @@ export const getCurrencyRate = async ({
 		rates,
 		timestamp: Date.now(),
 	});
-	console.log("Rates saved to memory cache.");
+	if (import.meta.env.DEV) console.log("Rates saved to memory cache.");
 
 	// Calculate the requested rate from the fresh data
 	const rate = calculateRate(rates, fromCurrency, toCurrency);

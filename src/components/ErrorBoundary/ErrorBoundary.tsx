@@ -23,6 +23,14 @@ export class ErrorBoundary extends React.Component<
 		return { hasError: true, error };
 	}
 
+	override componentDidCatch(error: Error, info: React.ErrorInfo): void {
+		console.error(
+			"[ErrorBoundary] Caught an error:",
+			error,
+			info.componentStack,
+		);
+	}
+
 	override render(): React.ReactNode {
 		if (this.state.hasError) {
 			return (

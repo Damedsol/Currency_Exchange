@@ -81,7 +81,7 @@ The Nginx production stage includes strict policies to mitigate common attack ve
 - **Global Security Headers**:
   - `X-Frame-Options: SAMEORIGIN` (mitigates Clickjacking).
   - `X-Content-Type-Options: nosniff` (mitigates MIME-type Sniffing).
-  - `X-XSS-Protection: 1; mode=block` (mitigates cross-site scripting attacks).
+
   - `Referrer-Policy: strict-origin-when-cross-origin`.
 
 ---

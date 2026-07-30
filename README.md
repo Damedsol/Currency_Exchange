@@ -166,9 +166,9 @@ pnpm build                  # Build static files for production to /dist
 pnpm preview                # Preview production build locally
 
 # Testing (Vitest)
-pnpm test                   # Run unit & integration tests (244 tests)
+pnpm test                   # Run unit & integration tests (299 tests)
 pnpm test:coverage          # Run tests with coverage report (98%+)
-pnpm test:e2e               # Run Playwright E2E tests (24 tests)
+pnpm test:e2e               # Run Playwright E2E tests (10 tests)
 
 # Code Quality & Format
 pnpm format                 # Formats files and organizes imports with Biome
@@ -186,7 +186,7 @@ Our production [nginx.conf](nginx.conf) unifies performance and security policie
 - **HTTP Headers**:
   - `X-Frame-Options: SAMEORIGIN` (prevents clickjacking).
   - `X-Content-Type-Options: nosniff` (prevents MIME sniffing).
-  - `X-XSS-Protection: 1; mode=block`.
+
   - `Referrer-Policy: strict-origin-when-cross-origin`.
 
 ---
