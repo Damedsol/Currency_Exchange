@@ -179,3 +179,26 @@
 - **2026-08-17: Favicon "CEX" → "EX" monogram**
   - **Details:** Redesigned `favicon.svg` from "CEX" to "EX" (dropped the C, recentered E+X, span 17-47 midpoint 32), same neon-code style. Title → "Currency Exchange (EX)". Regenerated 5 PNGs via `rsvg-convert`. Updated `favicon.test.ts` (title `(EX)`, no "CEX", exactly 2 `<path>`).
   - **QA:** 318/318 unit tests (32 files). Full gate: oxlint 0 err, check-filenames ✅, tsc 0 err, vitest 318/318, Vite build 253ms.
+
+- **2026-08-17: Security audit — 7 CVEs fixed + API key hardened to sessionStorage**
+  - **Details:** Full SCA scan (`pnpm audit`) detected 7 advisories (3 HIGH + 4 MODERATE), all dev-only transitive deps. Fixed via 3 overrides in `pnpm-workspace.yaml`:
+    - `undici`: `^7.28.0` → `^7.29.0` (5 advisories: GHSA-4cwx-7wf7-3272 HIGH + 4 MODERATE; stays in 7.x line to avoid jsdom 29 `wrap-handler.js` breakage).
+    - `fast-uri`: `>=3.1.4` → `>=4.1.2` (GHSA-7p8r-x3mc-p8w7 HIGH, host confusion via backslash authority).
+    - `nanoid`: **new** override `^3.3.18` (GHSA-2v37-7h3g-55p8 HIGH, infinite loop DoS). Initially set `>=3.3.18` which resolved to `nanoid@6.0.1` — incompatible with `postcss@8.5.23` (`^3.3.16`); pinned to `^3.3.18` (patched, in-range).
+  - **API key hardening:** `apiKey` storage migrated from `localStorage` to `sessionStorage` in `LocalStorage.ts` (`localStorageFetchService`, `localStorageStoreService`, `clearLocalStorage`). Non-sensitive caches (rates/currencies/history) remain in `localStorage`. Function names unchanged (YAGNI). `LocalStorage.test.ts` updated (6 refs + 2 error-stub tests now stub `sessionStorage`).
+  - **Key lessons:** `>=` override with `resolutionMode: highest` can jump major versions outside the dependent's declared range — prefer `^` pins for transitive fixes. `vi.stubGlobal("sessionStorage", ...)` + failing assertion aborts before `unstubAllGlobals()` → cascades to `beforeEach` of subsequent tests (RED phase artifact, resolved in GREEN).
+  - **QA:** `pnpm audit` → 0 advisories (all levels). Resolved: undici 7.29.0, fast-uri 4.1.2, nanoid 3.3.18. Full gate: oxlint 0 err, check-filenames ✅, tsc 0 err, vitest 318/318, Vite build 276ms.
+
+- **2026-08-17: Reviewer round 2 — E2E sync + hygiene (4 findings fixed)**
+  - **Details:** Reviewer rejected round 1 with 4 findings, all fixed:
+    - **[ID-01]** `e2e/ui-enhancements.spec.ts` injected API key into `localStorage` (2 spots) — migrated to `sessionStorage` to match the new backend (would have broken 2 E2E tests).
+    - **[ID-02]** Vulnerable orphan packages in `node_modules/.pnpm` (`nanoid@6.0.1`, `nanoid@3.3.16`, `undici@7.28.0`, `fast-uri@4.1.1`) — `pnpm install --force` and `pnpm prune` do NOT purge them (virtual store residue, unlinked). Removed manually via `rm -rf` (user-authorized). Symlinks verified intact (postcss→nanoid@3.3.18, jsdom→undici@7.29.0, ajv→fast-uri@4.1.2).
+    - **[ID-03]** Inert overrides removed from `pnpm-workspace.yaml`: `flatted`, `minimatch`, `brace-expansion` (0 lockfile entries, 0 node_modules dirs). **Lesson:** `picomatch` was nearly removed too but IS in the tree (resolved 4.0.4, multiple dependents) — always verify with `grep -E "^  <pkg>@" pnpm-lock.yaml` before deleting overrides.
+    - **[ID-04]** Updated 6 stale comments/logs in `LocalStorage.ts` referencing "localStorage" for the API key → "sessionStorage". Function names kept (`localStorageFetchService`/`localStorageStoreService`) — YAGNI, renaming would churn useApiKey.ts + 2 test files.
+  - **QA:** `pnpm audit` → 0 advisories. Full gate: oxlint 0 err, check-filenames ✅, tsc 0 err, vitest 318/318, Vite build 275ms.
+
+- **2026-08-17: Dependabot config + transient file cleanup**
+  - **Details:** Added `.github/dependabot.yml` (minimal, project-aware): `package-ecosystem: npm` (pnpm lockfile v9), `directory: "/"`, `interval: weekly`, `open-pull-requests-limit: 5`, and 3 critical `ignore` rules preventing PRs that break the build: `undici >=8.0.0` (breaks jsdom@29.1.1 wrap-handler.js), `nanoid >=4.0.0` (postcss@8.5.x requires ^3.3.16), `@fluentui/react-motion >=9.16.0` (pinned for jsdom compat). New test `src/config/dependabot.test.ts` (8 tests) validates the config via `readFileSync` (pattern from `nginx.test.ts`).
+  - **Cleanup (user-authorized):** removed 2 stale plan files (`.ia/docs/plan_2026-08-13_footer-favicon-ls-lint.md`, `plan_2026-08-17_license-footer-consistency.md` — content preserved in this history), build artifacts (`coverage/`, `playwright-report/`, `test-results/`), and session temp files in `/tmp/opencode/`. Project tests (326) preserved — they are the permanent regression net.
+  - **Key lessons:** Dependabot `ignore` rules are essential for this repo — without them, automated PRs would bump `undici` to 8.x / `nanoid` to 6.x / `react-motion` past 9.15.0 and break the build. Config kept minimal (no groups/labels/commit-message) per user request.
+  - **QA:** 326/326 unit tests (33 files). Full gate: oxlint 0 err, check-filenames ✅, tsc 0 err, vitest 326/326, Vite build 281ms.
