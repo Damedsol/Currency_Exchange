@@ -1,0 +1,6 @@
+pipeline:
+  status: "completed"
+  plan_file: ".ia/docs/plan_2026-08-17_license-footer-consistency.md"
+  last_step: "scribe"
+  completed_at: "2026-08-17T21:30:00Z"
+  cycle_summary: "2 ciclos (license consistency + favicon EX), 0 escalados, QA gates verdes (318/318 tests)"

@@ -7,7 +7,7 @@ This document dynamically records technical learnings, architectural decisions, 
 - **Primary Linter:** **Oxlint** for ultra-fast static analysis without ESLint. Correctness, performance, and suspicious rules are enabled in `.oxlintrc.json`.
 - **Exclusive Formatter:** **Biome** to aesthetically format JS, TS, TSX, CSS, and JSON files in record time. Biome's internal linter is disabled to prevent conflicts.
   - *Configuration:* Absolute precision in tab usage, width of 2, line width of 80, double quotes, and trailing commas.
-- **Filename Linter:** **ls-lint** guarantees consistency in naming conventions: components in `PascalCase.tsx`, utilities/services in `camelCase.ts`, and configurations in `kebab-case`/`dot-notation`.
+- **Filename Linter:** **Custom script `scripts/check-filenames.mjs`** (Node, zero deps) guarantees consistency in naming conventions: components in `PascalCase.tsx`, services in `PascalCase.ts`, hooks in `camelCase.ts`, styles in `kebab-case.css`, and test files with `*.test.ts(x)`/`*.spec.ts(x)` suffix. It replaced `ls-lint` (removed dependency).
 - **UI & Framework:** **React 19** and **Fluent UI React Components v9** (`@fluentui/react-components`), injecting the theme via `FluentProvider` and using `makeStyles` (atomic CSS-in-JS from Griffel).
 - **Package Management:** **pnpm** with absolute priority in the environment (using pnpm workspaces/catalogs).
 
@@ -234,6 +234,26 @@ This document dynamically records technical learnings, architectural decisions, 
     - `ConversionHistoryEntry` was defined in 2 places (LocalStorage.ts + implied); centralizing to types/index.ts required updating 7 import paths
     - EmptyState.test.tsx added as 26th test file (156 total tests)
   - **Branches / Associated Commits:** `feature/neon-a11y-fixes`, `feature/neon-style-fixes`, `feature/neon-security-persist`
+
+- **2026-08-17: License consistency — footer attribution, SPDX, third-party licenses**
+  - **Change Details:**
+    - Footer: removed `©` symbol and "Created by" → pure CC BY 4.0 attribution `{year} Damedsol · Licensed under CC BY 4.0` (CC = "some rights reserved", no copyright claim). Renamed `styles.copyright` → `styles.attribution`.
+    - Footer: added "README" nav link → `https://github.com/Damedsol/currencyExchange#readme` (5 external links total).
+    - `package.json`: `"license"` normalized to valid SPDX `CC-BY-4.0` (was `CC BY 4.0`).
+    - `README.md`: normalized 2 stale GitHub URLs `Currency_Exchange` → `currencyExchange` (matches `origin` remote + footer); added THIRD-PARTY-LICENSES.md references in Documentation + License sections.
+    - New `THIRD-PARTY-LICENSES.md`: fonts (Figtree + IBM Plex Mono, SIL OFL 1.1, copyrights) + runtime deps (react, react-dom, @fluentui/react-components, @fluentui/react-icons, MIT) + dev tooling note.
+    - New `src/config/license.test.ts` (5 tests, node env): SPDX identifier, THIRD-PARTY-LICENSES content, README URL normalization, bundled OFL.txt files.
+  - **QA Lessons:** `getByText` matches only direct text nodes — year assertion uses `new RegExp(year)` against the `<p>` direct text; footer link count is now exactly 5.
+  - **QA:** 317/317 unit tests (32 files). Full gate: oxlint 0 err, check-filenames ✅, tsc 0 err, vitest 317/317, Vite build 295ms.
+
+- **2026-08-17: Favicon "CEX" → "EX" monogram**
+  - **Change Details:**
+    - Redesigned `favicon.svg` from 3-letter "CEX" to 2-letter "EX" monogram (dropped the "C"): E (`M 28 21 H 17 V 43 H 28 M 17 32 H 25`) + X (`M 47 21 L 36 43 M 36 21 L 47 43`), recentered (span 17-47, midpoint 32), same neon-code style (neon lime `#b9f27c` on dark `#0d1117`, rounded rect, no gradients/shadows/external refs).
+    - Updated `<title>` to "Currency Exchange (EX)".
+    - Regenerated all 5 PNGs (16/32/192/512/favicon.png) via `rsvg-convert`.
+    - Updated `src/config/favicon.test.ts`: title assertion `(EX)`, `not.toContain("CEX")`, new test asserting exactly 2 `<path>` elements.
+  - **QA Lessons:** `rsvg-convert` regenerates PNGs deterministically; pixel histogram confirms dark bg dominant + neon lime strokes.
+  - **QA:** 318/318 unit tests (32 files). Full gate: oxlint 0 err, check-filenames ✅, tsc 0 err, vitest 318/318, Vite build 253ms.
 
 ## Relevant Files
 - `docs/docker-usage.md`: Docker deployment guide

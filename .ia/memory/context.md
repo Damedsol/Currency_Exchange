@@ -4,7 +4,7 @@
 - **React 19 + Fluent UI v9:** UI built with `FluentProvider`, `makeStyles` (Griffel atomic CSS-in-JS), and components from `@fluentui/react-components`.
 - **Oxlint (linter):** Only active linter. `correctness` at `error`, `perf` at `warn`. No ESLint.
 - **Biome (formatter):** Exclusive. `indentStyle: tab`, `indentWidth: 2`, `lineWidth: 80`, `trailingCommas: all`. No Prettier.
-- **ls-lint:** Components `PascalCase.tsx`, services `PascalCase.ts`, styles `kebabcase.css`.
+- **Custom filename checker (`scripts/check-filenames.mjs`):** Replaces ls-lint. Components `PascalCase.tsx`, services `PascalCase.ts`, hooks `camelCase.ts`, styles `kebabcase.css`, test suffix `*.test.ts(x)`/`*.spec.ts(x)`.
 - **pnpm catalogs/workspaces:** Centralized dependency management via `catalog:` in `pnpm-workspace.yaml`.
 - **Vite 8.0.16:** React plugins, HMR with polling (300ms) for Docker, manual chunking (react-dom, react, fluent).
 - **TypeScript 6 (strict):** `strict: true`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, `noImplicitOverride`.
@@ -164,3 +164,18 @@
   - **New files:** `.nvmrc` (Node 24), `SECURITY.md` (vulnerability reporting).
   - **Tags normalized:** 21 tags renamed from uppercase `V` to lowercase `v` (e.g. `V2.0.1` → `v2.0.1`).
   - **QA:** 299/299 unit tests (28 files). Docker build (production target) verified + nginx config test + security headers verified via curl. Full gate: oxlint 0 err, ls-lint 0 err, tsc 0 err, vitest 299/299, Vite build OK.
+
+- **2026-08-13: Footer + custom filename checker (ls-lint removed) + neon "CEX" favicon**
+  - **Footer:** New `src/components/Footer/Footer.tsx` (React, theme-aware, mono font, neon hover, focus-visible ring) rendered below the main Card in `App.tsx`. Mirrors `imageTransformer`: "© {year} Created by Damedsol · Licensed under CC BY 4.0" + GitHub/LinkedIn links, all `target="_blank" rel="noopener noreferrer"`. 5 new tests.
+  - **ls-lint → custom script:** Removed `@ls-lint/ls-lint` (devDep + catalog + lockfile) and deleted `.ls-lint.yml`. New zero-dep `scripts/check-filenames.mjs` validates the FULL `src/` tree (components PascalCase, services PascalCase, hooks/theme/types/config camelCase, styles kebab-case css/camelCase ts, test suffix `*.test.ts(x)`/`*.spec.ts(x)`, reserved `main.tsx`/`App.tsx`/`vite-env.d.ts`). Skips symlinks; exit 1 with actionable messages on violation. Wired as `pnpm lint` step + new `pnpm check-filenames`. Docs updated: root `AGENTS.md`, `.ia/AGENTS.md`, `project_manifest.yml`, `README.md`, `skills/modern-linting/SKILL.md`, `skills/README.md`, root `context.md`.
+  - **Favicon "CEX":** Redesigned `favicon.svg` — neon-code cyberpunk-flat monogram: neon lime `#b9f27c` "CEX" strokes (path-outlined, no fonts) on dark `#0d1117` rounded square with subtle neon border; no gradients/shadows/external refs. Regenerated all PNGs (16/32/192/512/favicon.png) via `rsvg-convert`. Verified pixel histogram (dark bg dominant + neon lime strokes).
+  - **New tests:** `src/config/lintScript.test.ts` (no ls-lint dep, lint script wiring), `src/config/favicon.test.ts` (CEX monogram, neon palette, no external refs, PNGs exist), `src/components/Footer/Footer.test.tsx` (5 tests).
+  - **QA:** 311/311 unit tests (31 files). Full gate: oxlint 0 err, check-filenames ✅ exit 0, tsc 0 err, vitest 311/311, Vite build 294ms (favicon assets emitted with hashes). E2E: 37 tests blocked by missing Playwright Chromium binary in `~/.cache/ms-playwright` (pre-existing environment limitation, browsers never installed).
+
+- **2026-08-17: License consistency — footer attribution, SPDX, third-party licenses**
+  - **Details:** Footer dropped `©`/`Created by` → pure CC BY 4.0 attribution (`{year} Damedsol · Licensed under CC BY 4.0`), renamed `styles.copyright` → `styles.attribution`, added "README" nav link (`#readme` anchor). `package.json` license → valid SPDX `CC-BY-4.0`. README: 2 stale `Currency_Exchange` URLs → `currencyExchange` (matches origin remote), added THIRD-PARTY-LICENSES references. New `THIRD-PARTY-LICENSES.md` (fonts OFL 1.1 + runtime deps MIT). New `src/config/license.test.ts` (5 tests).
+  - **QA:** 317/317 unit tests (32 files). Full gate: oxlint 0 err, check-filenames ✅, tsc 0 err, vitest 317/317, Vite build 295ms.
+
+- **2026-08-17: Favicon "CEX" → "EX" monogram**
+  - **Details:** Redesigned `favicon.svg` from "CEX" to "EX" (dropped the C, recentered E+X, span 17-47 midpoint 32), same neon-code style. Title → "Currency Exchange (EX)". Regenerated 5 PNGs via `rsvg-convert`. Updated `favicon.test.ts` (title `(EX)`, no "CEX", exactly 2 `<path>`).
+  - **QA:** 318/318 unit tests (32 files). Full gate: oxlint 0 err, check-filenames ✅, tsc 0 err, vitest 318/318, Vite build 253ms.
