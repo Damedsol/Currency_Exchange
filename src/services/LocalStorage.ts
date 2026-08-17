@@ -1,23 +1,23 @@
 import type { ConversionHistoryEntry, CurrencyMetadata } from "../types";
 
 /**
- * Fetches the API key from localStorage.
+ * Fetches the API key from sessionStorage.
  * @returns {string | null} The API key if found, otherwise null.
  */
 export function localStorageFetchService(): string | null {
 	try {
-		const apiKey = localStorage.getItem("apiKey");
+		const apiKey = sessionStorage.getItem("apiKey");
 		// Trim whitespace from the fetched key before returning
 		return apiKey ? apiKey.trim() : null;
 	} catch (error) {
-		console.error("Error fetching API key from localStorage:", error);
+		console.error("Error fetching API key from sessionStorage:", error);
 		// Return null on error to indicate failure without crashing.
 		return null;
 	}
 }
 
 /**
- * Stores the API key in localStorage.
+ * Stores the API key in sessionStorage.
  * @param {string} apiKey The API key to store.
  * @returns {void}
  * @throws {Error} If the API key is empty or if an error occurs during the store operation.
@@ -38,9 +38,9 @@ export function localStorageStoreService(apiKey: string): void {
 				"Invalid API key format. It should start with 'fca_live_' followed by 40 alphanumeric characters.",
 			);
 		}
-		localStorage.setItem("apiKey", apiKey);
+		sessionStorage.setItem("apiKey", apiKey);
 	} catch (error) {
-		console.error("Error storing API key in localStorage:", error);
+		console.error("Error storing API key in sessionStorage:", error);
 		// Re-throw the error to allow calling code to handle it.
 		throw new Error(
 			`Failed to store API key: ${error instanceof Error ? error.message : String(error)}`,
@@ -50,7 +50,7 @@ export function localStorageStoreService(apiKey: string): void {
 }
 
 /**
- * Clears the API key from localStorage and reloads the page.
+ * Clears the API key from sessionStorage and reloads the page.
  * Note: Reloading the page might be better handled by the UI component that calls this function.
  * @returns {void}
  * @throws {Error} If an error occurs during the clear operation.
@@ -58,11 +58,11 @@ export function localStorageStoreService(apiKey: string): void {
 export function clearLocalStorage(): void {
 	try {
 		// Use removeItem for targeted removal instead of clear()
-		localStorage.removeItem("apiKey");
+		sessionStorage.removeItem("apiKey");
 		localStorage.removeItem(RATES_CACHE_KEY); // Clear rates cache too
 		localStorage.removeItem(CURRENCIES_CACHE_KEY); // Clear currencies cache too
 	} catch (error) {
-		console.error("Error clearing API key from localStorage:", error);
+		console.error("Error clearing API key from sessionStorage:", error);
 		// Re-throw the error.
 		throw new Error(
 			`Failed to clear API key: ${error instanceof Error ? error.message : String(error)}`,

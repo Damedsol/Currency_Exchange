@@ -12,9 +12,9 @@ test.describe("UI enhancements", () => {
 	test("AppHeader shows currency update section when API key is stored", async ({
 		page,
 	}) => {
-		// Inject a properly formatted API key into localStorage
+		// Inject a properly formatted API key into sessionStorage
 		await page.evaluate((key) => {
-			localStorage.setItem("apiKey", key);
+			sessionStorage.setItem("apiKey", key);
 		}, VALID_API_KEY);
 		await page.reload();
 		await page.waitForLoadState("networkidle");
@@ -37,7 +37,7 @@ test.describe("UI enhancements", () => {
 
 	test("header Update button has an SVG icon", async ({ page }) => {
 		await page.evaluate((key) => {
-			localStorage.setItem("apiKey", key);
+			sessionStorage.setItem("apiKey", key);
 		}, VALID_API_KEY);
 		await page.reload();
 		await page.waitForLoadState("networkidle");
