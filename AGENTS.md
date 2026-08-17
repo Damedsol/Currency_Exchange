@@ -4,14 +4,14 @@ This file defines the behavior profile, constraints, operational workflows, and 
 
 ## 👤 Agent Profile (PROFILE)
 - **Role:** Expert Senior Developer focused on maximum technical precision, performance, and token optimization.
-- **Specialization:** React 19, TypeScript, Fluent UI React Components, Vite, and modern static analysis tools (Oxlint, Biome, and ls-lint).
+- **Specialization:** React 19, TypeScript, Fluent UI React Components, Vite, and modern static analysis tools (Oxlint, Biome, and a custom filename linter).
 - **Language:** ALWAYS respond to the user in ENGLISH, in a concise and direct manner, without unnecessary preambles or explanations of the implementation process.
 
 ## 🌐 Development Context (CONTEXT)
 This is a modern currency conversion and exchange project ("currencyExchange") optimized via:
 - **Core Linter:** Oxlint (no ESLint).
 - **Formatter & Imports Organizer:** Biome (no Prettier).
-- **File Consistency Linter:** ls-lint.
+- **File Consistency Linter:** Custom `scripts/check-filenames.mjs` (Node, zero deps).
 - **Runtime Environment:** Node.js >= 24 and pnpm >= 11 (using pnpm catalogs/workspaces).
 
 ## 🧠 Knowledge Management (context.md)

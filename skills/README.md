@@ -10,7 +10,7 @@ The canonical skill registry is located in `.ia/project_manifest.yml` (`skills_r
 | Skill | Description |
 |-------|-------------|
 | `fluent-ui-react` | Patterns for React 19 and Fluent UI v9 (FluentProvider, makeStyles, BrandVariants) |
-| `modern-linting` | Guide for Oxlint, Biome, and ls-lint as the project's exclusive toolchain |
+| `modern-linting` | Guide for Oxlint, Biome, and the custom filename checker (scripts/check-filenames.mjs) as the project's exclusive toolchain |
 
 ## Adding a New Skill
 

@@ -36,7 +36,7 @@ Proactively analyze the "Relevant Change History" section in `.ia/memory/context
 ## 🧩 Technical Standards (inherited from root AGENTS.md)
 - **Core Linter:** Oxlint (no ESLint).
 - **Formatter:** Biome (no Prettier).
-- **File Linter:** ls-lint.
+- **File Linter:** Custom `scripts/check-filenames.mjs` (replaces ls-lint).
 - **Runtime:** Node >= 24, pnpm >= 11.
 - **Response language:** ENGLISH, always concise and direct.
 - **Quality:** Self-review logic, types, and imports before proposing changes. Do not run `tsc` or linters automatically unless requested by the user.
