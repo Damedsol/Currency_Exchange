@@ -1,0 +1,17 @@
+version: 2
+updates:
+  - package-ecosystem: "npm" # pnpm lockfile v9
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    ignore:
+      # undici 8.x breaks jsdom@29.1.1 (wrap-handler.js removed)
+      - dependency-name: "undici"
+        versions: [">=8.0.0"]
+      # postcss@8.5.x requires nanoid ^3.3.16
+      - dependency-name: "nanoid"
+        versions: [">=4.0.0"]
+      # Pinned to 9.15.0 for jsdom compatibility (pnpm-workspace.yaml)
+      - dependency-name: "@fluentui/react-motion"
+        versions: [">=9.16.0"]
