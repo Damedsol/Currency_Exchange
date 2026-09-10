@@ -23,6 +23,11 @@ describe("nginx.conf security headers", () => {
 		expect(nginxConfig).toMatch(/connect-src\s+[^;]*api\.freecurrencyapi\.com/);
 	});
 
+	it("listens on unprivileged port 8080 (non-root runtime)", () => {
+		expect(nginxConfig).toMatch(/listen\s+8080;/);
+		expect(nginxConfig).not.toMatch(/listen\s+80;/);
+	});
+
 	it("applies security headers in SPA location block", () => {
 		const locationBlock = nginxConfig.match(
 			/location \/\s*\{[^}]*add_header\s+Content-Security-Policy/s,

@@ -17,4 +17,21 @@ describe("Dockerfile", () => {
 	it("does not contain HEALTHCHECK instruction", () => {
 		expect(dockerfile).not.toMatch(/^HEALTHCHECK\b/m);
 	});
+
+	it("pins Node.js base image by digest", () => {
+		expect(dockerfile).toMatch(
+			/FROM node:\$\{NODE_VERSION\}@sha256:[0-9a-f]{64} AS (development|builder)/,
+		);
+	});
+
+	it("production stage uses unprivileged nginx image pinned by digest", () => {
+		expect(dockerfile).toMatch(
+			/FROM nginxinc\/nginx-unprivileged:alpine@sha256:[0-9a-f]{64} AS production/,
+		);
+	});
+
+	it("production stage runs as non-root user", () => {
+		const productionStage = dockerfile.split(/^FROM.*AS production/m)[1];
+		expect(productionStage).toMatch(/^USER nginx$/m);
+	});
 });
