@@ -1,7 +1,7 @@
 # Currency Exchange 💱
 
 [![License: CC BY 4.0](https://img.shields.io/badge/License-CC_BY_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/)
-[![Version](https://img.shields.io/badge/version-2.1.2-blue.svg)](https://github.com/Damedsol/currencyExchange)
+[![Version](https://img.shields.io/badge/version-2.1.3-blue.svg)](https://github.com/Damedsol/currencyExchange)
 [![TypeScript](https://img.shields.io/badge/TypeScript-6.0.3-blue?logo=typescript)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-19.2.6-blue?logo=react)](https://reactjs.org/)
 [![Vite](https://img.shields.io/badge/Vite-8.0.16-646CFF?logo=vite)](https://vitejs.dev/)
@@ -171,7 +171,7 @@ pnpm build                  # Build static files for production to /dist
 pnpm preview                # Preview production build locally
 
 # Testing (Vitest)
-pnpm test                   # Run unit & integration tests (332 tests)
+pnpm test                   # Run unit & integration tests (334 tests)
 pnpm test:coverage          # Run tests with coverage report (98%+)
 pnpm test:e2e               # Run Playwright E2E tests (37 tests)
 pnpm test:e2e:ui            # Run Playwright E2E tests in UI mode

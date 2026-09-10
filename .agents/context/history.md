@@ -6,6 +6,31 @@
 
 ## Recent Changes
 
+### 2026-09-10 — Release 2.1.3 (version bump + docs sync)
+
+- Bumped `package.json` `2.1.2` → `2.1.3` (SemVer patch, footer-cycle follow-up on `release/2.1.3`).
+- `README.md`: version badge → 2.1.3, unit test count synced 332 → 334 (footer cycle added 2 tests).
+- Version recorded in `.agents/project_manifest.yaml` and `.agents/context/project.md`.
+
+### 2026-09-10 — Footer parity with imageTransformer (TDD)
+
+- `src/components/Footer/Footer.tsx`: yearless attribution (`Damedsol · Licensed under CC BY 4.0`), nav order README → GitHub → LinkedIn, 16px brand icons, fixed `borderTop: 1px solid var(--card-border-subtle)`, focus `2px solid colorStrokeFocus1`.
+- New `src/components/Footer/FooterIcons.tsx` (vendored Iconoir github/linkedin geometry, MIT-registered in `THIRD-PARTY-LICENSES.md`); zero new deps (Fluent has no brand icons — verified T0).
+- `Footer.test.tsx`: 6 → 8 tests (no-year, nav order, 16px `aria-hidden` icons; 5-link target/rel kept).
+- **QA:** `pnpm vitest run` → 34 files / 334 tests ✅ · `tsc --noEmit` ✅ · `oxlint` ✅ · `check-filenames` ✅ · `biome check` (3 files) ✅ · `vite build` 290ms ✅.
+- **Reviewer (18:48):** ✅ APROBADO → /scribe. 0 hallazgos; 8 tests KEEP, 0 REMOVE.
+- **Lecciones:** (1) el ciclo sobrevivió al bloqueo del harness (`SANDBOXED_GATES` + `/reload`): el diseño RED se aplicó intacto al recuperarse el shell; (2) los iconos `aria-hidden` preservan `getByText` en Testing Library.
+- **ADR:** `.agents/docs/adr/003-footer-brand-icons.md`.
+- **Commit:** `aca6f64` — feat(footer): mirror imageTransformer attribution, order and icons.
+
+### 2026-09-10 — Build blocked (footer cycle): shell + code-write gates down
+
+- Task: footer parity with imageTransformer (plan `.agents/docs/plan_2026-09-10_footer-imageTransformer.md`).
+- `default.bash` fails on every call (`SANDBOXED_GATES is not defined`); no vitest/tsc/oxlint execution possible.
+- E3 gate-router blocks all `edit`/`write` outside `.agents/` ("Gate /plan…") despite active /build; T1 RED tests designed but NOT applied; zero production code touched (TDD rule honored).
+- T0 verified via file tools: no Fluent brand icons → `FooterIcons.tsx` stays in scope (recorded in plan).
+- Next: human fixes/reloads harness, re-invokes `/build` as a real command, resumes at plan T1.
+
 ### 2026-09-10 — Release 2.1.2 (version bump + docs sync)
 
 - Bumped `package.json` `2.1.1` → `2.1.2` (SemVer patch).
