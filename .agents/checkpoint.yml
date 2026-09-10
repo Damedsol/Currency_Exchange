@@ -1,7 +1,8 @@
 # .agents/checkpoint.yml
 pipeline:
-  status: "completed"
-  plan_file: ".agents/docs/plan_2026-09-10_security-fixes.md"
+  status: "completed"        # plan_completed | build_completed | reviewer_approved | completed
+  type: "harness"            # no /plan file: init/harness consolidation cycle
+  plan_file: null
   last_step: "scribe"
-  completed_at: "2026-09-10T17:20:00Z"
-  cycle_summary: "1 ciclo, 0 escalados, reviewer aprobado (6 KEEP / 0 REMOVE)"
+  completed_at: "2026-09-10T17:35:00Z"
+  cycle_summary: "Init/harness consolidation: .ia/ + root context.md + skills unified into .agents/; public-release sanitization (no environment-specific skill/MCP references)."

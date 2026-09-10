@@ -142,9 +142,12 @@ currencyExchange/
 │   └── main.tsx                   # App Entry point
 ├── docs/                          # Project documentation
 │   └── docker-usage.md            # Detailed Docker usage guide (English)
-├── .ia/                           # Agentic AI configuration & memory
-│   ├── AGENTS.md                  # Local agent behavior profile
-│   └── memory/context.md          # Persistent session memory
+├── .agents/                       # Agentic AI configuration & memory
+│   ├── context/                   # project.md (stable) + history.md (changing)
+│   ├── docs/                      # plans, reviews, specs, ADRs
+│   ├── skills/                    # Local project skills (fluent-ui-react, modern-linting)
+│   ├── checkpoint.yml             # Pipeline state
+│   └── project_manifest.yaml      # Stack, commands, skills registry
 ├── .nvmrc                         # Node.js version for nvm/nodenv (Node 24)
 ├── SECURITY.md                    # Vulnerability reporting policy
 ├── public/                        # Static assets & favicons
@@ -201,7 +204,7 @@ Our production [nginx.conf](nginx.conf) unifies performance and security policie
 - **[Docker Usage Guide](docs/docker-usage.md)**: Deep dive into the containerized environment setup.
 - **[Security Policy](SECURITY.md)**: How to report vulnerabilities.
 - **[AGENTS.md](AGENTS.md)**: Coding standards and agent behavior profile.
-- **[.ia/memory/context.md](.ia/memory/context.md)**: Technical decisions and session history.
+- **[.agents/context/](.agents/context/)**: Stable project context and change history (project memory).
 - **[LICENSE.md](LICENSE.md)**: Details about Creative Commons CC BY 4.0 policies.
 - **[THIRD-PARTY-LICENSES.md](THIRD-PARTY-LICENSES.md)**: Licenses of bundled fonts and dependencies.
 

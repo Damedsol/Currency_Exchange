@@ -1,3 +1,10 @@
+---
+name: fluent-ui-react
+description: "Implementation patterns for React 19 and Fluent UI React Components v9 in this project. Covers FluentProvider, makeStyles (Griffel atomic CSS-in-JS), BrandVariants, mergeClasses, theme tokens, and the prohibitive rules (no Tailwind, no inline styles, no Fluent v8). Use when building, refactoring or reviewing UI components."
+metadata:
+  audience: build, reviewer
+---
+
 # 🎨 Skill: Fluent UI React Components v9 & React 19
 
 This skill compiles design guidelines, standard patterns, optimizations, and troubleshooting for building smooth and premium interfaces using **React 19** and **Fluent UI React v9** (@fluentui/react-components).

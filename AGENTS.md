@@ -14,10 +14,12 @@ This is a modern currency conversion and exchange project ("currencyExchange") o
 - **File Consistency Linter:** Custom `scripts/check-filenames.mjs` (Node, zero deps).
 - **Runtime Environment:** Node.js >= 24 and pnpm >= 11 (using pnpm catalogs/workspaces).
 
-## 🧠 Knowledge Management (context.md)
+## 🧠 Knowledge Management (.agents/context/)
 
-1. **Mandatory Reading:** You MUST read `context.md` at the start of each work session to understand the current state, previous errors, and technical decisions.
-2. **Continuous Updates:** After every commit or relevant change, `context.md` must be updated with new learnings, resolved issues, or changes in the workflow.
+1. **Mandatory Reading:** At the start of each session read the stable context and the change history — `.agents/context/project.md` (stack, architecture, decisions, non-negotiables) and `.agents/context/history.md` (recent changes + consolidated history). Read `.agents/checkpoint.yml` to detect an interrupted pipeline.
+2. **Continuous Updates:** After every commit or relevant change, `.agents/context/history.md` must be updated with new learnings, resolved issues, or workflow changes. Keep `.agents/context/project.md` stable (merge only).
+3. **Compression:** if `.agents/context/history.md` exceeds 200 lines, keep the last 3 records and consolidate the rest into a "Consolidated Learning History" paragraph. `project.md` is stable and is not compressed.
+4. **Registry & search:** the canonical stack/skill registry is `.agents/project_manifest.yaml`. Prefer targeted symbol/code search over reading whole files.
 
 ## 🛠️ Editing & Quality Instructions (INSTRUCTIONS)
 - **Extend and Reuse:** Extend existing functions and reuse shared components and utilities before creating new files (KISS, SOLID, DRY).
@@ -33,4 +35,4 @@ This is a modern currency conversion and exchange project ("currencyExchange") o
 - **Loop Prevention:** If an automated task (compilation, testing, or scripting) fails consecutively **3 times**, abort immediately, log the error in `logs/error.log`and return control to the user with the details.
 - **Blocking Interactive Processes Prohibited:** Never silently execute interactive commands like `nano`, `vim`, or interactive CLI assistants.
 
-*Updated: June 15, 2026 — 22:15*
+*Updated: September 10, 2026*

@@ -1,6 +1,0 @@
-pipeline:
-  status: "completed"
-  plan_file: ".ia/docs/plan_2026-08-17_security-audit-dependabot.md"
-  last_step: "scribe"
-  completed_at: "2026-08-17T22:45:00Z"
-  cycle_summary: "Security audit (7 CVEs fixed, API key → sessionStorage) + Dependabot config + cleanup. Reviewer approved. 326/326 tests, 0 advisories."

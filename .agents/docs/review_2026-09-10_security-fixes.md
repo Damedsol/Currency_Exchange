@@ -11,7 +11,7 @@ Plan: `.agents/docs/plan_2026-09-10_security-fixes.md` · Handoff: Gate 7 (build
 - T5: explícitamente fuera de alcance (YAGNI). ✅
 - Sin hallazgos de compliance. 0 ID-XX.
 
-## QA (code-hygiene, ficheros tocados)
+## QA (higiene de código, ficheros tocados)
 
 - `FreeCurrency.ts` 246 líneas (<300); `getCurrencyRate` sin aumento de complejidad; sin secretos; sin catch silenciosos; el cambio no añade `console.*`.
 - Tests config siguen el patrón existente del repo; `vitestConfig.test.ts` 17 líneas, justificado.
