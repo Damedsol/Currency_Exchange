@@ -1,8 +1,8 @@
 # .agents/checkpoint.yml
 pipeline:
   status: "completed"        # plan_completed | build_completed | reviewer_approved | completed
-  type: "release"            # no /plan file: version bump + documentation sync
-  plan_file: null
+  type: "feature"            # plan → build → reviewer → scribe cycle
+  plan_file: ".agents/docs/plan_2026-09-10_footer-imageTransformer.md"
   last_step: "scribe"
-  completed_at: "2026-09-10T17:50:00Z"
-  cycle_summary: "Release 2.1.2: package.json version bump + README/docs sync (test counts, scripts, version badges)."
+  completed_at: "2026-09-10T18:55:00Z"
+  cycle_summary: "Footer parity with imageTransformer: TDD (RED 3fail → GREEN 334), reviewer aprobado (8 KEEP / 0 REMOVE)."

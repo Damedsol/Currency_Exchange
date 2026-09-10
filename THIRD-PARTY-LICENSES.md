@@ -44,6 +44,15 @@ listed below in accordance with the respective license terms.
 - **Copyright:** Copyright (c) Microsoft Corporation.
 - **Source:** https://github.com/microsoft/fluentui
 
+### Iconoir (icon geometry vendored as inline React components)
+
+- **License:** MIT
+- **Copyright:** Copyright (c) Iconoir (https://iconoir.com).
+- **Source:** https://github.com/iconoir-icons/iconoir
+- **Usage:** `github` and `linkedin` path geometry reused in
+  `src/components/Footer/FooterIcons.tsx` (normalized: geometry only, no
+  original presentation attributes).
+
 ## Development and build tooling
 
 Development-only dependencies (Vite, TypeScript, Vitest, Oxlint, Biome,

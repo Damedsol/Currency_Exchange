@@ -1,6 +1,8 @@
 import { makeStyles, tokens } from "@fluentui/react-components";
 import React from "react";
 
+import { GithubIcon, LinkedinIcon } from "./FooterIcons";
+
 const useStyles = makeStyles({
 	footer: {
 		display: "flex",
@@ -15,14 +17,15 @@ const useStyles = makeStyles({
 		fontFamily: tokens.fontFamilyMonospace,
 		fontSize: tokens.fontSizeBase200,
 		color: tokens.colorNeutralForeground3,
-		borderTop: "var(--card-border-subtle)",
+		borderTop: "1px solid var(--card-border-subtle)",
 	},
 	content: {
 		display: "flex",
 		flexWrap: "wrap",
 		justifyContent: "center",
 		alignItems: "center",
-		gap: tokens.spacingHorizontalS,
+		rowGap: tokens.spacingVerticalS,
+		columnGap: tokens.spacingHorizontalXL,
 	},
 	attribution: {
 		margin: 0,
@@ -32,6 +35,9 @@ const useStyles = makeStyles({
 		gap: tokens.spacingHorizontalL,
 	},
 	link: {
+		display: "inline-flex",
+		alignItems: "center",
+		gap: tokens.spacingHorizontalXS,
 		color: tokens.colorNeutralForeground3,
 		textDecoration: "none",
 		borderBottom: "1px solid transparent",
@@ -43,10 +49,9 @@ const useStyles = makeStyles({
 			borderBottomColor: tokens.colorBrandForeground1,
 		},
 		":focus-visible": {
-			outline: "2px solid transparent",
+			outline: `2px solid ${tokens.colorStrokeFocus1}`,
 			outlineOffset: "2px",
 			borderRadius: tokens.borderRadiusMedium,
-			boxShadow: `0 0 0 2px ${tokens.colorNeutralBackground1}, 0 0 0 4px ${tokens.colorCompoundBrandStroke}`,
 		},
 	},
 });
@@ -58,13 +63,11 @@ const LICENSE_URL = "https://creativecommons.org/licenses/by/4.0/";
 
 export const Footer: React.FC = () => {
 	const styles = useStyles();
-	const year = new Date().getFullYear();
 
 	return (
 		<footer className={styles.footer}>
 			<div className={styles.content}>
 				<p className={styles.attribution}>
-					{year}{" "}
 					<a
 						className={styles.link}
 						href={GITHUB_URL}
@@ -86,14 +89,6 @@ export const Footer: React.FC = () => {
 				<nav className={styles.links} aria-label="External links">
 					<a
 						className={styles.link}
-						href={GITHUB_URL}
-						target="_blank"
-						rel="noopener noreferrer"
-					>
-						GitHub
-					</a>
-					<a
-						className={styles.link}
 						href={README_URL}
 						target="_blank"
 						rel="noopener noreferrer"
@@ -102,10 +97,20 @@ export const Footer: React.FC = () => {
 					</a>
 					<a
 						className={styles.link}
+						href={GITHUB_URL}
+						target="_blank"
+						rel="noopener noreferrer"
+					>
+						<GithubIcon />
+						GitHub
+					</a>
+					<a
+						className={styles.link}
 						href={LINKEDIN_URL}
 						target="_blank"
 						rel="noopener noreferrer"
 					>
+						<LinkedinIcon />
 						LinkedIn
 					</a>
 				</nav>
