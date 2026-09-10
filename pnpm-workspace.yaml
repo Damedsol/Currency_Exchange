@@ -20,7 +20,7 @@ registries:
 minimumReleaseAge: 7200
 catalog:
   "@biomejs/biome": "^2.4.0"
-  "@fluentui/react-components": "^9.74.0"
+  "@fluentui/react-components": "^9.74.7"
   "@fluentui/react-icons": "^2.0.328"
   react: "^19.2.0"
   react-dom: "^19.2.0"
