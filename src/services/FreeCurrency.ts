@@ -159,7 +159,8 @@ export const getCurrencyRate = async ({
 	const cacheKey = `${fromCurrency}-${toCurrency}`;
 	const memoryEntry = memoryCache.get(cacheKey);
 	if (memoryEntry && Date.now() - memoryEntry.timestamp < MEMORY_CACHE_TTL) {
-		return { rate: memoryEntry.rates[toCurrency] ?? null, source: "cache" };
+		const rate = calculateRate(memoryEntry.rates, fromCurrency, toCurrency);
+		return { rate, source: "cache" };
 	}
 
 	// 2. Try loading from localStorage cache

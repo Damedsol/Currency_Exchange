@@ -2,7 +2,7 @@
 ARG NODE_VERSION=24-alpine
 
 # Stage 1: Development Environment
-FROM node:${NODE_VERSION} AS development
+FROM node:${NODE_VERSION}@sha256:50c8e8ca1d27439048670df5883f32d57cf81cff6233222c893fd0d9884cbd81 AS development
 
 # Set working directory first
 WORKDIR /app
@@ -42,7 +42,7 @@ EXPOSE 5173
 CMD ["pnpm", "run", "dev", "--", "--host", "0.0.0.0"]
 
 # Stage 2: Build Environment
-FROM node:${NODE_VERSION} AS builder
+FROM node:${NODE_VERSION}@sha256:50c8e8ca1d27439048670df5883f32d57cf81cff6233222c893fd0d9884cbd81 AS builder
 
 # Set working directory first
 WORKDIR /app
@@ -70,8 +70,11 @@ COPY --chown=node:node . .
 # Build the application as the node user
 RUN pnpm run build
 
-# Stage 3: Production Environment
-FROM nginx:alpine AS production
+# Stage 3: Production Environment (non-root via nginx-unprivileged)
+FROM nginxinc/nginx-unprivileged:alpine@sha256:2ddec616f1cb58bcac057aa388f28cb81e35137641ef4226d321714499329bd1 AS production
+
+# Drop root privileges: unprivileged image listens on 8080
+USER nginx
 
 # Copy custom Nginx configuration for production
 COPY nginx.conf /etc/nginx/conf.d/default.conf
@@ -80,7 +83,7 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=builder /app/dist /usr/share/nginx/html
 
 # Expose Nginx port
-EXPOSE 80
+EXPOSE 8080
 
 # Start Nginx in the foreground
 CMD ["nginx", "-g", "daemon off;"] 

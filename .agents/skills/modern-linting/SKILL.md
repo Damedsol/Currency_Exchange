@@ -1,3 +1,10 @@
+---
+name: modern-linting
+description: "Guidance for this project's exclusive toolchain: Oxlint (linter), Biome (formatter + import organizer), and the custom filename checker (scripts/check-filenames.mjs, replacing ls-lint). Prohibits ESLint and Prettier. Includes commands, configuration and edge-case lessons. Use when linting, formatting, naming files or configuring static analysis."
+metadata:
+  audience: build, reviewer
+---
+
 # 🛠️ Skill: Modern Linting & Formatting (Oxlint, Biome, custom filename checker)
 
 This skill documents the guidelines, standards, and static analysis workflows of the project. It completely replaces traditional workflows based on ESLint and Prettier with high-performance tools written in Rust/Go.
