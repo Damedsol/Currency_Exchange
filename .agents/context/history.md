@@ -15,7 +15,7 @@
 - **Reviewer (18:48):** ✅ APROBADO → /scribe. 0 hallazgos; 8 tests KEEP, 0 REMOVE.
 - **Lecciones:** (1) el ciclo sobrevivió al bloqueo del harness (`SANDBOXED_GATES` + `/reload`): el diseño RED se aplicó intacto al recuperarse el shell; (2) los iconos `aria-hidden` preservan `getByText` en Testing Library.
 - **ADR:** `.agents/docs/adr/003-footer-brand-icons.md`.
-- **Commit:** pending (scribe).
+- **Commit:** `aca6f64` — feat(footer): mirror imageTransformer attribution, order and icons.
 
 ### 2026-09-10 — Build blocked (footer cycle): shell + code-write gates down
 
