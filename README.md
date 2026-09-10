@@ -1,7 +1,7 @@
 # Currency Exchange 💱
 
 [![License: CC BY 4.0](https://img.shields.io/badge/License-CC_BY_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/)
-[![Version](https://img.shields.io/badge/version-2.1.1-blue.svg)](https://github.com/Damedsol/Currency_Exchange)
+[![Version](https://img.shields.io/badge/version-2.1.2-blue.svg)](https://github.com/Damedsol/currencyExchange)
 [![TypeScript](https://img.shields.io/badge/TypeScript-6.0.3-blue?logo=typescript)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-19.2.6-blue?logo=react)](https://reactjs.org/)
 [![Vite](https://img.shields.io/badge/Vite-8.0.16-646CFF?logo=vite)](https://vitejs.dev/)
@@ -47,7 +47,7 @@ A modern, responsive web application for real-time currency conversion built wit
 | **PNPM** | v11.15.0 | Fast, disk space efficient package manager |
 | **Oxlint** | LATEST | Blazing-fast static linter (Rust-powered) |
 | **Biome** | LATEST | Blazing-fast formatting and import organization (Rust-powered) |
-| **ls-lint** | LATEST | Filename consistency enforcer |
+| **Filename Checker** | LATEST | Custom `scripts/check-filenames.mjs` (replaces ls-lint) |
 | **Docker & Compose** | v3.8+ | Containerized local development & production orchestration |
 | **Nginx** | alpine | Production web server with hardening, gzip, and SPA routing |
 
@@ -64,8 +64,8 @@ Make sure you have [Node.js](https://nodejs.org/) (v24 or higher) and [PNPM](htt
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/Damedsol/Currency_Exchange.git
-   cd Currency_Exchange
+   git clone https://github.com/Damedsol/currencyExchange.git
+   cd currencyExchange
    ```
 
 2. **Initialize Environment Variables:**
@@ -121,7 +121,7 @@ Open [http://localhost:8080](http://localhost:8080) in your browser.
 
 ```
 currencyExchange/
-├── src/                           # Source code principal
+├── src/                           # Main source code
 │   ├── components/                # Reusable React components
 │   │   ├── ActionButtons/
 │   │   ├── ApiKeySection/
@@ -142,9 +142,12 @@ currencyExchange/
 │   └── main.tsx                   # App Entry point
 ├── docs/                          # Project documentation
 │   └── docker-usage.md            # Detailed Docker usage guide (English)
-├── .ia/                           # Agentic AI configuration & memory
-│   ├── AGENTS.md                  # Local agent behavior profile
-│   └── memory/context.md          # Persistent session memory
+├── .agents/                       # Agentic AI configuration & memory
+│   ├── context/                   # project.md (stable) + history.md (changing)
+│   ├── docs/                      # plans, reviews, specs, ADRs
+│   ├── skills/                    # Local project skills (fluent-ui-react, modern-linting)
+│   ├── checkpoint.yml             # Pipeline state
+│   └── project_manifest.yaml      # Stack, commands, skills registry
 ├── .nvmrc                         # Node.js version for nvm/nodenv (Node 24)
 ├── SECURITY.md                    # Vulnerability reporting policy
 ├── public/                        # Static assets & favicons
@@ -168,14 +171,16 @@ pnpm build                  # Build static files for production to /dist
 pnpm preview                # Preview production build locally
 
 # Testing (Vitest)
-pnpm test                   # Run unit & integration tests (299 tests)
+pnpm test                   # Run unit & integration tests (332 tests)
 pnpm test:coverage          # Run tests with coverage report (98%+)
-pnpm test:e2e               # Run Playwright E2E tests (10 tests)
+pnpm test:e2e               # Run Playwright E2E tests (37 tests)
+pnpm test:e2e:ui            # Run Playwright E2E tests in UI mode
 
 # Code Quality & Format
+pnpm typecheck              # Type-check with tsc --noEmit
 pnpm format                 # Formats files and organizes imports with Biome
-pnpm format:check           # Checks formatting with Biome
-pnpm lint                   # Performs correctness checks with Oxlint & ls-lint
+pnpm lint                   # Verifies code with Oxlint + custom filename checker
+pnpm check-filenames        # Checks filename conventions only
 ```
 
 ---
@@ -201,13 +206,14 @@ Our production [nginx.conf](nginx.conf) unifies performance and security policie
 - **[Docker Usage Guide](docs/docker-usage.md)**: Deep dive into the containerized environment setup.
 - **[Security Policy](SECURITY.md)**: How to report vulnerabilities.
 - **[AGENTS.md](AGENTS.md)**: Coding standards and agent behavior profile.
-- **[.ia/memory/context.md](.ia/memory/context.md)**: Technical decisions and session history.
+- **[.agents/context/](.agents/context/)**: Stable project context and change history (project memory).
 - **[LICENSE.md](LICENSE.md)**: Details about Creative Commons CC BY 4.0 policies.
+- **[THIRD-PARTY-LICENSES.md](THIRD-PARTY-LICENSES.md)**: Licenses of bundled fonts and dependencies.
 
 ---
 
 ## 📄 License
-This project is licensed under **Creative Commons Attribution 4.0 International (CC BY 4.0)**. Refer to [LICENSE.md](LICENSE.md) for full terms.
+This project is licensed under **Creative Commons Attribution 4.0 International (CC BY 4.0)**. Refer to [LICENSE.md](LICENSE.md) for full terms. Bundled fonts and dependencies are covered by their own licenses — see [THIRD-PARTY-LICENSES.md](THIRD-PARTY-LICENSES.md).
 
 ---
 

@@ -1,0 +1,89 @@
+# Project manifest — currencyExchange
+# Maintained by the project's agentic setup. Merge-only: preserve team content.
+version: 1
+
+project:
+  name: currencyExchange
+  version: 2.1.2
+  description: >
+    Currency conversion & exchange rates SPA. React 19 + Fluent UI v9, built with
+    Vite, hardened Docker/Nginx production image, TDD with Vitest + Playwright.
+
+stack:
+  - React 19.2
+  - TypeScript 6 (strict)
+  - Vite 8.0.16
+  - Fluent UI React Components v9.74 (Griffel makeStyles)
+  - Vitest 4.1.11 + @testing-library/react + jsdom
+  - Playwright 1.60 (E2E)
+  - Oxlint 1.66 (linter, no ESLint)
+  - Biome 2.4 (formatter, no Prettier)
+  - Custom filename linter (scripts/check-filenames.mjs, replaces ls-lint)
+  - pnpm 11 (catalogs + workspaces), Node >= 24 (.nvmrc = 24)
+  - Husky + lint-staged + commitlint (git hooks)
+  - Docker multi-stage + Nginx unprivileged (production, non-root, port 8080)
+
+layers:
+  ui: src/components            # 14 subdirectories, PascalCase.tsx
+  services: src/services        # FreeCurrency.ts, LocalStorage.ts
+  hooks: src/hooks              # useApiKey, useConversion, useTheme (camelCase.ts)
+  theme: src/theme              # neonTheme.ts (BrandVariants + WCAG tokens)
+  config: src/config            # config contract tests (nginx/dockerfile/license/...)
+  styles: src/styles            # main.css + globalStyles.ts
+  types: src/types              # centralized types
+  e2e: e2e                      # Playwright specs
+  scripts: scripts              # check-filenames.mjs
+  docs: docs                    # project documentation (not agent docs)
+  skills: .agents/skills        # local project skills
+
+ignored_paths:
+  - node_modules
+  - dist
+  - .git
+  - .husky
+
+entrypoints:
+  primary: "AGENTS.md"          # canonical governance for AI agents
+  app: ["index.html", "src/main.tsx"]
+  discovered: []                # no GEMINI.md/CLAUDE.md/.cursorrules present; README.md is not an agent entrypoint
+  notes: "Root AGENTS.md is the canonical governance; memory in .agents/context/{project,history}.md."
+
+commands:
+  dev: pnpm dev
+  build: pnpm build
+  typecheck: pnpm typecheck
+  lint: pnpm lint
+  format: pnpm format
+  test: pnpm vitest run
+  test:watch: pnpm vitest
+  test:coverage: pnpm vitest run --coverage
+  test:e2e: pnpm playwright test
+
+env_keys:
+  - NODE_ENV
+  - VITE_API_URL
+  - VITE_DEBUG
+  - VITE_HMR
+  - CHOKIDAR_USEPOLLING
+  - WATCHPACK_POLLING
+  - FAST_REFRESH
+  - VITE_LOG_LEVEL
+
+services:
+  - Docker
+  - Docker Compose
+  - Nginx (unprivileged, port 8080)
+
+# Project-local skills (.agents/skills/<name>/SKILL.md)
+local_skills:
+  - name: fluent-ui-react
+    path: .agents/skills/fluent-ui-react/SKILL.md
+    status: active
+  - name: modern-linting
+    path: .agents/skills/modern-linting/SKILL.md
+    status: active
+
+legacy:
+  migrated_from: ".ia/"
+  migrated_at: "2026-09-10"
+  status: "merged-and-removed"

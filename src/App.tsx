@@ -11,6 +11,7 @@ import { AppHeader } from "./components/AppHeader/AppHeader";
 import { AppMessageBar } from "./components/AppMessageBar/AppMessageBar";
 import { ConversionControls } from "./components/ConversionControls/ConversionControls";
 import { ErrorBoundary } from "./components/ErrorBoundary/ErrorBoundary";
+import { Footer } from "./components/Footer/Footer";
 
 const HistoryPanel = lazy(() =>
 	import("./components/HistoryPanel/HistoryPanel").then((m) => ({
@@ -182,6 +183,7 @@ function App(): React.JSX.Element {
 					</ErrorBoundary>
 				</main>
 			</Card>
+			<Footer />
 		</div>
 	);
 }

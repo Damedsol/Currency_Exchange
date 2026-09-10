@@ -16,6 +16,7 @@ import {
 
 beforeEach(() => {
 	localStorage.clear();
+	sessionStorage.clear();
 	vi.restoreAllMocks();
 });
 
@@ -41,7 +42,7 @@ describe("localStorageFetchService", () => {
 	});
 
 	it("returns trimmed API key when stored", () => {
-		localStorage.setItem("apiKey", `  ${validKey}  `);
+		sessionStorage.setItem("apiKey", `  ${validKey}  `);
 		expect(localStorageFetchService()).toBe(validKey);
 	});
 });
@@ -49,7 +50,7 @@ describe("localStorageFetchService", () => {
 describe("localStorageStoreService", () => {
 	it("stores a valid API key", () => {
 		localStorageStoreService(validKey);
-		expect(localStorage.getItem("apiKey")).toBe(validKey);
+		expect(sessionStorage.getItem("apiKey")).toBe(validKey);
 	});
 
 	it("throws on empty key", () => {
@@ -67,15 +68,15 @@ describe("localStorageStoreService", () => {
 
 describe("clearLocalStorage", () => {
 	it("removes apiKey and rates cache", () => {
-		localStorage.setItem("apiKey", "test");
+		sessionStorage.setItem("apiKey", "test");
 		localStorage.setItem("currencyRatesCache", "{}");
 		clearLocalStorage();
-		expect(localStorage.getItem("apiKey")).toBeNull();
+		expect(sessionStorage.getItem("apiKey")).toBeNull();
 		expect(localStorage.getItem("currencyRatesCache")).toBeNull();
 	});
 
 	it("does not remove unrelated localStorage keys", () => {
-		localStorage.setItem("apiKey", "test");
+		sessionStorage.setItem("apiKey", "test");
 		localStorage.setItem("currencyRatesCache", "{}");
 		localStorage.setItem("unrelatedKey", "shouldPersist");
 		clearLocalStorage();
@@ -270,8 +271,8 @@ describe("conversion history", () => {
 	it("clearLocalStorage handles storage errors gracefully", () => {
 		const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 		vi.stubGlobal(
-			"localStorage",
-			Object.assign({}, localStorage, {
+			"sessionStorage",
+			Object.assign({}, sessionStorage, {
 				removeItem: vi.fn(() => {
 					throw new Error("Storage access denied");
 				}),
@@ -333,8 +334,8 @@ describe("conversion history", () => {
 	it("localStorageFetchService handles storage errors gracefully", () => {
 		const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 		vi.stubGlobal(
-			"localStorage",
-			Object.assign({}, localStorage, {
+			"sessionStorage",
+			Object.assign({}, sessionStorage, {
 				getItem: vi.fn(() => {
 					throw new Error("Storage access denied");
 				}),

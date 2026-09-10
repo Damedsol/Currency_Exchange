@@ -1,4 +1,11 @@
-# 🛠️ Skill: Modern Linting & Formatting (Oxlint, Biome, ls-lint)
+---
+name: modern-linting
+description: "Guidance for this project's exclusive toolchain: Oxlint (linter), Biome (formatter + import organizer), and the custom filename checker (scripts/check-filenames.mjs, replacing ls-lint). Prohibits ESLint and Prettier. Includes commands, configuration and edge-case lessons. Use when linting, formatting, naming files or configuring static analysis."
+metadata:
+  audience: build, reviewer
+---
+
+# 🛠️ Skill: Modern Linting & Formatting (Oxlint, Biome, custom filename checker)
 
 This skill documents the guidelines, standards, and static analysis workflows of the project. It completely replaces traditional workflows based on ESLint and Prettier with high-performance tools written in Rust/Go.
 
@@ -17,7 +24,7 @@ This skill documents the guidelines, standards, and static analysis workflows of
 The project's static analysis system relies on a strict separation of concerns to maximize CPU performance and code hygiene:
 *   **Oxlint (Linter):** Exclusively responsible for analyzing the AST to detect logical errors, bad practices, and potential bugs in milliseconds.
 *   **Biome (Formatter):** Exclusively responsible for the aesthetics and format of the code (spacing, quotes, tabs, commas) and organizing imports. Its internal linter is **disabled**.
-*   **ls-lint (File Linter):** Exclusively responsible for maintaining file naming style consistency.
+*   **Custom filename checker (`scripts/check-filenames.mjs`):** Node script (zero deps) that enforces file and directory naming style consistency across `src/`, replacing `ls-lint`.
 *   **Husky + Lint-Staged:** Automates fast verification during pre-commit, running only on modified files.
 
 ---
@@ -27,8 +34,11 @@ The project's static analysis system relies on a strict separation of concerns t
 To format and verify the code locally, use the following `package.json` scripts:
 
 ```bash
-# Run Oxlint and ls-lint to check for syntax and file naming errors
+# Run Oxlint and the custom filename checker to catch syntax and file naming errors
 pnpm run lint
+
+# Run only the custom filename checker (exit 0 if conventions are respected)
+pnpm run check-filenames
 
 # Run Biome to format and organize imports across the workspace
 pnpm run format
@@ -114,28 +124,25 @@ Oxlint is used in its recommended high-performance mode, ensuring code analysis 
 }
 ```
 
-### 3. ls-lint Configuration (`.ls-lint.yml`)
-ls-lint restricts filenames to maintain absolute visual consistency across the directory tree:
+### 3. Custom Filename Checker (`scripts/check-filenames.mjs`)
+Replaces `ls-lint` (removed). Zero-dependency Node script that validates the full `src/` tree:
 
-```yaml
-ls:
-  .dir: kebab-case
-  .js: camelCase
-  .ts: camelCase
-  .tsx: PascalCase
-  .css: camelCase
-  .scss: camelCase
-  .yml: dot-notation | kebab-case
-  .yaml: dot-notation | kebab-case
-  .json: dot-notation | kebab-case | camelCase
-
-ignore:
-  - node_modules
-  - dist
-  - .git
-  - .idea
-  - LICENSE.md
+```text
+src/                            → directories lowercase
+src/components/<Component>/     → directory PascalCase
+src/components/**/*.tsx         → files PascalCase (incl. *.test.tsx)
+src/services/*.ts               → PascalCase (FreeCurrency.ts, LocalStorage.ts)
+src/hooks/*.ts(x)               → camelCase (useApiKey.ts, useTheme.tsx)
+src/theme/*, src/types/*, src/config/* → camelCase
+src/styles/*.css                → kebab-case (main.css, fonts.css)
+src/styles/*.ts                 → camelCase (globalStyles.ts)
+src/test/*                      → lowercase (setup.ts)
+Reserved: main.tsx, App.tsx, vite-env.d.ts, index.*
+Test suffix: *.test.ts(x) / *.spec.ts(x) with base name matching the dir convention
 ```
+
+Run it with `pnpm check-filenames` (or via `pnpm lint`). Exit code 1 + actionable
+messages on violation, 0 on success. Symlinks and ignored dirs are never followed.
 
 ### 4. Integrated Git Hooks (`.lintstagedrc.json`)
 Ensures buggy or poorly formatted code never makes it to the repository:
@@ -196,7 +203,7 @@ Biome might fail or error when trying to format JSON files containing comments o
 
 *   **❌ DO NOT use Prettier or ESLint:** Both packages have been completely replaced. Installing ESLint dependencies or extensions in this project will break the pre-commit system and performance.
 *   **❌ DO NOT enable the Biome linter:** Biome has linter capabilities, but they have been explicitly disabled (`linter.enabled: false` in `biome.json`) to avoid redundancy and collisions with Oxlint's ultra-fast suggestions.
-*   **❌ DO NOT ignore ls-lint:** If you rename a `.tsx` component to lowercase or a `.ts` service file to PascalCase, the pre-commit suite will abort the push. Follow the conventions: Components in `PascalCase.tsx`, utilities/services in `camelCase.ts`.
+*   **❌ DO NOT ignore the custom filename checker:** If you rename a `.tsx` component to lowercase or a `.ts` service file to camelCase, `pnpm lint` will fail. Follow the conventions: Components in `PascalCase.tsx`, services in `PascalCase.ts`, hooks in `camelCase.ts`.
 *   **❌ DO NOT bypass Git hooks (`git commit --no-verify`):** Bypassing local linters introduces buggy code into continuous integration (CI). Solve issues locally using `pnpm run lint` and `pnpm run format`.
 
 ---

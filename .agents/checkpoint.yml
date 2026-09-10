@@ -1,0 +1,8 @@
+# .agents/checkpoint.yml
+pipeline:
+  status: "completed"        # plan_completed | build_completed | reviewer_approved | completed
+  type: "release"            # no /plan file: version bump + documentation sync
+  plan_file: null
+  last_step: "scribe"
+  completed_at: "2026-09-10T17:50:00Z"
+  cycle_summary: "Release 2.1.2: package.json version bump + README/docs sync (test counts, scripts, version badges)."

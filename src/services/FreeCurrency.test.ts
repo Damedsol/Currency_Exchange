@@ -148,6 +148,22 @@ describe("FreeCurrency service", () => {
 		expect(result.source).toBe("cache");
 	});
 
+	it("returns cross-rate (not USD-based rate) on in-memory cache hit", async () => {
+		mockFetchOnce(mockRates);
+		await getCurrencyRate({
+			fromCurrency: "EUR",
+			toCurrency: "GBP",
+			apiKey: validApiKey,
+		});
+		const result = await getCurrencyRate({
+			fromCurrency: "EUR",
+			toCurrency: "GBP",
+			apiKey: validApiKey,
+		});
+		expect(result.source).toBe("cache");
+		expect(result.rate).toBeCloseTo(mockRates.GBP / mockRates.EUR, 2);
+	});
+
 	it("calls API with HTTPS URL", async () => {
 		const capture = mockFetchCapture();
 		await getCurrencyRate({
