@@ -4,6 +4,7 @@ version: 1
 
 project:
   name: currencyExchange
+  version: 2.1.2
   description: >
     Currency conversion & exchange rates SPA. React 19 + Fluent UI v9, built with
     Vite, hardened Docker/Nginx production image, TDD with Vitest + Playwright.

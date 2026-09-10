@@ -1,8 +1,8 @@
 # .agents/checkpoint.yml
 pipeline:
   status: "completed"        # plan_completed | build_completed | reviewer_approved | completed
-  type: "harness"            # no /plan file: init/harness consolidation cycle
+  type: "release"            # no /plan file: version bump + documentation sync
   plan_file: null
   last_step: "scribe"
-  completed_at: "2026-09-10T17:35:00Z"
-  cycle_summary: "Init/harness consolidation: .ia/ + root context.md + skills unified into .agents/; public-release sanitization (no environment-specific skill/MCP references)."
+  completed_at: "2026-09-10T17:50:00Z"
+  cycle_summary: "Release 2.1.2: package.json version bump + README/docs sync (test counts, scripts, version badges)."

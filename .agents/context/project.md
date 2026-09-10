@@ -5,6 +5,8 @@
 
 ## Stack & Configuration
 
+- **Version:** Semantic Versioning; current `package.json` version `2.1.2` (CC BY 4.0).
+
 - **React 19 + Fluent UI v9:** UI built with `FluentProvider`, `makeStyles` (Griffel atomic CSS-in-JS), components from `@fluentui/react-components`.
 - **TypeScript 6 (strict):** `strict`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, `noImplicitOverride`.
 - **Vite 8.0.16:** React plugin, HMR polling (300ms) for Docker, manual chunking (react-dom, react, fluent).

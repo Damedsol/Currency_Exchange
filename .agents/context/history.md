@@ -6,6 +6,12 @@
 
 ## Recent Changes
 
+### 2026-09-10 — Release 2.1.2 (version bump + docs sync)
+
+- Bumped `package.json` `2.1.1` → `2.1.2` (SemVer patch).
+- `README.md`: version badge → 2.1.2, current test counts (332 unit / 37 E2E), corrected script list (`format:check` did not exist → `typecheck` / `format` / `check-filenames`), English cleanup.
+- Version recorded in `.agents/project_manifest.yaml` and `.agents/context/project.md`.
+
 ### 2026-09-10 — Init/harness: consolidate `.ia/` + `context.md` + skills into `.agents/`
 
 **Origin:** legacy `.ia/` and root `context.md` coexisted with the newer `.agents/`; project skills sat at the repo root.
