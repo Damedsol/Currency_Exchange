@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 import { Footer } from "./Footer";
@@ -11,12 +11,12 @@ describe("Footer component", () => {
 		expect(container.querySelector("footer")).not.toBeNull();
 	});
 
-	it("renders CC attribution with author name and current year", () => {
+	it("renders CC attribution without year", () => {
 		render(<Footer />);
 		const year = new Date().getFullYear();
 		expect(screen.queryByText("©")).toBeNull();
 		expect(screen.queryByText(/Created by/)).toBeNull();
-		expect(screen.getByText(new RegExp(`${year}`))).toBeDefined();
+		expect(screen.queryByText(new RegExp(`${year}`))).toBeNull();
 		expect(screen.getByText("Damedsol")).toBeDefined();
 		expect(screen.getByText("CC BY 4.0")).toBeDefined();
 		expect(screen.getByText(/Licensed under/)).toBeDefined();
@@ -40,6 +40,25 @@ describe("Footer component", () => {
 		const rel = readme.closest("a")?.getAttribute("rel") ?? "";
 		expect(rel).toContain("noopener");
 		expect(rel).toContain("noreferrer");
+	});
+
+	it("renders nav links in README, GitHub, LinkedIn order", () => {
+		render(<Footer />);
+		const nav = screen.getByRole("navigation", { name: "External links" });
+		const names = within(nav)
+			.getAllByRole("link")
+			.map((link) => link.textContent);
+		expect(names).toEqual(["README", "GitHub", "LinkedIn"]);
+	});
+
+	it("renders 16px decorative brand icons for GitHub and LinkedIn", () => {
+		const { container } = render(<Footer />);
+		const icons = container.querySelectorAll('footer svg[aria-hidden="true"]');
+		expect(icons).toHaveLength(2);
+		for (const icon of icons) {
+			expect(icon.getAttribute("width")).toBe("16");
+			expect(icon.getAttribute("height")).toBe("16");
+		}
 	});
 
 	it("renders GitHub and LinkedIn external links", () => {
