@@ -1,0 +1,7 @@
+# .agents/checkpoint.yml
+pipeline:
+  status: "completed"
+  plan_file: ".agents/docs/plan_2026-09-10_security-fixes.md"
+  last_step: "scribe"
+  completed_at: "2026-09-10T17:20:00Z"
+  cycle_summary: "1 ciclo, 0 escalados, reviewer aprobado (6 KEEP / 0 REMOVE)"

@@ -255,6 +255,16 @@ This document dynamically records technical learnings, architectural decisions, 
   - **QA Lessons:** `rsvg-convert` regenerates PNGs deterministically; pixel histogram confirms dark bg dominant + neon lime strokes.
   - **QA:** 318/318 unit tests (32 files). Full gate: oxlint 0 err, check-filenames ✅, tsc 0 err, vitest 318/318, Vite build 253ms.
 
+- **2026-09-10: Security audit remediation (audit → build → reviewer → scribe)**
+  - **Change Details:**
+    - Fixed `getCurrencyRate()` in-memory cache hit returning USD-based rate instead of cross-rate → now uses `calculateRate()` (DeepSec HIGH_BUG). New regression test asserting numeric value on 2nd call for non-USD pair.
+    - Patched CVEs: `fast-uri >=4.1.3` override (4 HIGH advisories), `vitest`/`@vitest/coverage-v8 ^4.1.11` (mocker path traversal). `pnpm audit` → 0 vulns.
+    - Hardened `Dockerfile`: base images pinned by digest, production on `nginxinc/nginx-unprivileged` + `USER nginx`, `EXPOSE 8080`; `nginx.conf` `listen 8080`. Validated via `docker build` + smoke test (user `nginx`, HTTP 200, CSP/HSTS intact).
+    - `vitest.config.ts` excludes `.deepsec/**` (DeepSec workspace node_modules broke `pnpm test` with 2000+ foreign files). New `src/config/vitestConfig.test.ts`.
+    - Reviewer: APROBADO (6 KEEP / 0 REMOVE). Cycle memory in `.agents/` (plan, review, specs, ADR-001, checkpoint, history).
+  - **QA Lessons:** `exclude: ["node_modules/**"]` doesn't cover nested `node_modules` — use `**/node_modules/**` for future tooling workspaces; pnpm v11 auto-syncs lockfile on drift without touching `node_modules`; `imagetools inspect --format '{{.Manifest.Digest}}'` yields the pinnable multi-arch digest.
+  - **QA:** 332/332 unit tests (34 files). Full gate: oxlint 0 err, check-filenames ✅, tsc 0 err, vitest 332/332, Vite build 293ms.
+
 ## Relevant Files
 - `docs/docker-usage.md`: Docker deployment guide
 - `src/theme/neonTheme.ts`: BrandVariants + baseOverrides + dark/light + status + palette overrides (58 tokens total)
