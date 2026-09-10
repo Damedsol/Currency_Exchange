@@ -6,6 +6,12 @@
 
 ## Recent Changes
 
+### 2026-09-10 — Release 2.1.3 (version bump + docs sync)
+
+- Bumped `package.json` `2.1.2` → `2.1.3` (SemVer patch, footer-cycle follow-up on `release/2.1.3`).
+- `README.md`: version badge → 2.1.3, unit test count synced 332 → 334 (footer cycle added 2 tests).
+- Version recorded in `.agents/project_manifest.yaml` and `.agents/context/project.md`.
+
 ### 2026-09-10 — Footer parity with imageTransformer (TDD)
 
 - `src/components/Footer/Footer.tsx`: yearless attribution (`Damedsol · Licensed under CC BY 4.0`), nav order README → GitHub → LinkedIn, 16px brand icons, fixed `borderTop: 1px solid var(--card-border-subtle)`, focus `2px solid colorStrokeFocus1`.
