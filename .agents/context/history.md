@@ -26,7 +26,7 @@
 
 **QA:** no code changes → tests not re-run. `AGENTS.md` = 38 lines (≤150); skill loader returns 2 skills / 0 diagnostics.
 **ADR:** `.agents/docs/adr/002-agentic-memory-layout.md`.
-**Commit:** pending (scribe).
+**Commit:** `7ff1474` — docs(agents): consolidate and sanitize harness for public release.
 
 ### 2026-09-10 — Security fixes (TDD)
 
