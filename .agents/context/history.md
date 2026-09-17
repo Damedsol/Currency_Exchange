@@ -6,6 +6,12 @@
 
 ## Recent Changes
 
+### 2026-09-18 — Release 2.2.0 (version bump + docs sync)
+
+- SemVer **minor** bump `2.1.3` → `2.2.0` after finishing `feature/minor-fixes-and-security` into `develop` (new functionality: currency auto-load + conversion gating, dependency override policy).
+- Synced sources of truth: `package.json`, `.agents/project_manifest.yaml` (`project.version`), `.agents/context/project.md`, `README.md` version badge. No runtime/infra files touched.
+- No version-consistency test exists (`src/config/` covers nginx/dockerfile/license/dependabot but not `package.json.version`), so the sync is manual.
+
 ### 2026-09-18 — UI Cycle A: automatic currency load + conversion gating (TDD)
 
 **Origin:** user report — with an API key entered but currencies not loaded the app still allowed a conversion; the load must happen automatically as soon as the key is available. (Cycle B of the same change covers the fixed-size/jump-free layout split out for the 5-file workload SLO.)
