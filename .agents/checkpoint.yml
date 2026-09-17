@@ -1,8 +1,57 @@
 # .agents/checkpoint.yml
+# status: plan_completed | build_completed | reviewer_rejected | reviewer_approved | completed
+# NOTE: keep `status`, `plan_file`, `review_file` and `diff_stat` free of inline comments —
+# workflow-approvals.readCheckpoint parses them with /^\s*(\w+):\s*"?([^"]*)"?\s*$/
 pipeline:
-  status: "completed"        # plan_completed | build_completed | reviewer_approved | completed
-  type: "feature"            # plan → build → reviewer → scribe cycle
-  plan_file: ".agents/docs/plan_2026-09-10_footer-imageTransformer.md"
+  status: "completed"
+  type: "security"
+  plan_file: ".agents/docs/plan_2026-09-17_security-advisories-deps.md"
+  spec_file: ".agents/docs/specs/change_spec.yaml"
+  analysis_file: ".agents/docs/analysis_2026-09-17_security-advisories.md"
+  report_file: ".agents/docs/security_report.md"
+  review_file: ".agents/docs/review_2026-09-17_security-advisories-deps.md"
+  reviewer_hash: "secadv-deps-2026-09-17|7files+117-26"
+  scribe_hash: "secadv-deps-2026-09-17|rev:7files+117-26|adr-004|sec-09..12"
+  completed_at: "2026-09-17T16:28:00+01:00"
+  cycle_summary: >
+    Cycle A of the security-advisories change: overrides bounded to their major and floored at the
+    advisory fix versions (js-yaml 5.2.2 -> 4.3.2), Dependabot minor/patch grouping, .agents/.state
+    gitignored, 12 new contract tests, 346/346 tests green, pnpm audit 0 + OSV 385/385 clean.
+    Archived: R1/R2/R3/R5 -> specs/security.md SEC-09..SEC-12 + ADR-004. Deferred: R4/R6/R7
+    (Cycles B/C) -> change_spec.yaml stays active.
   last_step: "scribe"
-  completed_at: "2026-09-10T18:55:00Z"
-  cycle_summary: "Footer parity with imageTransformer: TDD (RED 3fail → GREEN 334), reviewer aprobado (8 KEEP / 0 REMOVE)."
+  plan_hash: "secadv-deps-2026-09-17"
+  build_hash: "secadv-deps-2026-09-17"
+  index_project: "projects-github-currencyexchange"
+  context_hash_file: ".agents/.state/context_hash.json"
+  build_state_file: ".agents/.state/build_state.json"
+  audit_cache_file: ".agents/.state/audit_cache.json"
+  diff_stat: "tracked: 7 files / +112 -26 (incl. generated pnpm-lock.yaml) · new: 3 test files (overrides 160, gitignore 33) · code/config non-generated delta ≈ 241 lines / 6 files · 5 locked files (R2 SLO +1 file, all review-mandated, no split)"
+  review_scope: ["R1", "R2", "R3", "R5"]
+  pending_ids:
+  review_fixes: "ronda 1: ID-01 (gitignore .agents/.state/) + ID-02 (2 GHSAs) — ambos verificados por efecto en la ronda 2"
+  deferred_ids: T6,T7,T8,T9,T10
+  decisions:
+    - "Keep the cycle in feature/minor-fixes-and-security; after the merge the user closes the 7 stale Dependabot PRs/branches"
+    - "gitea remote (v2.1.1) is OUT OF SCOPE for now"
+  approvals_required:
+    - "pnpm up undici fast-uri postcss picomatch yaml nanoid (R3 freshness — AGENTS.md)"
+    - "Cycle B: catalog refresh (R4 — AGENTS.md)"
+    - "Cycle C: infra .github/workflows/ci.yml (R6 — AGENTS.md)"
+    - "Cycle C: destructive .deepsec/ removal (R7 — E1)"
+  notes: >
+    Cycle A: executed (T1-T5), reviewed in 2 rounds -> APPROVED. R1/R2/R3/R5 green,
+    12 tests KEEP / 0 REMOVE, suite 36 files / 346 tests exit 0, tsc 0, oxlint clean,
+    audit 0 + OSV 385/385 + GitHub Advisory API clean on the 7 override versions.
+    ID-01 fixed and verified by effect (git check-ignore -> .gitignore:43; state dir
+    no longer untracked; oxlint repo-wide clean; biome no longer reports the state JSON).
+    ID-02 fixed (GHSA-c2c7-rcm5-vvqj + GHSA-rf6f-7fwh-wjgh in security_report.md §2).
+    change_spec.yaml must stay `active`: R4/R6/R7 -> deferred_ids T6-T10 (Cycles B/C).
+    Pre-existing, OUT OF SCOPE: biome check . still fails on scripts/check-filenames.mjs.
+    Cleanup before /scribe: dist/ (3.4M, regenerable) removed; .deepsec/ (761M, 30813 files,
+    R7) awaiting explicit user OK; .agents/.state/ kept (harness contract) and gitignored;
+    node_modules untouched. Harness gap reported: policy.ts ASK regex does not match
+    `rm <path>` -> `rm -r dist` ran WITHOUT confirmation (not exploited for .deepsec/).
+    Human decision recorded: fix in this branch; after the merge the user closes the 7 stale
+    Dependabot PRs; gitea out of scope.
+  previous_cycle: "footer parity with imageTransformer → reviewer approved → commit aca6f64 (2026-09-10)"
