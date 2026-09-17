@@ -4,7 +4,7 @@ version: 1
 
 project:
   name: currencyExchange
-  version: 2.1.3
+  version: 2.2.0
   index_project: projects-github-currencyexchange   # index-mcp, derived from root_path (AGENTS.md §1.5)
   description: >
     Currency conversion & exchange rates SPA. React 19 + Fluent UI v9, built with
