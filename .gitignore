@@ -38,4 +38,8 @@ e2e/test-results/
 playwright-report/
 test-results/
 
+# Agent harness runtime state — never commit (machine-local, changes every cycle):
+# audit_cache.json, build_state.json, context_hash.json, ad-hoc scan scripts.
+.agents/.state/
+
 .deepsec
