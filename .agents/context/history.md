@@ -6,6 +6,28 @@
 
 ## Recent Changes
 
+### 2026-09-18 — UI Cycle A: automatic currency load + conversion gating (TDD)
+
+**Origin:** user report — with an API key entered but currencies not loaded the app still allowed a conversion; the load must happen automatically as soon as the key is available. (Cycle B of the same change covers the fixed-size/jump-free layout split out for the 5-file workload SLO.)
+
+**Root cause (verified):** `useCurrencies` only read the metadata cache on mount and `updateCurrencies()` was invoked **only** by the AppHeader "Update" button, while `ConversionControls` enabled Calculate as soon as `storedApiKey` existed (`disabled={!storedApiKey || amount <= 0 || isLoading}`) — so a debounce-saved key opened conversion with `currencies = {}` and disabled `---` selectors.
+
+**Changes:**
+- `src/hooks/useCurrencies.ts` — auto-load effect + `autoLoadKeyRef`: one attempt per distinct key (`!storedApiKey` resets the ref for a future key; `isLoaded || isUpdating` and `ref === storedApiKey` short-circuit) → no StrictMode double-fetch, no retry loop after a failure; the Update button remains a manual refresh.
+- `src/components/ConversionControls/ConversionControls.tsx` — `currenciesLoaded = Object.keys(currencies ?? {}).length > 0`, `canCalculate = Boolean(storedApiKey) && currenciesLoaded && amount > 0 && !isLoading` wired to `disabled` (no prop-signature or `App.tsx` change).
+- `e2e/ui-enhancements.spec.ts` — `mockFreeCurrencyApi(page)` (`page.route("https://api.freecurrencyapi.com/**")`, registered **before** `page.goto` because the load fires on mount) + the API-key test now asserts "Currency data loaded" **without clicking Update** and both selects enabled.
+- Tests: `useCurrencies.test.ts` 10 → 16 (5 R1 cases + a pre-existing non-Error rejection branch), `ConversionControls.test.tsx` 9 → 12 (R2 gating).
+
+**QA:** `pnpm vitest run` → **36 files / 355 tests ✅** · `tsc --noEmit` exit 0 · `oxlint .` + `check-filenames` clean · `biome check` on the 5 touched files clean · `vite build` 306 ms · `playwright test e2e/ui-enhancements.spec.ts` **9/9 ✅** (RED established first: stashing the hook made the new e2e assertions fail).
+
+**Lessons:** (1) Playwright 1.60 needed `chromium-1223` but the cache only had 1228/1234 → `pnpm exec playwright install chromium` was required (the interrupted first attempt had to be re-run); (2) the e2e API mock must be registered before navigation, since R1 fetches during mount; (3) **pre-existing, out of scope:** `pnpm exec vitest run --coverage` fails the 95 % branch threshold (93.46 % on `HEAD`, 93.69 % after this cycle — the gap is in `LocalStorage.ts`/`globalStyles.ts`, and line 64 of `useCurrencies.ts` was uncovered before this change); the green gate is `pnpm vitest run`, as in previous cycles.
+
+**Reviewer (✅ APROBADO, `review_2026-09-18_ui-autoload-fixed-layout.md`):** 0 blocking findings (O-1 `useCurrencies` 55→80 líneas, O-2 "key distinta ⇒ nuevo intento" solo mientras no haya metadatos cargados, O-3 la cláusula "petición de tasa en vuelo" de R2 es solo code-read) · 10 tests KEEP / 0 REMOVE · workload 5 ficheros / 261 líneas dentro del SLO · el reviewer re-ejecutó **unit 355/355 (exit 0)** y la **suite e2e completa 37/37 (exit 0)**, no solo la spec tocada.
+
+**Scribe (2026-09-17):** memoria en index-mcp (`mem_save` #40 session, #41 decision `architecture/currency-bootstrap-contract`) + `mem_digest` verificado; R1/R2 fusionados en `.agents/docs/specs/ui.md` como **UI-01/UI-02** con **ADR-005** (arranque de divisas + gating); el `change_spec.yaml` sigue `active` con `pending_requirements: [R3, R4]` (Cycle B, T8..T20); manifiesto: +3 `ignored_paths` (`coverage`, `test-results`, `playwright-report`, artefactos gitignored que el reindex estaba contando); reindexado index-mcp (126 → 132 ficheros, +6: 4 docs nuevos + artefactos de test). **Commit PENDIENTE:** el gate de shell de `/scribe` es de solo lectura y deniega `git add`/`git commit` (harness gap, no del código) → los comandos exactos quedan en `checkpoint.yml:pending_commit` para ejecución humana.
+
+**Pending:** `pnpm up` de los 6 overrides (aprobación) · cerrar los 6 PRs Dependabot obsoletos · Cycle B de deps · Cycle C CI + decisión `.deepsec/` · **Cycle B de UI (R3/R4: slots de tamaño fijo, T8..T20)**.
+
 ### 2026-09-17 — Security advisories audit + override hygiene (Cycle A, TDD)
 
 **Origin:** user reported security-advisory problems and asked to consider updating dependencies.

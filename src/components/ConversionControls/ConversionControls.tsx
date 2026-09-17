@@ -137,6 +137,11 @@ export const ConversionControls: React.FC<ConversionControlsProps> = ({
 	const styles = useStyles();
 
 	const isLoading = rateSource === "loading";
+	// R2: converting requires the currency metadata (the selectors are empty
+	// and disabled until it is loaded), not just a stored API key.
+	const currenciesLoaded = Object.keys(currencies ?? {}).length > 0;
+	const canCalculate =
+		Boolean(storedApiKey) && currenciesLoaded && amount > 0 && !isLoading;
 
 	return (
 		<section
@@ -191,7 +196,7 @@ export const ConversionControls: React.FC<ConversionControlsProps> = ({
 					)
 				}
 				onClick={fetchRate}
-				disabled={!storedApiKey || amount <= 0 || isLoading}
+				disabled={!canCalculate}
 				className={styles.primaryActionButton}
 			>
 				<span className={isLoading ? styles.spinnerButton : undefined}>

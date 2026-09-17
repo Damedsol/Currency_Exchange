@@ -54,6 +54,7 @@ vi.mock("../services/LocalStorage", () => ({
 }));
 
 const validApiKey = "fca_live_test1234567890123456789012345678901234";
+const secondApiKey = "fca_live_second1234567890123456789012345678901";
 
 describe("useCurrencies", () => {
 	beforeEach(() => {
@@ -216,5 +217,119 @@ describe("useCurrencies", () => {
 		});
 
 		expect(result.current.updateError).toBeNull();
+	});
+
+	// --- R1: automatic load as soon as an API key is available ---
+
+	it("R1 auto-fetches currencies and rates when a key is available and no cache exists", async () => {
+		mockLoadCurrenciesFromCache.mockReturnValue(null);
+		mockFetchCurrencies.mockResolvedValue(mockCurrencies);
+		mockFetchLatestRates.mockResolvedValue({ EUR: 0.85, USD: 1.0 });
+
+		const { result } = renderHook(() => useCurrencies(validApiKey));
+
+		await waitFor(() => {
+			expect(result.current.isLoaded).toBe(true);
+		});
+
+		expect(mockFetchCurrencies).toHaveBeenCalledTimes(1);
+		expect(mockFetchLatestRates).toHaveBeenCalledTimes(1);
+		expect(mockFetchCurrencies).toHaveBeenCalledWith(validApiKey);
+		expect(mockFetchLatestRates).toHaveBeenCalledWith(validApiKey);
+		expect(mockSaveCurrenciesToCache).toHaveBeenCalledWith(mockCurrencies);
+		expect(result.current.currencies).toEqual(mockCurrencies);
+		expect(result.current.isUpdating).toBe(false);
+	});
+
+	it("R1 does not auto-fetch when the cached metadata is already loaded", async () => {
+		mockLoadCurrenciesFromCache.mockReturnValue(mockCurrencies);
+
+		const { result } = renderHook(() => useCurrencies(validApiKey));
+
+		await act(async () => {
+			await Promise.resolve();
+		});
+
+		expect(result.current.isLoaded).toBe(true);
+		expect(mockFetchCurrencies).not.toHaveBeenCalled();
+		expect(mockFetchLatestRates).not.toHaveBeenCalled();
+	});
+
+	it("R1 does not auto-fetch when there is no stored API key", async () => {
+		mockLoadCurrenciesFromCache.mockReturnValue(null);
+
+		const { result } = renderHook(() => useCurrencies(null));
+
+		await act(async () => {
+			await Promise.resolve();
+		});
+
+		expect(result.current.isLoaded).toBe(false);
+		expect(mockFetchCurrencies).not.toHaveBeenCalled();
+		expect(mockFetchLatestRates).not.toHaveBeenCalled();
+	});
+
+	it("R1 auto-fetches again when the stored API key changes", async () => {
+		mockLoadCurrenciesFromCache.mockReturnValue(null);
+		mockFetchCurrencies.mockResolvedValueOnce(null);
+		mockFetchLatestRates.mockResolvedValueOnce({ USD: 1.0 });
+
+		const { result, rerender } = renderHook(
+			({ apiKey }: { apiKey: string | null }) => useCurrencies(apiKey),
+			{ initialProps: { apiKey: validApiKey } },
+		);
+
+		await waitFor(() => {
+			expect(result.current.updateError).not.toBeNull();
+		});
+		expect(mockFetchCurrencies).toHaveBeenCalledTimes(1);
+
+		mockFetchCurrencies.mockResolvedValueOnce(mockCurrencies);
+		mockFetchLatestRates.mockResolvedValueOnce({ EUR: 0.85, USD: 1.0 });
+		rerender({ apiKey: secondApiKey });
+
+		await waitFor(() => {
+			expect(result.current.isLoaded).toBe(true);
+		});
+
+		expect(mockFetchCurrencies).toHaveBeenCalledTimes(2);
+		expect(mockFetchCurrencies).toHaveBeenLastCalledWith(secondApiKey);
+	});
+
+	it("R1 does not retry the same failed key automatically but allows a manual update", async () => {
+		mockLoadCurrenciesFromCache.mockReturnValue(null);
+		mockFetchCurrencies.mockResolvedValue(null);
+		mockFetchLatestRates.mockResolvedValue({ USD: 1.0 });
+
+		const { result } = renderHook(() => useCurrencies(validApiKey));
+
+		await waitFor(() => {
+			expect(result.current.updateError).not.toBeNull();
+		});
+
+		// Give the auto-load effect several chances to loop before asserting.
+		await act(async () => {
+			await new Promise((resolve) => setTimeout(resolve, 50));
+		});
+
+		expect(mockFetchCurrencies).toHaveBeenCalledTimes(1);
+
+		await act(async () => {
+			await result.current.updateCurrencies();
+		});
+
+		expect(mockFetchCurrencies).toHaveBeenCalledTimes(2);
+	});
+
+	it("reports a generic error message when the fetch rejects with a non-Error", async () => {
+		mockLoadCurrenciesFromCache.mockReturnValue(null);
+		mockFetchCurrencies.mockImplementation(() => Promise.reject("boom"));
+		mockFetchLatestRates.mockResolvedValue({ USD: 1.0 });
+
+		const { result } = renderHook(() => useCurrencies(validApiKey));
+
+		await waitFor(() => {
+			expect(result.current.updateError).toBe("Unknown error");
+		});
 	});
 });

@@ -44,6 +44,9 @@ ignored_paths:
   - .husky
   - .agents/.state   # harness runtime state — never committed (.gitignore:43)
   - .deepsec         # unaudited local tooling workspace (761 MB; R7 / Cycle C pending)
+  - coverage         # vitest --coverage output (gitignored, regenerable)
+  - test-results     # Playwright run artifacts (gitignored, regenerable)
+  - playwright-report
 
 entrypoints:
   primary: "AGENTS.md"          # canonical governance for AI agents

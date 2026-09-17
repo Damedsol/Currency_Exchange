@@ -1,83 +1,71 @@
 # change_spec — currencyExchange
 # SDD equivalent of openspec/changes/<change>/proposal.md
-change: security-advisories-and-dependency-refresh
+change: ui-autoload-and-fixed-layout
 status: active
-archived_requirements: [R1, R2, R3, R5]   # merged into .agents/docs/specs/security.md (SEC-09..SEC-12) on 2026-09-17
-pending_requirements: [R4, R6, R7]         # Cycles B (T6-T7) and C (T8-T10) — keep this change active
-created: 2026-09-17
-plan: .agents/docs/plan_2026-09-17_security-advisories-deps.md
-analysis: .agents/docs/analysis_2026-09-17_security-advisories.md
-domain: .agents/docs/specs/security.md
-approval_required:
-  - "pnpm install / dependency updates (AGENTS.md)"
-  - "infra change: .github/workflows/ci.yml (AGENTS.md)"
-  - "destructive: .deepsec/ removal (E1)"
+created: 2026-09-18
+plan: .agents/docs/plan_2026-09-18_ui-autoload-fixed-layout.md
+domain: .agents/docs/specs/ui.md
+archived_requirements: [R1, R2]   # merged into .agents/docs/specs/ui.md (UI-01, UI-02) on 2026-09-17 + ADR-005
+pending_requirements: [R3, R4]    # Cycle B (T8..T20) — keep this change active
+previous_change: security-advisories-and-dependency-refresh   # Cycles A closed 2026-09-17; remaining R4/R6/R7 live on as SEC-13..SEC-16 in specs/security.md
+approval_required: []   # no new dependency, no .env, no Docker/infra, no destructive action
 
 requirements:
   - id: R1
-    title: Authoritative SCA evidence before and after any dependency change
+    title: Automatic currency load as soon as an API key is available
+    cycle: A
     acceptance: >
-      `pnpm audit --audit-level=low` and `pnpm outdated` executed in an auditing gate;
-      results recorded in `.agents/docs/security_report.md`; audit reports 0 advisories
-      at the end of the cycle.
-    tasks: [T1, T5, T10]
+      When storedApiKey is present and no valid (<7 days) metadata cache exists, useCurrencies
+      fetches /v1/currencies + /v1/latest exactly once with no user action and the selectors
+      populate. With a valid cache or without a key: zero network calls (API quota preserved).
+      A failed automatic attempt is not retried in a loop; a different key triggers a new
+      automatic attempt; the AppHeader Update button still forces a manual refresh. React 19
+      StrictMode must not produce a double fetch.
+    tasks: [T1, T2, T4, T7]
   - id: R2
-    title: No security override can silently jump a major
+    title: Conversion is only possible once currency data is loaded
+    cycle: A
     acceptance: >
-      Every entry of pnpm-workspace.yaml:overrides is bounded to its intended major
-      (`^X.Y.Z` or `>=X.Y.Z <X+1.0.0`), except pins explicitly documented as intentional.
-    tasks: [T2, T3]
+      The ConversionControls Calculate button is disabled while storedApiKey is set but the
+      currencies record is empty (and while amount <= 0 or a rate fetch is in flight), and
+      enabled once currency metadata is available. No prop-signature change in
+      ConversionControlsProps and no change in App.tsx.
+    tasks: [T3, T5, T7]
   - id: R3
-    title: Security overrides bounded to their major and to the advisory fix floors
+    title: Fixed-size slots — no layout jumps from content changes
+    cycle: B
     acceptance: >
-      Every override range (a) stays inside its intended major and (b) has a floor at or above the
-      known advisory fix version: js-yaml ^4.3.2 (GHSA-2883-xcg3-v3hh, GHSA-52cp-r559-cp3m,
-      GHSA-5p4m-2wfm-xmqj, GHSA-h67p-54hq-rp68), picomatch ^4.0.4 (GHSA-3v7f-55p6-f55p),
-      yaml ^2.8.3 (GHSA-48c2-rrv3-qjmp), fast-uri >=4.1.3 <5.0.0, postcss >=8.5.18 <9.0.0,
-      nanoid ^3.3.18, undici ^7.29.0; @fluentui/react-motion 9.15.0 stays the only documented
-      pin (jsdom compat). Patch freshness ABOVE the floor is deferred to an approved `pnpm up`:
-      preferFrozenLockfile keeps existing resolutions and minimumReleaseAge 7200 can defer the
-      newest patch, so a range must never demand a version newer than the resolved one.
-    tasks: [T2, T3]
+      Declared, state-independent reserved size AND presence in every state for: (a)
+      CurrencySelector hint line (empty vs loaded), (b) ResultSection result row + rate row
+      (loading spinner vs value, idle indicator vs text), (c) AppHeader currency status row
+      (key absent / loading / loaded / error, no wrapping), (d) AppMessageBar message region
+      (revealed vs dismissed). Measured: the Calculate button bounding box (y, height) is
+      unchanged (<=1 px) across the automatic currency load and across a message reveal.
+    tasks: [T8, T9, T10, T11, T12, T13, T14, T15, T16, T18, T19, T20]
   - id: R4
-    title: Direct dependencies refreshed inside their current major
+    title: Copy reflects automatic loading
+    cycle: B
     acceptance: >
-      Catalog ranges updated for @fluentui/react-components, @fluentui/react-icons,
-      react, react-dom, vite, @vitejs/plugin-react, playwright, @playwright/test,
-      @biomejs/biome, oxlint, @testing-library/react, @testing-library/user-event;
-      vitest, typescript, jsdom, @testing-library/jest-dom, lint-staged, @commitlint/*,
-      @types/node, pnpm stay on their majors.
-    tasks: [T6, T7]
-  - id: R5
-    title: Dependabot rules minimal and documented
-    acceptance: >
-      Each `ignore` entry carries the incompatibility that justifies it; patch/minor
-      updates are grouped; undici/nanoid rules exist only while jsdom 29 / postcss 8.5 need them.
-    tasks: [T4]
-  - id: R6
-    title: CI validates pull requests
-    acceptance: >
-      .github/workflows/ci.yml runs Node 24 + pnpm 11, `pnpm install --frozen-lockfile`,
-      `pnpm audit --audit-level=high`, `pnpm typecheck`, `pnpm lint`, `pnpm test` on pull_request.
-    tasks: [T8]
-  - id: R7
-    title: No unaudited local dependency tree
-    acceptance: >
-      `.deepsec/` removed from disk or explicitly audited and documented; audit report
-      present at `.agents/docs/security_report.md`.
-    tasks: [T9, T10]
+      No user-facing string instructs the user to press Update to load currencies; the header
+      status shows the loading state ("Loading currencies...") and the selector hint states the
+      automatic load ("Currencies load automatically when an API key is set."). Affected unit
+      tests and the e2e status regex are updated in the same cycle.
+    tasks: [T17, T19]
 
 out_of_scope:
-  - vitest 5 / @vitest/coverage-v8 5
-  - typescript 7
-  - jsdom 30 (+ undici 8 / nanoid 4 migration, @fluentui/react-motion >= 9.16)
-  - "@testing-library/jest-dom 7, lint-staged 17, @commitlint/cli 21, @types/node 26, pnpm 12"
-  - src/services/* and any business logic (last cycle green: 334 unit tests)
+  - useConversion / FreeCurrency rate path (rates are API-driven, not metadata-driven)
+  - App.tsx (currenciesLoaded is derived inside ConversionControls; no new prop)
+  - useApiKey (1 s debounce + clearRatesCache() contract unchanged)
+  - HistoryPanel / ConversionHistory (right column legitimately grows with history)
+  - theme tokens, .env*, Docker/infra, package.json dependencies
+  - pending security cycles SEC-13..SEC-16 (see specs/security.md)
 
 edges:
-  - pnpm-lock.yaml is regenerated by pnpm install (mechanical; excluded from the workload count)
-  - minimumReleaseAge 7200 (5 days) may defer undici 7.29.1; never bypassed with --force
-  - preferFrozenLockfile + engineStrict: install must be an explicit, approved action
-  - hoistPattern "*": an override change rewrites node_modules links -> full suite required
-  - advisory source of truth is OSV/GitHub Advisory DB (Dependabot), broader than `pnpm audit`: use
-    `.agents/.state/scan-advisories.mjs` for a full-lockfile sweep (385 packages, GET/POST only)
+  - jsdom performs no layout: getBoundingClientRect is always 0 -> contract tests read declared
+    minHeight via getComputedStyle (precedent: CurrencyRow.test.tsx:28-32)
+  - the four jump sources are conditional elements inside flex columns, so each must reserve its
+    own box in BOTH states, not just get a bigger parent
+  - e2e API-key tests must mock api.freecurrencyapi.com BEFORE page.goto (R1 fetches on mount)
+  - vitest coverage thresholds are 95%: every new state-independent branch needs a test
+  - Workload: Cycle A = 5 files; Cycle B = 9 files (>5 SLO -> declared WARNING, B1/B2 split
+    available on request)
