@@ -1,0 +1,71 @@
+# change_spec — currencyExchange
+# SDD equivalent of openspec/changes/<change>/proposal.md
+change: ui-autoload-and-fixed-layout
+status: active
+created: 2026-09-18
+plan: .agents/docs/plan_2026-09-18_ui-autoload-fixed-layout.md
+domain: .agents/docs/specs/ui.md
+archived_requirements: [R1, R2]   # merged into .agents/docs/specs/ui.md (UI-01, UI-02) on 2026-09-17 + ADR-005
+pending_requirements: [R3, R4]    # Cycle B (T8..T20) — keep this change active
+previous_change: security-advisories-and-dependency-refresh   # Cycles A closed 2026-09-17; remaining R4/R6/R7 live on as SEC-13..SEC-16 in specs/security.md
+approval_required: []   # no new dependency, no .env, no Docker/infra, no destructive action
+
+requirements:
+  - id: R1
+    title: Automatic currency load as soon as an API key is available
+    cycle: A
+    acceptance: >
+      When storedApiKey is present and no valid (<7 days) metadata cache exists, useCurrencies
+      fetches /v1/currencies + /v1/latest exactly once with no user action and the selectors
+      populate. With a valid cache or without a key: zero network calls (API quota preserved).
+      A failed automatic attempt is not retried in a loop; a different key triggers a new
+      automatic attempt; the AppHeader Update button still forces a manual refresh. React 19
+      StrictMode must not produce a double fetch.
+    tasks: [T1, T2, T4, T7]
+  - id: R2
+    title: Conversion is only possible once currency data is loaded
+    cycle: A
+    acceptance: >
+      The ConversionControls Calculate button is disabled while storedApiKey is set but the
+      currencies record is empty (and while amount <= 0 or a rate fetch is in flight), and
+      enabled once currency metadata is available. No prop-signature change in
+      ConversionControlsProps and no change in App.tsx.
+    tasks: [T3, T5, T7]
+  - id: R3
+    title: Fixed-size slots — no layout jumps from content changes
+    cycle: B
+    acceptance: >
+      Declared, state-independent reserved size AND presence in every state for: (a)
+      CurrencySelector hint line (empty vs loaded), (b) ResultSection result row + rate row
+      (loading spinner vs value, idle indicator vs text), (c) AppHeader currency status row
+      (key absent / loading / loaded / error, no wrapping), (d) AppMessageBar message region
+      (revealed vs dismissed). Measured: the Calculate button bounding box (y, height) is
+      unchanged (<=1 px) across the automatic currency load and across a message reveal.
+    tasks: [T8, T9, T10, T11, T12, T13, T14, T15, T16, T18, T19, T20]
+  - id: R4
+    title: Copy reflects automatic loading
+    cycle: B
+    acceptance: >
+      No user-facing string instructs the user to press Update to load currencies; the header
+      status shows the loading state ("Loading currencies...") and the selector hint states the
+      automatic load ("Currencies load automatically when an API key is set."). Affected unit
+      tests and the e2e status regex are updated in the same cycle.
+    tasks: [T17, T19]
+
+out_of_scope:
+  - useConversion / FreeCurrency rate path (rates are API-driven, not metadata-driven)
+  - App.tsx (currenciesLoaded is derived inside ConversionControls; no new prop)
+  - useApiKey (1 s debounce + clearRatesCache() contract unchanged)
+  - HistoryPanel / ConversionHistory (right column legitimately grows with history)
+  - theme tokens, .env*, Docker/infra, package.json dependencies
+  - pending security cycles SEC-13..SEC-16 (see specs/security.md)
+
+edges:
+  - jsdom performs no layout: getBoundingClientRect is always 0 -> contract tests read declared
+    minHeight via getComputedStyle (precedent: CurrencyRow.test.tsx:28-32)
+  - the four jump sources are conditional elements inside flex columns, so each must reserve its
+    own box in BOTH states, not just get a bigger parent
+  - e2e API-key tests must mock api.freecurrencyapi.com BEFORE page.goto (R1 fetches on mount)
+  - vitest coverage thresholds are 95%: every new state-independent branch needs a test
+  - Workload: Cycle A = 5 files; Cycle B = 9 files (>5 SLO -> declared WARNING, B1/B2 split
+    available on request)

@@ -5,6 +5,12 @@ updates:
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 5
+    # R5: collapse minor/patch updates into a single PR so majors stay reviewable
+    # one by one (majors are the ones that break: vitest 5, jsdom 30, TS 7).
+    groups:
+      minor-and-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
     ignore:
       # undici 8.x breaks jsdom@29.1.1 (wrap-handler.js removed)
       - dependency-name: "undici"

@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { fetchCurrencies, fetchLatestRates } from "../services/FreeCurrency";
 import {
@@ -33,6 +33,11 @@ export function useCurrencies(
 	const [lastUpdated, setLastUpdated] = useState<number | null>(null);
 	const [updateError, setUpdateError] = useState<string | null>(null);
 
+	// Last API key that triggered an automatic load (R1): one attempt per distinct
+	// key, so a failure never turns into a retry loop and StrictMode's double
+	// effect invocation can't double-fetch.
+	const autoLoadKeyRef = useRef<string | null>(null);
+
 	const updateCurrencies = useCallback(async () => {
 		if (!storedApiKey) {
 			return;
@@ -61,6 +66,26 @@ export function useCurrencies(
 			setIsUpdating(false);
 		}
 	}, [storedApiKey]);
+
+	// Load currencies as soon as an API key is available and no cached metadata
+	// is loaded yet; a different key triggers a new automatic attempt.
+	useEffect(() => {
+		if (!storedApiKey) {
+			autoLoadKeyRef.current = null;
+			return;
+		}
+
+		if (isLoaded || isUpdating) {
+			return;
+		}
+
+		if (autoLoadKeyRef.current === storedApiKey) {
+			return;
+		}
+
+		autoLoadKeyRef.current = storedApiKey;
+		void updateCurrencies();
+	}, [storedApiKey, isLoaded, isUpdating, updateCurrencies]);
 
 	return {
 		currencies,

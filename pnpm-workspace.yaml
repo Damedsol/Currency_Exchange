@@ -45,11 +45,14 @@ catalog:
   "@playwright/test": "^1.60.0"
 
 "overrides":
-  "js-yaml": ">=4.3.0"
-  "picomatch": "4.0.4"
-  "yaml": "2.8.3"
-  "fast-uri": ">=4.1.3"
-  "postcss": ">=8.5.18"
-  "nanoid": "^3.3.18"
-  "@fluentui/react-motion": "9.15.0"
-  "undici": "^7.29.0"
+  # Security/compat overrides. Rule: every range stays bounded to the major it was
+  # chosen for. A bare `>=X.Y.Z` with resolutionMode: highest can jump a major
+  # (js-yaml 4.x -> 5.x happened with the 2026-08 override).
+  "fast-uri": ">=4.1.3 <5.0.0"          # 4.x: GHSA-5jgf/f65p/fph4/jqff fixed in >=4.1.3
+  "js-yaml": "^4.3.2"                 # 4.x: @commitlint API + GHSA-2883/52cp/5p4m/h67p fixed in 4.3.2
+  "nanoid": "^3.3.18"                  # 3.x: postcss 8.5.x requires ^3.3.16
+  "picomatch": "^4.0.4"                # 4.x: security floor (was an exact pin)
+  "postcss": ">=8.5.18 <9.0.0"         # 8.x: security floor
+  "undici": "^7.29.0"                  # 7.x: jsdom 29 declares ^7.25 (8.x removed wrap-handler.js)
+  "yaml": "^2.8.3"                     # 2.x: security floor (was an exact pin)
+  "@fluentui/react-motion": "9.15.0"   # pin: jsdom 29 compat (Dependabot ignores >=9.16.0)

@@ -4,7 +4,8 @@ version: 1
 
 project:
   name: currencyExchange
-  version: 2.1.3
+  version: 2.2.0
+  index_project: projects-github-currencyexchange   # index-mcp, derived from root_path (AGENTS.md §1.5)
   description: >
     Currency conversion & exchange rates SPA. React 19 + Fluent UI v9, built with
     Vite, hardened Docker/Nginx production image, TDD with Vitest + Playwright.
@@ -28,7 +29,7 @@ layers:
   services: src/services        # FreeCurrency.ts, LocalStorage.ts
   hooks: src/hooks              # useApiKey, useConversion, useTheme (camelCase.ts)
   theme: src/theme              # neonTheme.ts (BrandVariants + WCAG tokens)
-  config: src/config            # config contract tests (nginx/dockerfile/license/...)
+  config: src/config            # config contract tests (nginx/dockerfile/dockerignore/license/dependabot/overrides/gitignore/favicon/html/css/lint/vitest)
   styles: src/styles            # main.css + globalStyles.ts
   types: src/types              # centralized types
   e2e: e2e                      # Playwright specs
@@ -41,6 +42,11 @@ ignored_paths:
   - dist
   - .git
   - .husky
+  - .agents/.state   # harness runtime state — never committed (.gitignore:43)
+  - .deepsec         # unaudited local tooling workspace (761 MB; R7 / Cycle C pending)
+  - coverage         # vitest --coverage output (gitignored, regenerable)
+  - test-results     # Playwright run artifacts (gitignored, regenerable)
+  - playwright-report
 
 entrypoints:
   primary: "AGENTS.md"          # canonical governance for AI agents
