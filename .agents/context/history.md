@@ -6,6 +6,51 @@
 
 ## Recent Changes
 
+### 2026-09-18 — UI Cycle A: automatic currency load + conversion gating (TDD)
+
+**Origin:** user report — with an API key entered but currencies not loaded the app still allowed a conversion; the load must happen automatically as soon as the key is available. (Cycle B of the same change covers the fixed-size/jump-free layout split out for the 5-file workload SLO.)
+
+**Root cause (verified):** `useCurrencies` only read the metadata cache on mount and `updateCurrencies()` was invoked **only** by the AppHeader "Update" button, while `ConversionControls` enabled Calculate as soon as `storedApiKey` existed (`disabled={!storedApiKey || amount <= 0 || isLoading}`) — so a debounce-saved key opened conversion with `currencies = {}` and disabled `---` selectors.
+
+**Changes:**
+- `src/hooks/useCurrencies.ts` — auto-load effect + `autoLoadKeyRef`: one attempt per distinct key (`!storedApiKey` resets the ref for a future key; `isLoaded || isUpdating` and `ref === storedApiKey` short-circuit) → no StrictMode double-fetch, no retry loop after a failure; the Update button remains a manual refresh.
+- `src/components/ConversionControls/ConversionControls.tsx` — `currenciesLoaded = Object.keys(currencies ?? {}).length > 0`, `canCalculate = Boolean(storedApiKey) && currenciesLoaded && amount > 0 && !isLoading` wired to `disabled` (no prop-signature or `App.tsx` change).
+- `e2e/ui-enhancements.spec.ts` — `mockFreeCurrencyApi(page)` (`page.route("https://api.freecurrencyapi.com/**")`, registered **before** `page.goto` because the load fires on mount) + the API-key test now asserts "Currency data loaded" **without clicking Update** and both selects enabled.
+- Tests: `useCurrencies.test.ts` 10 → 16 (5 R1 cases + a pre-existing non-Error rejection branch), `ConversionControls.test.tsx` 9 → 12 (R2 gating).
+
+**QA:** `pnpm vitest run` → **36 files / 355 tests ✅** · `tsc --noEmit` exit 0 · `oxlint .` + `check-filenames` clean · `biome check` on the 5 touched files clean · `vite build` 306 ms · `playwright test e2e/ui-enhancements.spec.ts` **9/9 ✅** (RED established first: stashing the hook made the new e2e assertions fail).
+
+**Lessons:** (1) Playwright 1.60 needed `chromium-1223` but the cache only had 1228/1234 → `pnpm exec playwright install chromium` was required (the interrupted first attempt had to be re-run); (2) the e2e API mock must be registered before navigation, since R1 fetches during mount; (3) **pre-existing, out of scope:** `pnpm exec vitest run --coverage` fails the 95 % branch threshold (93.46 % on `HEAD`, 93.69 % after this cycle — the gap is in `LocalStorage.ts`/`globalStyles.ts`, and line 64 of `useCurrencies.ts` was uncovered before this change); the green gate is `pnpm vitest run`, as in previous cycles.
+
+**Reviewer (✅ APROBADO, `review_2026-09-18_ui-autoload-fixed-layout.md`):** 0 blocking findings (O-1 `useCurrencies` 55→80 líneas, O-2 "key distinta ⇒ nuevo intento" solo mientras no haya metadatos cargados, O-3 la cláusula "petición de tasa en vuelo" de R2 es solo code-read) · 10 tests KEEP / 0 REMOVE · workload 5 ficheros / 261 líneas dentro del SLO · el reviewer re-ejecutó **unit 355/355 (exit 0)** y la **suite e2e completa 37/37 (exit 0)**, no solo la spec tocada.
+
+**Scribe (2026-09-17):** memoria en index-mcp (`mem_save` #40 session, #41 decision `architecture/currency-bootstrap-contract`) + `mem_digest` verificado; R1/R2 fusionados en `.agents/docs/specs/ui.md` como **UI-01/UI-02** con **ADR-005** (arranque de divisas + gating); el `change_spec.yaml` sigue `active` con `pending_requirements: [R3, R4]` (Cycle B, T8..T20); manifiesto: +3 `ignored_paths` (`coverage`, `test-results`, `playwright-report`, artefactos gitignored que el reindex estaba contando); reindexado index-mcp (126 → 132 ficheros, +6: 4 docs nuevos + artefactos de test). **Commit PENDIENTE:** el gate de shell de `/scribe` es de solo lectura y deniega `git add`/`git commit` (harness gap, no del código) → los comandos exactos quedan en `checkpoint.yml:pending_commit` para ejecución humana.
+
+**Pending:** `pnpm up` de los 6 overrides (aprobación) · cerrar los 6 PRs Dependabot obsoletos · Cycle B de deps · Cycle C CI + decisión `.deepsec/` · **Cycle B de UI (R3/R4: slots de tamaño fijo, T8..T20)**.
+
+### 2026-09-17 — Security advisories audit + override hygiene (Cycle A, TDD)
+
+**Origin:** user reported security-advisory problems and asked to consider updating dependencies.
+
+**Advisories located (real, from repo history — OSV/GitHub Advisory DB):** `picomatch@2.3.1` GHSA-3v7f-55p6-f55p · `minimatch@3.1.2` GHSA-23c5-xmqv-rm74/GHSA-3ppc-4f35-3m26/GHSA-7r86-cg39-jmmj · `brace-expansion@1.1.12` GHSA-3jxr-9vmj-r5cp (+3) · `flatted@3.3.3` GHSA-25h7-pfq9-p65f · `yaml@2.8.2` GHSA-48c2-rrv3-qjmp · `vite@7.1.11` (5 GHSAs) · `js-yaml@4.1.1` (4 GHSAs, Dependabot #18). Root cause: 6 stale `origin/dependabot/*` branches + `hotfix/security-dependabot-18` opened against the **pre-Vite-8 tree**; `origin/main` and `develop` lockfiles are identical and contain **none** of those vulnerable versions. `pnpm audit` = 0 and a full OSV sweep of **385/385** resolved versions = 0 advisories. Table + reproduction commands in `.agents/docs/security_report.md`.
+
+**Changes:**
+- `pnpm-workspace.yaml` — overrides made **major-bounded** and **advisory-floored**: `js-yaml ^4.3.2` (was `>=4.3.0`, which had resolved **5.2.2**, and 4.3.2 is the advisory fix head), `fast-uri >=4.1.3 <5.0.0`, `postcss >=8.5.18 <9.0.0`; exact pins removed (`picomatch ^4.0.4` = GHSA-3v7f fix, `yaml ^2.8.3` = GHSA-48c2 fix); `@fluentui/react-motion 9.15.0` stays the only documented pin.
+- `pnpm-lock.yaml` — `js-yaml 5.2.2 → 4.3.2` (re-synced implicitly by `pnpm vitest run` on manifest drift).
+- `.github/dependabot.yml` — `groups.minor-and-patch` added; ignores unchanged (still valid for jsdom 29 / postcss 8.5).
+- `src/config/overrides.test.ts` (new, 7 tests incl. the advisory-floor guard) + `src/config/dependabot.test.ts` (+2) — config contract tests.
+- `.agents/docs/security_report.md` (recreated), `.agents/docs/analysis_2026-09-17_*.md`, plan + `change_spec.yaml`.
+
+**QA:** `pnpm vitest run` → **35 files / 343 tests ✅** · `tsc --noEmit` ✅ · `oxlint` + `check-filenames` ✅ · `biome check` ✅ · `vite build` 293 ms (react-dom gzip 127.77 kB) ✅ · `pnpm audit` 0 before and after ✅ · OSV sweep 385/385 clean ✅ · commitlint dry-run ✅.
+
+**Lessons:** (1) `/do`+`/plan` bash is a read-only allowlist (`BASH_READONLY`), so `pnpm audit` is only obtainable in `/build`/`/audit`; (2) the source of truth for Dependabot-style alerts is the GitHub Advisory DB/OSV, **not** `pnpm audit` — `.agents/.state/scan-advisories.mjs` sweeps the whole lockfile in one OSV `querybatch` call; (3) an advisory sweep must cover **scoped** packages: the first parser version stripped quotes *after* the trailing colon and silently skipped all 194 `@scope/*` entries (191/385 → false clean) — hence the malformed-pair assertion; (4) Dependabot keeps **branches/PRs** alive long after the alerts are fixed, so a repo can look vulnerable when the lockfile is clean — compare `git show <branch>:pnpm-lock.yaml` before acting; (5) `pnpm install` alone does **not** refresh existing resolutions — `preferFrozenLockfile` needs a deliberate `pnpm up`; (6) an override range whose floor is newer than the installed version can fail resolution under `minimumReleaseAge` → keep the installed/advisory-fix version as the floor; (7) currencyExchange was **not indexed** in index-mcp (now indexed: 117 files / 236 symbols) and its `mem_*` store is empty — memory is file-based.
+
+**Review round 1 (❌ RECHAZADO → corregido):** ID-01 [QA] `.agents/.state/` no estaba ignorado (el propio arnés dice "nunca commitear" `audit_cache.json`; `biome check .` fallaba sobre los JSON de estado y `oxlint .` avisaba sobre el script ad-hoc) → **TDD**: nuevo `src/config/gitignore.test.ts` (3 tests, RED 2 failed) + `.gitignore` +4 líneas → verificado con `git check-ignore -v` (`.gitignore:43`) y `oxlint .` limpio (oxlint **sí** respeta `.gitignore`). ID-02 [VERIFY] tabla del informe incompleta → añadidos `GHSA-c2c7-rcm5-vvqj` (picomatch) y `GHSA-rf6f-7fwh-wjgh` (flatted) + API de GitHub Advisory como segunda fuente. Suite tras correcciones: **36 files / 346 tests ✅** · `tsc` 0 · `vite build` 252 ms. Hallazgo **pre-existente y fuera de alcance** reportado al reviewer: `biome check .` sigue fallando en `scripts/check-filenames.mjs` (sin tocar en este ciclo).
+
+**Scribe (2026-09-17):** memoria persistida en index-mcp (`mem_save` #31 session, #32 decision `config/dependency-override-policy`, #33 config `config/agent-harness-state-gitignore`) + `mem_digest` verificado; requisitos R1/R2/R3/R5 fusionados en `.agents/docs/specs/security.md` como **SEC-09..SEC-12** (R4/R6/R7 quedan pendientes en Cycles B/C y el `change_spec.yaml` sigue `active` con `archived_requirements`); **ADR-004** (política de overrides) creado; manifiesto actualizado (`project.index_project`, `ignored_paths` + `.agents/.state`/`.deepsec`, contrato `config`); reindexado index-mcp (126 ficheros, +9). Limpieza: `dist/` eliminado (3,4 M, regenerable) · **`.deepsec/` (761 M) sigue pendiente de OK explícito del usuario** · `.agents/.state/` conservado e ignorado.
+
+**Pending:** `pnpm up` of the 6 override packages (approval) · close the 6 stale Dependabot PRs · Cycle B catalog refresh (Fluent 9.74.7, react 19.3.0, vite 8.3.0…) · Cycle C CI workflow + `.deepsec/` decision.
+
 ### 2026-09-10 — Release 2.1.3 (version bump + docs sync)
 
 - Bumped `package.json` `2.1.2` → `2.1.3` (SemVer patch, footer-cycle follow-up on `release/2.1.3`).

@@ -51,4 +51,24 @@ describe(".github/dependabot.yml", () => {
 			/dependency-name:\s*["']?@fluentui\/react-motion["']?[\s\S]*?versions:\s*\[[^\]]*>=9\.16\.0/,
 		);
 	});
+
+	it("groups minor and patch updates into one PR stream (R5)", () => {
+		expect(dependabotConfig).toMatch(/^\s{4}groups:/m);
+		expect(dependabotConfig).toMatch(
+			/update-types:\s*\[[^\]]*["']?minor["']?[^\]]*["']?patch["']?[^\]]*\]/,
+		);
+	});
+
+	it("documents every ignore rule with a comment (R5)", () => {
+		const lines = dependabotConfig.split("\n");
+		const undocumented: string[] = [];
+		lines.forEach((line, index) => {
+			if (!/^\s*-\s*dependency-name:/.test(line)) return;
+			const context = lines.slice(Math.max(0, index - 4), index + 1);
+			if (!context.some((entry) => entry.includes("#"))) {
+				undocumented.push(line.trim());
+			}
+		});
+		expect(undocumented, "ignore rule without a documented reason").toEqual([]);
+	});
 });

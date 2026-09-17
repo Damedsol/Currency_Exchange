@@ -2,7 +2,29 @@
 
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
+import type { CurrencyMetadata } from "../../types";
 import { ConversionControls } from "./ConversionControls";
+
+const mockCurrencies: Record<string, CurrencyMetadata> = {
+	EUR: {
+		symbol: "€",
+		name: "Euro",
+		code: "EUR",
+		symbol_native: "€",
+		decimal_digits: 2,
+		name_plural: "Euros",
+		rounding: 0,
+	},
+	USD: {
+		symbol: "$",
+		name: "US Dollar",
+		code: "USD",
+		symbol_native: "$",
+		decimal_digits: 2,
+		name_plural: "US dollars",
+		rounding: 0,
+	},
+};
 
 describe("ConversionControls", () => {
 	const defaultProps = {
@@ -52,8 +74,39 @@ describe("ConversionControls", () => {
 	});
 
 	it("Calculate button disabled when no API key", () => {
-		render(<ConversionControls {...defaultProps} storedApiKey={null} />);
-		expect(screen.getByText("Calculate")).toBeDefined();
+		render(
+			<ConversionControls
+				{...defaultProps}
+				storedApiKey={null}
+				currencies={mockCurrencies}
+			/>,
+		);
+		expect(screen.getByRole("button", { name: /Calculate/ })).toBeDisabled();
+	});
+
+	// --- R2: conversion is only possible once currency data is loaded ---
+
+	it("R2 disables Calculate when an API key is set but currencies are not loaded", () => {
+		render(<ConversionControls {...defaultProps} currencies={undefined} />);
+		expect(screen.getByRole("button", { name: /Calculate/ })).toBeDisabled();
+	});
+
+	it("R2 disables Calculate when currencies are loaded but the amount is zero", () => {
+		render(
+			<ConversionControls
+				{...defaultProps}
+				amount={0}
+				currencies={mockCurrencies}
+			/>,
+		);
+		expect(screen.getByRole("button", { name: /Calculate/ })).toBeDisabled();
+	});
+
+	it("R2 enables Calculate once currencies are loaded and the amount is positive", () => {
+		render(
+			<ConversionControls {...defaultProps} currencies={mockCurrencies} />,
+		);
+		expect(screen.getByRole("button", { name: /Calculate/ })).toBeEnabled();
 	});
 
 	it("shows Spinner when loading", () => {
