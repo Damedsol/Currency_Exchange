@@ -6,6 +6,12 @@
 
 ## Recent Changes
 
+### 2026-09-21 — Version bump 2.3.0 (complete)
+
+- Minor bump: Cycle B (fixed layout + auto-load copy) + dep refresh since 2.2.0.
+- Synced all 4 sources: `package.json`, `.agents/project_manifest.yaml`, `.agents/context/project.md`, `README.md` badge.
+- Applied under /build L1 (scribe gate had blocked `package.json`/`README.md` writes; completed on re-invocation).
+
 ### 2026-09-21 — UI Cycle B: fixed-size slots + copy (R3/R4, T8..T20, TDD)
 
 - Reserved-size slots in 4 components: `CurrencySelector` unconditional `role="status"` hint (`minHeight 32px`); `ResultSection` single `result-slot` (`44px`, spinner inside) + `rate-row` (`32px`) + `rate-indicator-slot` (idle-safe); `AppHeader` always-rendered `currency-status-row` (`32px`, `aria-hidden` when keyless) + nowrap/ellipsis status; `AppMessageBar` reserved band (`minHeight 56px`, constant margin, opacity-only transition).
