@@ -25,10 +25,21 @@ Origen: change `ui-autoload-and-fixed-layout` (Cycles A/B). Ciclo A cerrado y ap
   Tests: `src/components/ConversionControls/ConversionControls.test.tsx` (+3 y la aserción pre-existente
   "disabled when no API key" reforzada con `toBeDisabled()`).
 
-## Pendiente (Cycle B — no fusionado aún)
+## Slots fijos y copy automático (Cycle B — [✓])
 
-- **UI-03 (R3)** — Slots de tamaño fijo y sin saltos por cambio de contenido: hint de `CurrencySelector`,
-  filas de `ResultSection`, fila de estado de `AppHeader`, banda de `AppMessageBar`; verificación por contrato
-  jsdom (`minHeight` declarado) + e2e de estabilidad del bounding box de *Calculate*.
-- **UI-04 (R4)** — Copy acorde al load automático (nada de "click Update to load currencies").
-- Tareas T8..T20 del plan; `change_spec.yaml` sigue `active` con `pending_requirements: [R3, R4]`.
+- [✓] **UI-03 — Slots de tamaño fijo y sin saltos por cambio de contenido.** Tamaño reservado
+  declarado e independiente del estado, presente en todos los estados: (a) hint de `CurrencySelector`
+  (`role="status"`, `minHeight: 32px`, vacío cuando hay divisas); (b) `ResultSection` con un único
+  `result-slot` (`minHeight: 44px`, `minWidth: 10ch`, spinner *dentro* en loading), `rate-row`
+  (`minHeight: 32px`) y `rate-indicator-slot` (existe con `rateSource="idle"`); (c) fila de estado de
+  `AppHeader` siempre renderizada (`minHeight: 32px`, `aria-hidden` sin key) con texto `nowrap`/ellipsis;
+  (d) banda de `AppMessageBar` reservada (`minHeight: 56px`, margen constante, solo transición de
+  `opacity`; el `<MessageBar>` interior sigue condicional). Medido: bounding box de *Calculate* (y, height)
+  estable ≤1 px ante el autoload y ante reveal+dismiss del mensaje.
+  Tests: 12 contratos jsdom (`getComputedStyle().minHeight`, precedente `CurrencyRow.test.tsx`) + e2e R3 de
+  estabilidad en `e2e/ui-enhancements.spec.ts`. Incidencia: el `minHeight: 44px` del `Select` vive en el
+  wrapper (no en el `<select>` nativo); el hint `role="status"` obligó a re-enfocar una aserción de
+  `CurrencyRow.test.tsx` a `[aria-live="polite"]` explícito.
+- [✓] **UI-04 — Copy acorde al load automático.** Estado idle del header → "Loading currencies…"; hint del
+  selector → "Currencies load automatically when an API key is set."; ninguna cadena menciona *Update*
+  para cargar. (Review: `.agents/docs/review_2026-09-21_ui-cycle-b.md`, ✅ APROBADO, 13+1 KEEP / 0 REMOVE.)

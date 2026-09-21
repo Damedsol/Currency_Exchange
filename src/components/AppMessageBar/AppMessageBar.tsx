@@ -13,18 +13,19 @@ import type { AppMessage } from "../../types";
 
 const useStyles = makeStyles({
 	messageBarContainer: {
-		transitionProperty: "max-height, opacity",
+		transitionProperty: "opacity",
 		transitionDuration: "0.3s",
 		transitionTimingFunction: "ease-in-out",
 		overflow: "hidden",
 		maxHeight: 0,
+		minHeight: "56px",
+		marginBottom: tokens.spacingVerticalM,
 		opacity: 0,
 		boxShadow: "none",
 	},
 	messageBarContainerVisible: {
 		maxHeight: "60px",
 		opacity: 1,
-		marginBottom: tokens.spacingVerticalM,
 	},
 	dismissButton: {
 		color: tokens.colorNeutralForeground2,

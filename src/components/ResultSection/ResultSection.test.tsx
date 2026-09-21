@@ -162,4 +162,35 @@ describe("ResultSection", () => {
 			screen.getByText(new RegExp(`1 EUR = ${expectedRate} JPY`)),
 		).toBeDefined();
 	});
+
+	it("R3b result slot keeps reserved minHeight while loading and when computed", () => {
+		const { unmount } = render(
+			<ResultSection {...defaultProps} rateSource="loading" />,
+		);
+		const loadingSlot = screen.getByTestId("result-slot");
+		expect(loadingSlot.querySelector('[role="progressbar"]')).not.toBeNull();
+		expect(
+			Number.parseInt(getComputedStyle(loadingSlot).minHeight, 10),
+		).toBeGreaterThanOrEqual(44);
+		unmount();
+		render(<ResultSection {...defaultProps} rateSource="api" />);
+		const valueSlot = screen.getByTestId("result-slot");
+		expect(valueSlot.textContent).toContain("120");
+		expect(
+			Number.parseInt(getComputedStyle(valueSlot).minHeight, 10),
+		).toBeGreaterThanOrEqual(44);
+	});
+
+	it("R3b rate row reserves minHeight", () => {
+		render(<ResultSection {...defaultProps} />);
+		const rateRow = screen.getByTestId("rate-row");
+		expect(
+			Number.parseInt(getComputedStyle(rateRow).minHeight, 10),
+		).toBeGreaterThanOrEqual(32);
+	});
+
+	it("R3b indicator slot exists when idle", () => {
+		render(<ResultSection {...defaultProps} rateSource="idle" />);
+		expect(screen.getByTestId("rate-indicator-slot")).toBeDefined();
+	});
 });

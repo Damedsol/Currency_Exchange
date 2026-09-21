@@ -33,9 +33,11 @@ describe("CurrencyRow", () => {
 	});
 
 	it("has aria-live region for swap announcement", () => {
-		render(<CurrencyRow {...defaultProps} />);
-		const liveRegion = screen.getByRole("status");
-		expect(liveRegion).toBeDefined();
+		const { container } = render(<CurrencyRow {...defaultProps} />);
+		// Explicit [aria-live] targets the swap region (R3a hint slots also use
+		// role="status" but carry no explicit aria-live attribute).
+		const liveRegion = container.querySelector('[aria-live="polite"]');
+		expect(liveRegion).not.toBeNull();
 	});
 
 	it("swap button calls onSwap and shows message", async () => {

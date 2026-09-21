@@ -90,21 +90,21 @@
 
 ### Cycle B — R3 + R4
 #### Fase Red
-- [ ] **T8 (R3a) — RED, `CurrencySelector.test.tsx`:** hint slot (`role="status"`) is rendered in the empty **and** loaded states and its declared `minHeight` is ≥ 32 px in both; the disabled placeholder `Select` keeps `minHeight` 44 px. → FAIL.
-- [ ] **T9 (R3b) — RED, `ResultSection.test.tsx`:** the result slot node is present (same type) with a declared `minHeight` in both `rateSource="loading"` and a computed state; `rateRow` declares a `minHeight`; the indicator slot exists when `rateSource="idle"`. → FAIL.
-- [ ] **T10 (R3c) — RED, `AppHeader.test.tsx`:** the currency status row exists with a declared `minHeight` when `storedApiKey` is `null` and a key is present (row present in both, content only with a key); status text is `nowrap`. → FAIL.
-- [ ] **T11 (R3d) — RED, `AppMessageBar.test.tsx`:** the alert container is rendered with a declared `minHeight` > 0 in the hidden state too (the "does not render message when hidden" test stays green). → FAIL.
-- [ ] **T12 (R3) — RED, `e2e/ui-enhancements.spec.ts`:** layout-stability test (`Calculate` `boundingBox()` y/height stable across the automatic load and across message reveal+dismiss). → FAIL until the reserved constants are correct.
+- [✓] **T8 (R3a) — RED, `CurrencySelector.test.tsx`:** hint slot (`role="status"`) is rendered in the empty **and** loaded states and its declared `minHeight` is ≥ 32 px in both; the disabled placeholder `Select` keeps `minHeight` 44 px. → FAIL.
+- [✓] **T9 (R3b) — RED, `ResultSection.test.tsx`:** the result slot node is present (same type) with a declared `minHeight` in both `rateSource="loading"` and a computed state; `rateRow` declares a `minHeight`; the indicator slot exists when `rateSource="idle"`. → FAIL.
+- [✓] **T10 (R3c) — RED, `AppHeader.test.tsx`:** the currency status row exists with a declared `minHeight` when `storedApiKey` is `null` and a key is present (row present in both, content only with a key); status text is `nowrap`. → FAIL.
+- [✓] **T11 (R3d) — RED, `AppMessageBar.test.tsx`:** the alert container is rendered with a declared `minHeight` > 0 in the hidden state too (the "does not render message when hidden" test stays green). → FAIL.
+- [✓] **T12 (R3) — RED, `e2e/ui-enhancements.spec.ts`:** layout-stability test (`Calculate` `boundingBox()` y/height stable across the automatic load and across message reveal+dismiss). → FAIL until the reserved constants are correct.
 #### Fase Green
-- [ ] **T13 (R3a) — GREEN, `CurrencySelector.tsx`:** unconditional hint slot + `minHeight: "32px"`.
-- [ ] **T14 (R3b) — GREEN, `ResultSection.tsx`:** single result slot (spinner inside), `minHeight` on `resultRow`/`rateRow`, fixed indicator slot.
-- [ ] **T15 (R3c) — GREEN, `AppHeader.tsx`:** always-rendered `currencyUpdateRow` (`minHeight: "32px"`, `aria-hidden` when empty) + nowrap/ellipsis status text.
-- [ ] **T16 (R3d) — GREEN, `AppMessageBar.tsx`:** reserved band `minHeight` (measured in T18) + constant margin + opacity-only transition.
-- [ ] **T17 (R4) — GREEN, copy:** `AppHeader` idle status → "Loading currencies…"; `CurrencySelector` hint → "Currencies load automatically when an API key is set."; update the affected unit/e2e strings (`e2e/ui-enhancements.spec.ts:33` regex widened to include the loading copy).
-- [ ] **T18 (R3) — GREEN, e2e tune:** run `pnpm exec vite preview` + the e2e; if the measured single-line MessageBar height ≠ `minHeight`, set the constant to the measured value and re-run until T12 is green (tolerance ≤1 px).
-- [ ] **T19 — Green gate Cycle B:** full gate as T6 (unit + e2e `ui-enhancements`, `conversion`, `error-handling`, `smoke`, `theme`, `accessibility`).
+- [✓] **T13 (R3a) — GREEN, `CurrencySelector.tsx`:** unconditional hint slot + `minHeight: "32px"`.
+- [✓] **T14 (R3b) — GREEN, `ResultSection.tsx`:** single result slot (spinner inside), `minHeight` on `resultRow`/`rateRow`, fixed indicator slot.
+- [✓] **T15 (R3c) — GREEN, `AppHeader.tsx`:** always-rendered `currencyUpdateRow` (`minHeight: "32px"`, `aria-hidden` when empty) + nowrap/ellipsis status text.
+- [✓] **T16 (R3d) — GREEN, `AppMessageBar.tsx`:** reserved band `minHeight` (measured in T18) + constant margin + opacity-only transition.
+- [✓] **T17 (R4) — GREEN, copy:** `AppHeader` idle status → "Loading currencies…"; `CurrencySelector` hint → "Currencies load automatically when an API key is set."; update the affected unit/e2e strings (`e2e/ui-enhancements.spec.ts:33` regex widened to include the loading copy).
+- [✓] **T18 (R3) — GREEN, e2e tune:** run `pnpm exec vite preview` + the e2e; if the measured single-line MessageBar height ≠ `minHeight`, set the constant to the measured value and re-run until T12 is green (tolerance ≤1 px).
+- [✓] **T19 — Green gate Cycle B:** full gate as T6 (unit + e2e `ui-enhancements`, `conversion`, `error-handling`, `smoke`, `theme`, `accessibility`).
 #### Fase Refactor
-- [ ] **T20 — Refactor Cycle B:** single source for the reserved heights (one const per component or a token), remove duplicated `minHeight` literals, no utility/abstraction beyond that; re-run the 4 component test files.
+- [✓] **T20 — Refactor Cycle B:** single source for the reserved heights (one const per component or a token), remove duplicated `minHeight` literals, no utility/abstraction beyond that; re-run the 4 component test files.
 
 ## Riesgos
 - **e2e API-key tests turn red the moment R1 lands** (`useCurrencies` now fires a real call with a fake key → header shows the error text, not the old regex alternatives). Mitigation: T2 (same cycle) mocks the API via `page.route` before `goto`, making the status deterministic; the mock is registered before navigation because the fetch happens on mount.

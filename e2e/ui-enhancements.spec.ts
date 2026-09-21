@@ -147,4 +147,34 @@ test.describe("UI enhancements", () => {
 			page.getByRole("heading", { name: /Conversion History/ }),
 		).toBeVisible({ timeout: 10000 });
 	});
+
+	test("R3 layout is stable: Calculate box unchanged across autoload and message reveal", async ({
+		page,
+	}) => {
+		// (i) automatic load must not shift Calculate (reserved slots)
+		await page.evaluate((key) => {
+			sessionStorage.setItem("apiKey", key);
+		}, VALID_API_KEY);
+		await page.reload();
+		await page.waitForLoadState("networkidle");
+		const calc = page.getByRole("button", { name: /^Calculate$/ });
+		await expect(calc).toBeVisible();
+		const before = await calc.boundingBox();
+		await expect(
+			page.locator("header").getByText("Currency data loaded"),
+		).toBeVisible({ timeout: 10000 });
+		const afterLoad = await calc.boundingBox();
+		expect(Math.abs(afterLoad!.y - before!.y)).toBeLessThanOrEqual(1);
+		expect(Math.abs(afterLoad!.height - before!.height)).toBeLessThanOrEqual(1);
+
+		// (ii) message reveal + dismiss must not shift Calculate either
+		await page.getByRole("button", { name: "Refresh rates" }).click();
+		await expect(page.getByText("Rates cache cleared.")).toBeVisible();
+		const revealed = await calc.boundingBox();
+		expect(Math.abs(revealed!.y - afterLoad!.y)).toBeLessThanOrEqual(1);
+		await page.getByRole("button", { name: "Dismiss message" }).click();
+		await expect(page.getByText("Rates cache cleared.")).toBeHidden();
+		const dismissed = await calc.boundingBox();
+		expect(Math.abs(dismissed!.y - revealed!.y)).toBeLessThanOrEqual(1);
+	});
 });

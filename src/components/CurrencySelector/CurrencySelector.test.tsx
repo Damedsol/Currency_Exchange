@@ -94,4 +94,56 @@ describe("CurrencySelector", () => {
 		expect(screen.getByText("￥ - Japanese Yen")).toBeDefined();
 		expect(screen.getByText("$ - US Dollar")).toBeDefined();
 	});
+
+	it("R3a hint slot is reserved with minHeight in the empty state", () => {
+		render(<CurrencySelector {...defaultProps} />);
+		const hint = screen.getByTestId("currency-hint");
+		expect(hint.getAttribute("role")).toBe("status");
+		expect(
+			Number.parseInt(getComputedStyle(hint).minHeight, 10),
+		).toBeGreaterThanOrEqual(32);
+	});
+
+	it("R3a hint slot stays reserved (empty) in the loaded state", () => {
+		render(
+			<CurrencySelector
+				{...defaultProps}
+				currencies={mockCurrencies}
+				value="USD"
+			/>,
+		);
+		const hint = screen.getByTestId("currency-hint");
+		expect(hint.textContent).toBe("");
+		expect(
+			Number.parseInt(getComputedStyle(hint).minHeight, 10),
+		).toBeGreaterThanOrEqual(32);
+	});
+
+	it("R3a selects keep 44px minHeight in both states", () => {
+		// Fluent renders minHeight on the Select root wrapper, not the native <select>
+		const { unmount } = render(<CurrencySelector {...defaultProps} />);
+		const placeholder = screen.getByRole("combobox").parentElement!;
+		expect(
+			Number.parseInt(getComputedStyle(placeholder).minHeight, 10),
+		).toBeGreaterThanOrEqual(44);
+		unmount();
+		render(
+			<CurrencySelector
+				{...defaultProps}
+				currencies={mockCurrencies}
+				value="USD"
+			/>,
+		);
+		const loaded = screen.getByRole("combobox").parentElement!;
+		expect(
+			Number.parseInt(getComputedStyle(loaded).minHeight, 10),
+		).toBeGreaterThanOrEqual(44);
+	});
+
+	it("R4 hint explains the automatic load instead of the Update button", () => {
+		render(<CurrencySelector {...defaultProps} />);
+		const hint = screen.getByTestId("currency-hint");
+		expect(hint.textContent).toMatch(/automatically/i);
+		expect(screen.queryByText(/click.*update/i)).toBeNull();
+	});
 });
