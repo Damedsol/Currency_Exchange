@@ -86,4 +86,25 @@ describe("AppMessageBar", () => {
 		);
 		expect(screen.queryByText(/Warning/)).toBeNull();
 	});
+
+	it("R3d alert band reserves minHeight while hidden", () => {
+		render(<AppMessageBar {...defaultHidden} />);
+		const band = screen.getByRole("alert");
+		expect(
+			Number.parseInt(getComputedStyle(band).minHeight, 10),
+		).toBeGreaterThan(0);
+	});
+
+	it("R3d alert band keeps constant margin in both states", () => {
+		const { unmount } = render(<AppMessageBar {...defaultHidden} />);
+		const hiddenMargin = getComputedStyle(
+			screen.getByRole("alert"),
+		).marginBottom;
+		unmount();
+		render(<AppMessageBar {...defaultVisible} />);
+		const visibleMargin = getComputedStyle(
+			screen.getByRole("alert"),
+		).marginBottom;
+		expect(visibleMargin).toBe(hiddenMargin);
+	});
 });

@@ -200,4 +200,55 @@ describe("AppHeader component", () => {
 		const updateBtn = screen.getByText("Update");
 		expect(updateBtn.closest("button")).toBeDisabled();
 	});
+
+	it("R3c currency status row is reserved with minHeight with and without a key", () => {
+		const { unmount } = render(
+			<AppHeader {...defaultProps} storedApiKey={null} />,
+		);
+		const emptyRow = screen.getByTestId("currency-status-row");
+		expect(
+			Number.parseInt(getComputedStyle(emptyRow).minHeight, 10),
+		).toBeGreaterThanOrEqual(32);
+		unmount();
+		render(
+			<AppHeader
+				{...defaultProps}
+				storedApiKey="fca_live_testkey"
+				isCurrenciesLoaded={true}
+				onUpdateCurrencies={vi.fn()}
+			/>,
+		);
+		const loadedRow = screen.getByTestId("currency-status-row");
+		expect(
+			Number.parseInt(getComputedStyle(loadedRow).minHeight, 10),
+		).toBeGreaterThanOrEqual(32);
+	});
+
+	it("R3c status text does not wrap", () => {
+		render(
+			<AppHeader
+				{...defaultProps}
+				storedApiKey="fca_live_testkey"
+				isCurrenciesLoaded={true}
+				onUpdateCurrencies={vi.fn()}
+			/>,
+		);
+		const status = screen.getByTestId("currency-status-text");
+		expect(getComputedStyle(status).whiteSpace).toBe("nowrap");
+	});
+
+	it("R4 idle status announces automatic loading", () => {
+		render(
+			<AppHeader
+				{...defaultProps}
+				storedApiKey="fca_live_testkey"
+				isCurrenciesLoaded={false}
+				isUpdatingCurrencies={false}
+				currenciesUpdateError={null}
+				onUpdateCurrencies={vi.fn()}
+			/>,
+		);
+		expect(screen.getByText("Loading currencies…")).toBeDefined();
+		expect(screen.queryByText(/click.*update|press.*update/i)).toBeNull();
+	});
 });

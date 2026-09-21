@@ -85,6 +85,7 @@ const useStyles = makeStyles({
 		alignItems: "center",
 		...shorthands.gap(tokens.spacingHorizontalXS),
 		fontSize: tokens.fontSizeBase200,
+		minHeight: "32px",
 	},
 	updateButton: {
 		minWidth: "unset",
@@ -94,9 +95,15 @@ const useStyles = makeStyles({
 	errorText: {
 		color: tokens.colorPaletteRedForeground1,
 		fontSize: tokens.fontSizeBase200,
+		whiteSpace: "nowrap",
+		overflow: "hidden",
+		textOverflow: "ellipsis",
 	},
 	statusText: {
 		fontSize: tokens.fontSizeBase200,
+		whiteSpace: "nowrap",
+		overflow: "hidden",
+		textOverflow: "ellipsis",
 	},
 });
 
@@ -184,27 +191,54 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
 		}
 	};
 
-	// Render currency update status row (only when API key is present)
-	const renderCurrencyUpdate = (): React.ReactNode | null => {
-		if (!storedApiKey) return null;
+	// Render currency update status row (always reserved; empty when no key is present)
+	const renderCurrencyUpdate = (): React.ReactNode => {
+		if (!storedApiKey) {
+			return (
+				<div
+					className={styles.currencyUpdateRow}
+					data-testid="currency-status-row"
+					aria-hidden="true"
+				/>
+			);
+		}
 
 		return (
-			<div className={styles.currencyUpdateRow}>
+			<div
+				className={styles.currencyUpdateRow}
+				data-testid="currency-status-row"
+			>
 				{isUpdatingCurrencies ? (
-					<Text size={200} className={styles.statusText}>
+					<Text
+						size={200}
+						className={styles.statusText}
+						data-testid="currency-status-text"
+					>
 						Updating currencies...
 					</Text>
 				) : currenciesUpdateError ? (
-					<Text size={200} className={styles.errorText}>
+					<Text
+						size={200}
+						className={styles.errorText}
+						data-testid="currency-status-text"
+					>
 						{currenciesUpdateError}
 					</Text>
 				) : isCurrenciesLoaded ? (
-					<Text size={200} className={styles.statusText}>
+					<Text
+						size={200}
+						className={styles.statusText}
+						data-testid="currency-status-text"
+					>
 						Currency data loaded
 					</Text>
 				) : (
-					<Text size={200} className={styles.statusText}>
-						Load currencies to select them
+					<Text
+						size={200}
+						className={styles.statusText}
+						data-testid="currency-status-text"
+					>
+						Loading currencies…
 					</Text>
 				)}
 				<Button

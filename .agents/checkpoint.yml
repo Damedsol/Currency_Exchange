@@ -9,10 +9,10 @@ pipeline:
   spec_file: ".agents/docs/specs/change_spec.yaml"
   analysis_file: ""
   report_file: ""
-  review_file: ".agents/docs/review_2026-09-18_ui-autoload-fixed-layout.md"
+  review_file: ".agents/docs/review_2026-09-21_ui-cycle-b.md"
   reviewer_hash: "ui-autoload-fixed-layout-2026-09-18|5files+249-12"
   scribe_hash: "ui-autoload-fixed-layout-2026-09-18|rev:5files+249-12|ui-01..ui-02|adr-005"
-  completed_at: "2026-09-17T19:35:00+01:00"
+  completed_at: "2026-09-21T13:15:28+01:00"
   cycle_summary: >
     New change `ui-autoload-and-fixed-layout` (R1..R4) planned in 2 build cycles.
     Cycle A (R1 autoload + R2 conversion gating) = 5 files; Cycle B (R3 fixed-size slots +
@@ -29,12 +29,13 @@ pipeline:
   context_hash_file: ".agents/.state/context_hash.json"
   build_state_file: ".agents/.state/build_state.json"
   audit_cache_file: ".agents/.state/audit_cache.json"
-  diff_stat: "Cycle A: 5 files / +249 -12 = 261 diff lines (within the 5-file / 400-line SLO) — src/hooks/useCurrencies.ts(+27), src/hooks/useCurrencies.test.ts(+115), src/components/ConversionControls/ConversionControls.tsx(+7/-2), ConversionControls.test.tsx(+57), e2e/ui-enhancements.spec.ts(+55/-8); suite 355/355 exit 0; tsc 0; oxlint+check-filenames clean; biome clean; vite build 306 ms; playwright ui-enhancements 9/9"
-  review_scope: ["R1", "R2"]
+  diff_stat: "Cycle B: 10 files / +284 -38 = 322 diff lines (SLO WARNING: >5 files, declared in plan; each file <55 lines) — CurrencySelector.tsx+test, ResultSection.tsx+test, AppHeader.tsx+test, AppMessageBar.tsx+test, CurrencyRow.test.tsx(1 assertion rescope), e2e/ui-enhancements.spec.ts(+30 R3 stability); suite 367/367 exit 0; tsc 0; oxlint+check-filenames clean; biome clean on touched; vite build 254 ms; playwright full 38/38"
+  review_scope: ["R3", "R4"]
+  reviewer_decision: "approved"
   pending_ids:
   review_fixes: ""
-  deferred_ids: T8,T9,T10,T11,T12,T13,T14,T15,T16,T17,T18,T19,T20
-  review_observations: "O-1 useCurrencies 55->80 lines; O-2 new-key attempt only while metadata unloaded; O-3 R2 in-flight clause code-read only (all non-blocking)"
+  deferred_ids:
+  review_observations: "Cycle B O-4 reserved 56px band accepted trade-off; O-5 empty role=status hint harmless (asserted empty). Cycle A O-1..O-3 carried (non-blocking)"
   decisions:
     - "Cycle A first (behavior), then Cycle B (layout): the e2e status regex change must ship with R1 or the Playwright suite goes red"
     - "Currencies load automatically once per distinct API key; a valid <7d cache suppresses the call (API quota)"
@@ -45,13 +46,16 @@ pipeline:
     - "Cycle B is over the 5-file workload SLO (9 files, each <25 lines) — user may request the B1/B2 split"
     - "MANUAL COMMIT: /scribe bash is read-only in this harness, so `git add`/`git commit` were DENIED — see pending_commit"
   pending_commit:
-    reason: "harness shell gate blocks scribe writes (git add/commit denied) — not a code or review issue"
-    state: "attempt 1 failed in husky/commitlint (body-max-line-length); attempts 2-3 failed because the pasted multi-line `-m` command was broken by the terminal wrapping (bash: switch `m' requires a value). Use the message FILE instead: agents cannot stage/commit, humans cannot paste long quotes reliably."
-    stage: "git add src e2e .agents"
-    commit: "git commit -F .agents/.state/commit-msg.txt"
-    message_file: ".agents/.state/commit-msg.txt (gitignored, ready; subject + 8 paragraphs, every line <=100 chars so commitlint passes)"
-    message_render: "feat(currency): auto-load currencies on API key and gate conversion / Selectors only populated after pressing Update, and Calculate was enabled with any stored API key. / useCurrencies bootstraps itself: one guarded fetch per distinct key (a <7d cache suppresses it). / StrictMode double effects and failure loops are impossible: the ref is set before the call. / ConversionControls enables Calculate only once the currency metadata is loaded. / e2e mocks api.freecurrencyapi.com before navigation, so the auto-load is asserted without pressing Update. / Verified 355/355 unit tests and 37/37 e2e, tsc 0, oxlint and biome clean. / Cycle A of ui-autoload-and-fixed-layout (R1/R2); R3/R4 remain pending. / Refs: .agents/docs/specs/ui.md UI-01/UI-02, ADR-005"
-    files: "13 (9 modified + 4 new docs) — src/hooks/useCurrencies.ts+test, src/components/ConversionControls/ConversionControls.tsx+test, e2e/ui-enhancements.spec.ts, .agents/checkpoint.yml, .agents/context/history.md, .agents/project_manifest.yaml, .agents/docs/specs/change_spec.yaml, .agents/docs/specs/ui.md (new), .agents/docs/adr/005-...md (new), .agents/docs/plan_2026-09-18_...md (new), .agents/docs/review_2026-09-18_...md (new)"
+    reason: "harness shell gate blocks scribe writes (git add/commit denied) — not a code or review issue; supersedes the Cycle A block below (already merged via release/2.2.0)"
+    commit_1_cycle_b:
+      stage: "git add src e2e .agents/docs/plan_2026-09-18_ui-autoload-fixed-layout.md .agents/docs/review_2026-09-21_ui-cycle-b.md .agents/docs/specs/ .agents/checkpoint.yml .agents/context/history.md"
+      commit: "git commit -F .agents/.state/commit-msg-cycle-b.txt"
+      message_file: ".agents/.state/commit-msg-cycle-b.txt (gitignored, ready; every line <=100 chars)"
+    commit_2_deps:
+      stage: "git add pnpm-workspace.yaml pnpm-lock.yaml biome.json"
+      commit: "git commit -F .agents/.state/commit-msg-deps.txt"
+      message_file: ".agents/.state/commit-msg-deps.txt (gitignored, ready)"
+    legacy_cycle_a: "merged via release/2.2.0 — block kept for traceability, no action needed"
   notes: >
     Cycle A CLOSED (status completed): reviewer approved R1/R2 with 0 blocking findings, scribe
     archived them as UI-01/UI-02 in .agents/docs/specs/ui.md (+ ADR-005), persisted memory
@@ -82,3 +86,5 @@ pipeline:
     Dependabot PRs, Cycle B catalog refresh, Cycle C CI workflow, and the `.deepsec/` (761 MB)
     decision (destructive, needs explicit OK).
   previous_cycle: "security advisories Cycle A -> reviewer approved (2026-09-17); UI Cycle A (autoload + gating) APPROVED + archived as UI-01/UI-02 + ADR-005 2026-09-17 (commit pending on the harness shell gate) -> Cycle B (R3/R4) pending"
+  h1_by: "human"
+  h1_at: "2026-09-21T12:14:53.513Z"

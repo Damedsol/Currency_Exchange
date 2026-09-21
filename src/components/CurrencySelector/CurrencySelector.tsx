@@ -27,6 +27,7 @@ const useStyles = makeStyles({
 		color: tokens.colorNeutralForeground3,
 		marginTop: tokens.spacingVerticalXS,
 		paddingLeft: tokens.spacingHorizontalXS,
+		minHeight: "32px",
 	},
 });
 
@@ -56,21 +57,15 @@ export const CurrencySelector: React.FC<CurrencySelectorProps> = React.memo(
 			<div className={styles.root}>
 				<Label htmlFor={selectId}>{labelText}</Label>
 				{isEmpty ? (
-					<>
-						<Select
-							disabled
-							className={styles.select}
-							id={selectId}
-							appearance={"outline"}
-							size={"large"}
-						>
-							<option value="">---</option>
-						</Select>
-						<Text className={styles.hint}>
-							Set an API key and click <strong>Update</strong> to load
-							currencies.
-						</Text>
-					</>
+					<Select
+						disabled
+						className={styles.select}
+						id={selectId}
+						appearance={"outline"}
+						size={"large"}
+					>
+						<option value="">---</option>
+					</Select>
 				) : (
 					<Select
 						className={styles.select}
@@ -87,6 +82,11 @@ export const CurrencySelector: React.FC<CurrencySelectorProps> = React.memo(
 						))}
 					</Select>
 				)}
+				<Text role="status" data-testid="currency-hint" className={styles.hint}>
+					{isEmpty
+						? "Currencies load automatically when an API key is set."
+						: ""}
+				</Text>
 			</div>
 		);
 	},
