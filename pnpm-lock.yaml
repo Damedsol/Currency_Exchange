@@ -15,9 +15,6 @@ catalogs:
     '@commitlint/config-conventional':
       specifier: ^20.0.0
       version: 20.0.0
-    '@fluentui/react-components':
-      specifier: 9.74.1
-      version: 9.74.1
     '@fluentui/react-icons':
       specifier: ^2.0.341
       version: 2.0.341
@@ -94,8 +91,8 @@ importers:
   .:
     dependencies:
       '@fluentui/react-components':
-        specifier: 'catalog:'
-        version: 9.74.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(scheduler@0.28.0)
+        specifier: 9.74.7
+        version: 9.74.7(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(scheduler@0.28.0)
       '@fluentui/react-icons':
         specifier: 'catalog:'
         version: 2.0.341(react@19.3.0)
@@ -434,8 +431,8 @@ packages:
       react: '>=16.14.0 <20.0.0'
       react-dom: '>=16.14.0 <20.0.0'
 
-  '@fluentui/react-alert@9.0.0-beta.140':
-    resolution: {integrity: sha512-IYrS7qNyN6FFya+FBdyHZU3jA+6xcU7SD1FjFbthZMx2QTYN7wnZGUdIRQQc3BQRRwRNWtH2BEF4RZY20TvfWQ==}
+  '@fluentui/react-alert@9.0.2-0':
+    resolution: {integrity: sha512-EBDZINmZABgcusZiwd2tpr7A0ibUnNXzQXEEq654fdb9txhk0zDV+TotudbDmusSRmz69GHCjiUYyv1kUp3yCg==}
     peerDependencies:
       '@types/react': '>=16.14.0 <20.0.0'
       '@types/react-dom': '>=16.9.0 <20.0.0'
@@ -522,8 +519,8 @@ packages:
       react: '>=16.14.0 <20.0.0'
       react-dom: '>=16.14.0 <20.0.0'
 
-  '@fluentui/react-components@9.74.1':
-    resolution: {integrity: sha512-N7BDd3g3A/ngxq8LKLD9ovd+3eHlOgo6R6QFPxA5pVYvznGSQlg00zQ2WxMz7jxQ8ADdPZYIsc7cfg80og3ckw==}
+  '@fluentui/react-components@9.74.7':
+    resolution: {integrity: sha512-6CsXxSnhr55zflwNOB7mD/iqtv5kmr8PXfQdlwJPLkbLOiZXniTtvjaJKXhRFaJcVtZGAJ5vh1leQRyK1R+DQQ==}
     peerDependencies:
       '@types/react': '>=16.14.0 <20.0.0'
       '@types/react-dom': '>=16.9.0 <20.0.0'
@@ -584,8 +581,8 @@ packages:
       react: '>=16.14.0 <20.0.0'
       react-dom: '>=16.14.0 <20.0.0'
 
-  '@fluentui/react-infobutton@9.0.0-beta.116':
-    resolution: {integrity: sha512-bnL8hRs9K8xCKvJU49F0UxcRankGb2sr+KYezdrcrgfbePrh8kyJTFGmxKQSgka8P+SySE5DxFwb2RbfpTjmnw==}
+  '@fluentui/react-infobutton@9.0.1-0':
+    resolution: {integrity: sha512-ZL34XO7sftGyOdr6DvJFW70eyleASyO647X9FLkAAjuoiZc5Qn7T4C391CZ7FrV+qqdYnVl5hQpSgHLzEPhBMA==}
     peerDependencies:
       '@types/react': '>=16.14.0 <20.0.0'
       '@types/react-dom': '>=16.9.0 <20.0.0'
@@ -925,8 +922,8 @@ packages:
       '@types/react': '>=16.14.0 <20.0.0'
       react: '>=16.14.0 <20.0.0'
 
-  '@fluentui/react-virtualizer@9.0.0-alpha.113':
-    resolution: {integrity: sha512-MGmdlm+0HwwMypCpUCpddQjgKvZkL9oGvjXNcoIHYhMVy4WSc5ha8XqOxAo2cfWvKGN0jMiW3H3IebLdcFpd7Q==}
+  '@fluentui/react-virtualizer@9.0.0-alpha.115':
+    resolution: {integrity: sha512-8ZOFmt5eSkiH9jWYvfmMkef+2jGvWrDeXjUptZeesgn4VRXwQu4SUKPLWqZ+ETcYXX/0leGEDl6KItdp/XxbmA==}
     peerDependencies:
       '@types/react': '>=16.14.0 <20.0.0'
       '@types/react-dom': '>=16.9.0 <20.0.0'
@@ -2433,7 +2430,7 @@ snapshots:
     transitivePeerDependencies:
       - scheduler
 
-  '@fluentui/react-alert@9.0.0-beta.140(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(scheduler@0.28.0)':
+  '@fluentui/react-alert@9.0.2-0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(scheduler@0.28.0)':
     dependencies:
       '@fluentui/react-avatar': 9.11.6(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(scheduler@0.28.0)
       '@fluentui/react-button': 9.11.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
@@ -2633,10 +2630,10 @@ snapshots:
     transitivePeerDependencies:
       - scheduler
 
-  '@fluentui/react-components@9.74.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(scheduler@0.28.0)':
+  '@fluentui/react-components@9.74.7(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(scheduler@0.28.0)':
     dependencies:
       '@fluentui/react-accordion': 9.12.3(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(scheduler@0.28.0)
-      '@fluentui/react-alert': 9.0.0-beta.140(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(scheduler@0.28.0)
+      '@fluentui/react-alert': 9.0.2-0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(scheduler@0.28.0)
       '@fluentui/react-aria': 9.17.14(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@fluentui/react-avatar': 9.11.6(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(scheduler@0.28.0)
       '@fluentui/react-badge': 9.5.5(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
@@ -2652,7 +2649,7 @@ snapshots:
       '@fluentui/react-drawer': 9.13.3(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(scheduler@0.28.0)
       '@fluentui/react-field': 9.5.4(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(scheduler@0.28.0)
       '@fluentui/react-image': 9.4.4(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@fluentui/react-infobutton': 9.0.0-beta.116(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(scheduler@0.28.0)
+      '@fluentui/react-infobutton': 9.0.1-0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(scheduler@0.28.0)
       '@fluentui/react-infolabel': 9.4.25(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(scheduler@0.28.0)
       '@fluentui/react-input': 9.8.6(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(scheduler@0.28.0)
       '@fluentui/react-label': 9.4.4(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
@@ -2694,7 +2691,7 @@ snapshots:
       '@fluentui/react-tooltip': 9.10.5(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@fluentui/react-tree': 9.16.6(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(scheduler@0.28.0)
       '@fluentui/react-utilities': 9.26.6(@types/react@19.3.0)(react@19.3.0)
-      '@fluentui/react-virtualizer': 9.0.0-alpha.113(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      '@fluentui/react-virtualizer': 9.0.0-alpha.115(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@griffel/react': 1.7.4(react@19.3.0)
       '@swc/helpers': 0.5.21
       '@types/react': 19.3.0
@@ -2807,7 +2804,7 @@ snapshots:
       react: 19.3.0
       react-dom: 19.3.0(react@19.3.0)
 
-  '@fluentui/react-infobutton@9.0.0-beta.116(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(scheduler@0.28.0)':
+  '@fluentui/react-infobutton@9.0.1-0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(scheduler@0.28.0)':
     dependencies:
       '@fluentui/react-icons': 2.0.341(react@19.3.0)
       '@fluentui/react-jsx-runtime': 9.4.5(@types/react@19.3.0)(react@19.3.0)
@@ -3537,7 +3534,7 @@ snapshots:
       '@types/react': 19.3.0
       react: 19.3.0
 
-  '@fluentui/react-virtualizer@9.0.0-alpha.113(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
+  '@fluentui/react-virtualizer@9.0.0-alpha.115(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
     dependencies:
       '@fluentui/react-jsx-runtime': 9.4.5(@types/react@19.3.0)(react@19.3.0)
       '@fluentui/react-shared-contexts': 9.26.3(@types/react@19.3.0)(react@19.3.0)

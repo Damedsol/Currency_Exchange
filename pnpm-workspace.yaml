@@ -20,7 +20,7 @@ registries:
 minimumReleaseAge: 7200
 catalog:
   "@biomejs/biome": "^2.5.14"
-  "@fluentui/react-components": "9.74.1" # hold: 9.74.7 pulls react-tabster 9.26.17 (dropped "node" CJS condition) -> tabster createTabster SyntaxError under vitest
+  "@fluentui/react-components": "9.74.7" # hold: 9.74.7 pulls react-tabster 9.26.17 (dropped "node" CJS condition) -> tabster createTabster SyntaxError under vitest
   "@fluentui/react-icons": "^2.0.341"
   react: "^19.3.0"
   react-dom: "^19.3.0"
