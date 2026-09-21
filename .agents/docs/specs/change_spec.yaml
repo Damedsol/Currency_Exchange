@@ -1,12 +1,12 @@
 # change_spec — currencyExchange
 # SDD equivalent of openspec/changes/<change>/proposal.md
 change: ui-autoload-and-fixed-layout
-status: active
+status: archived
 created: 2026-09-18
 plan: .agents/docs/plan_2026-09-18_ui-autoload-fixed-layout.md
 domain: .agents/docs/specs/ui.md
-archived_requirements: [R1, R2]   # merged into .agents/docs/specs/ui.md (UI-01, UI-02) on 2026-09-17 + ADR-005
-pending_requirements: [R3, R4]    # Cycle B (T8..T20) — keep this change active
+archived_requirements: [R1, R2, R3, R4]   # R1/R2 merged as UI-01/UI-02 on 2026-09-17 (ADR-005); R3/R4 merged as UI-03/UI-04 on 2026-09-21
+pending_requirements: []   # change complete (T1..T20); Cycle A review 2026-09-18 + Cycle B review 2026-09-21 both APPROVED
 previous_change: security-advisories-and-dependency-refresh   # Cycles A closed 2026-09-17; remaining R4/R6/R7 live on as SEC-13..SEC-16 in specs/security.md
 approval_required: []   # no new dependency, no .env, no Docker/infra, no destructive action
 

@@ -6,6 +6,29 @@
 
 ## Recent Changes
 
+### 2026-09-21 — Version bump 2.3.0 (complete)
+
+- Minor bump: Cycle B (fixed layout + auto-load copy) + dep refresh since 2.2.0.
+- Synced all 4 sources: `package.json`, `.agents/project_manifest.yaml`, `.agents/context/project.md`, `README.md` badge.
+- Applied under /build L1 (scribe gate had blocked `package.json`/`README.md` writes; completed on re-invocation).
+
+### 2026-09-21 — UI Cycle B: fixed-size slots + copy (R3/R4, T8..T20, TDD)
+
+- Reserved-size slots in 4 components: `CurrencySelector` unconditional `role="status"` hint (`minHeight 32px`); `ResultSection` single `result-slot` (`44px`, spinner inside) + `rate-row` (`32px`) + `rate-indicator-slot` (idle-safe); `AppHeader` always-rendered `currency-status-row` (`32px`, `aria-hidden` when keyless) + nowrap/ellipsis status; `AppMessageBar` reserved band (`minHeight 56px`, constant margin, opacity-only transition).
+- Copy (R4): header idle → "Loading currencies…", selector hint → automatic-load wording; no string references the Update button for loading.
+- Tests: 12 new R3/R4 unit contracts (declaration via `getComputedStyle`, per `CurrencyRow` precedent) + e2e R3 stability (`Calculate` box ≤1px across autoload and message reveal/dismiss) → suite **367/367** (was 355), e2e **38/38**, tsc 0, oxlint/filenames/biome clean, build 254 ms. The `56px` guess needed no tuning (T18).
+- Fixes on the way: Fluent `Select` minHeight lives on the wrapper span (test targets `parentElement`); always-rendered hint `role="status"` collided with `CurrencyRow`'s `getByRole("status")` → that assertion rescoped to explicit `[aria-live="polite"]` (only behavioral change to a pre-existing test).
+- Workload: 10 files / 322 lines — SLO WARNING (>5 files, declared in plan; +1 unplanned `CurrencyRow.test.tsx` rescope).
+- Note: built on branch `feature/update-dependencies` atop the uncommitted dep refresh (suite green on the combined tree).
+
+### 2026-09-21 — Dependency refresh: 13 safe minors + Fluent hold (TDD gate)
+
+- Branch `feature/update-dependencies` (from `develop`, user-created via git flow, ADELANTE approved).
+- `pnpm up` on 14 minors: react 19.2.6→19.3.0, react-dom, vite 8.0.16→8.3.0, plugin-react 6.0.2→6.1.1, playwright 1.60→1.63, biome 2.4.15→2.5.14, oxlint 1.66→1.83, testing-library react/user-event, @types/react+react-dom 19.2→19.3, fluent-icons 2.0.328→2.0.341.
+- **Fluent components HELD at 9.74.1** (catalog exact pin): 9.74.7 pulls react-tabster 9.26.17, which dropped the `"node"` CJS condition → vitest natively imports tabster's exports-less CJS → `SyntaxError: createTabster` in 16 suites. `server.deps.inline` (tabster, react-tabster, `/^@fluentui\//`) does NOT fix it (externalized parents bypass Vite). Revisit with vitest 5 or upstream tabster exports fix.
+- `biome.json` $schema 2.4.15→2.5.14 (Biome CLI bump). `pnpm audit` 0 vulns; remaining outdated = majors only (vitest 5, TS 7, jsdom 30, jest-dom 7, lint-staged 17, commitlint 21, @types/node 26) — out of scope.
+- **QA:** 36 files / 355 tests ✅ · `tsc` 0 · `oxlint` + `check-filenames` ✅ · `vite build` 261 ms ✅ · `biome check .` clean except pre-existing `scripts/check-filenames.mjs` format. E2E not re-run (playwright 1.63 needs fresh chromium download).
+
 ### 2026-09-18 — Release 2.2.0 (version bump + docs sync)
 
 - SemVer **minor** bump `2.1.3` → `2.2.0` after finishing `feature/minor-fixes-and-security` into `develop` (new functionality: currency auto-load + conversion gating, dependency override policy).

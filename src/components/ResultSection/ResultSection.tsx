@@ -47,12 +47,25 @@ const useStyles = makeStyles({
 		fontSize: tokens.fontSizeBase600,
 		fontWeight: "600",
 	},
+	resultSlot: {
+		display: "inline-flex",
+		alignItems: "center",
+		justifyContent: "flex-end",
+		minHeight: "44px",
+		minWidth: "10ch",
+	},
 	rateRow: {
 		display: "flex",
 		flexDirection: "row",
 		alignItems: "center",
 		justifyContent: "space-between",
 		marginTop: tokens.spacingVerticalXS,
+		minHeight: "32px",
+	},
+	indicatorSlot: {
+		display: "inline-flex",
+		alignItems: "center",
+		minHeight: "20px",
 	},
 	rateValue: {
 		display: "flex",
@@ -118,23 +131,34 @@ export const ResultSection = React.memo(
 			>
 				<div className={styles.resultRow}>
 					<Text size={200}>Result</Text>
-					{isLoading ? (
-						<Spinner size="small" label="Calculating..." />
-					) : (
-						<Text size={600} weight="semibold" className={styles.resultAmount}>
-							{calculateResult()}
-						</Text>
-					)}
+					<span data-testid="result-slot" className={styles.resultSlot}>
+						{isLoading ? (
+							<Spinner size="small" label="Calculating..." />
+						) : (
+							<Text
+								size={600}
+								weight="semibold"
+								className={styles.resultAmount}
+							>
+								{calculateResult()}
+							</Text>
+						)}
+					</span>
 				</div>
 
-				<div className={styles.rateRow}>
+				<div className={styles.rateRow} data-testid="rate-row">
 					<div className={styles.rateValue}>
 						<Text size={200}>Rate: </Text>
 						<Text size={200} weight="medium">
 							1 {fromCurrency} ={" "}
 							{formatCurrencyAmount(rate, toCurrency, currencies)} {toCurrency}
 						</Text>
-						<RateSourceIndicator rateSource={rateSource} />
+						<span
+							data-testid="rate-indicator-slot"
+							className={styles.indicatorSlot}
+						>
+							<RateSourceIndicator rateSource={rateSource} />
+						</span>
 					</div>
 					<Tooltip content="Refresh rates from API" relationship="description">
 						<Button
